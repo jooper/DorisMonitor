@@ -1141,14 +1141,165 @@ def api_jobs_execute():
     ok, msg = scheduler.execute_now(jid)
     return jsonify({"status": "ok" if ok else "fail", "message": "执行成功" if ok else msg})
 
+# ─── Catalog Management ───────────────────────────────
+
+def _parse_catalog_props(create_sql):
+    """Extract key-value properties from a CREATE CATALOG statement."""
+    props = {}
+    m = re.search(r'PROPERTIES\s*\(([\s\S]*)\)\s*;?\s*$', create_sql, re.IGNORECASE)
+    if m:
+        for match in re.finditer(r"""(['"])([^'"]+)\1\s*=\s*\1([^'"]*)\1""", m.group(1)):
+            props[match.group(2)] = match.group(3)
+    return props
+
+@app.route("/api/catalogs")
+def api_catalogs():
+    try:
+        rows = query("SHOW CATALOGS")
+        catalogs = []
+        for r in rows:
+            name = r.get("Catalog", r.get("CatalogName", r.get("name", "")))
+            if not name or name == "internal":
+                continue
+            ctype = r.get("Type", r.get("CatalogType", ""))
+            entry = {"name": name, "type": ctype, "properties": {}, "create_sql": ""}
+            try:
+                cr = query(f"SHOW CREATE CATALOG `{name}`")
+                if cr:
+                    sql_text = cr[0].get("Create Catalog", cr[0].get("CreateCatalog", ""))
+                    entry["create_sql"] = sql_text
+                    entry["properties"] = _parse_catalog_props(sql_text)
+            except Exception:
+                pass
+            catalogs.append(entry)
+        return jsonify({"catalogs": catalogs})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/catalogs/test", methods=["POST"])
+def api_catalog_test():
+    import socket as _socket
+    data = request.get_json(force=True)
+    props = data.get("properties", {})
+    if not props:
+        return jsonify({"error": "Properties are required"}), 400
+    ctype = props.get("type", "")
+
+    if ctype == "jdbc":
+        jdbc_url = props.get("jdbc_url", "")
+        user = props.get("user", "")
+        password = props.get("password", "")
+        m = re.search(r'jdbc:mysql://([^:/]+)(?::(\d+))?(?:/([^?]+))?', jdbc_url)
+        if not m:
+            return jsonify({"status": "fail", "message": "无法解析 JDBC URL，目前仅支持 MySQL 类型"})
+        host, port, db = m.group(1), int(m.group(2) or 3306), (m.group(3) or "")
+        try:
+            conn = pymysql.connect(host=host, port=port, user=user, password=password, connect_timeout=5, database=db)
+            with conn.cursor() as cur:
+                cur.execute("SELECT 1")
+                cur.fetchone()
+            conn.close()
+            return jsonify({"status": "ok", "message": "JDBC 连接成功 (SELECT 1 OK)"})
+        except Exception as e:
+            return jsonify({"status": "fail", "message": f"JDBC 连接失败: {e}"})
+
+    elif ctype in ("hms",):
+        uris_str = props.get("hive.metastore.uris", "")
+        m = re.search(r'thrift://([^:/]+):(\d+)', uris_str)
+        if not m:
+            return jsonify({"status": "fail", "message": "无法解析 hive.metastore.uris"})
+        host, port = m.group(1), int(m.group(2))
+        try:
+            s = _socket.create_connection((host, port), timeout=5)
+            s.close()
+            return jsonify({"status": "ok", "message": f"HMS 端口可达 ({host}:{port})"})
+        except Exception as e:
+            return jsonify({"status": "fail", "message": f"HMS 连接失败: {e}"})
+
+    elif ctype == "es":
+        hosts = props.get("elasticsearch.hosts", "")
+        if not hosts:
+            return jsonify({"status": "fail", "message": "缺少 elasticsearch.hosts"})
+        try:
+            r = requests.get(hosts, timeout=5, auth=(props.get("user",""), props.get("password","")) if props.get("user") else None)
+            return jsonify({"status": "ok" if r.ok else "fail", "message": f"ES 响应: HTTP {r.status_code}" if not r.ok else "ES 连接成功"})
+        except Exception as e:
+            return jsonify({"status": "fail", "message": f"ES 连接失败: {e}"})
+
+    elif ctype in ("iceberg",):
+        ice_type = props.get("iceberg.catalog.type", "")
+        if ice_type == "hms":
+            uris_str = props.get("hive.metastore.uris", "")
+            m = re.search(r'thrift://([^:/]+):(\d+)', uris_str)
+            if m:
+                host, port = m.group(1), int(m.group(2))
+                try:
+                    s = _socket.create_connection((host, port), timeout=5); s.close()
+                    return jsonify({"status": "ok", "message": f"Iceberg HMS 端口可达 ({host}:{port})"})
+                except Exception as e:
+                    return jsonify({"status": "fail", "message": f"Iceberg HMS 连接失败: {e}"})
+        return jsonify({"status": "fail", "message": "不支持的 Iceberg catalog type，暂仅支持 hms"})
+
+    elif ctype == "max_compute":
+        return jsonify({"status": "ok", "message": "MaxCompute 暂不支持自动测试，请手动验证"})
+
+    elif ctype == "paimon":
+        paimon_type = props.get("paimon.catalog.type", "")
+        if paimon_type == "hms":
+            uris_str = props.get("hive.metastore.uris", "")
+            m = re.search(r'thrift://([^:/]+):(\d+)', uris_str)
+            if m:
+                host, port = m.group(1), int(m.group(2))
+                try:
+                    s = _socket.create_connection((host, port), timeout=5); s.close()
+                    return jsonify({"status": "ok", "message": f"Paimon HMS 端口可达 ({host}:{port})"})
+                except Exception as e:
+                    return jsonify({"status": "fail", "message": f"Paimon HMS 连接失败: {e}"})
+        return jsonify({"status": "fail", "message": "不支持的 Paimon catalog type，暂仅支持 hms"})
+
+    else:
+        return jsonify({"status": "ok", "message": f"Catalog 类型 '{ctype}' 暂不支持自动测试"})
+
+@app.route("/api/catalogs", methods=["POST"])
+def api_catalog_create():
+    data = request.get_json(force=True)
+    name = data.get("name", "").strip()
+    props = data.get("properties", {})
+    if not name:
+        return jsonify({"error": "Catalog name is required"}), 400
+    if not props:
+        return jsonify({"error": "At least one property required"}), 400
+    props_str = ", ".join([f'"{k}" = "{v}"' for k, v in props.items()])
+    sql = f"CREATE CATALOG `{name}` PROPERTIES ({props_str})"
+    try:
+        query(sql)
+        return jsonify({"status": "ok"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/catalogs/<name>", methods=["PUT"])
+def api_catalog_alter(name):
+    data = request.get_json(force=True)
+    props = data.get("properties", {})
+    if not props:
+        return jsonify({"error": "No properties to update"}), 400
+    for k, v in props.items():
+        sql = f"ALTER CATALOG `{name}` SET PROPERTIES ('{k}' = '{v}')"
+        try:
+            query(sql)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+    return jsonify({"status": "ok"})
+
+@app.route("/api/catalogs/<name>", methods=["DELETE"])
+def api_catalog_drop(name):
+    try:
+        query(f"DROP CATALOG `{name}`")
+        return jsonify({"status": "ok"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == "__main__":
-    import scheduler_service as _ss
-    scheduler = _ss.SchedulerService(get_db)
-    scheduler.start()
-    cfg = get_fe_config()
-    print(f"  Doris Monitor @ http://localhost:5000")
-    start_alert_checker()
-    app.run(host="0.0.0.0", port=5000, debug=False, threaded=True)
     import scheduler_service as _ss
     scheduler = _ss.SchedulerService(get_db)
     scheduler.start()

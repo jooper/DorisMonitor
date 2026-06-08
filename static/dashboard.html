@@ -22,6 +22,7 @@
 <a class="nav-item" data-tab="tables"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10" stroke-linecap="round"/><line x1="10" y1="4" x2="10" y2="20" stroke-linecap="round"/></svg><span>数据表</span></a>
 <a class="nav-item" data-tab="graph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><line x1="10" y1="7" x2="7" y2="17" stroke-linecap="round"/><line x1="14" y1="7" x2="17" y2="17" stroke-linecap="round"/><line x1="7.5" y1="18" x2="16.5" y2="18" stroke-linecap="round"/></svg><span>关系图谱</span></a>
 <a class="nav-item" data-tab="jobs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="12" cy="16" r="1.5"/><line x1="12" y1="13" x2="12" y2="16"/></svg><span>作业调度</span></a>
+<a class="nav-item" data-tab="catalog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><ellipse cx="12" cy="12" rx="4" ry="10"/><path d="M2 12h20"/></svg><span>Catalog</span></a>
 <a class="nav-item" data-tab="config"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="2.5"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke-linecap="round"/></svg><span>设置</span></a>
 </nav>
 
@@ -35,6 +36,8 @@
 <div id="tab-graph" class="tab-content"><div class="page-header"><h1>Dependency Graph</h1><p>Materialized view dependency relationships</p></div><div class="page-body"><div class="filter-bar"><select id="graph-db-filter" onchange="renderMvGraph()"><option value="">All Databases</option></select><select id="graph-mv-filter" onchange="renderMvGraph()"><option value="">All MVs</option></select></div><div class="graph-legend"><span><span class="legend-dot mv"></span>Materialized View</span><span><span class="legend-dot table"></span>Base Table</span></div><div id="mv-graph" style="width:100%;height:800px;background:#fff;border-radius:var(--radius-md);border:1px solid var(--border-color)"></div></div></div>
 
 <div id="tab-jobs" class="tab-content"><div class="page-header"><h1>作业调度</h1><p>管理 Doris CREATE JOB 定时任务</p></div><div class="page-body"><div class="page-section"><div class="section-label">概览</div><div class="metrics-grid" id="jobs-summary"></div></div><div class="page-section"><div class="section-toolbar"><button class="cfg-btn primary" onclick="openCreateJobModal()">＋ 创建作业</button><div class="filter-bar"><select id="jobs-status-filter" onchange="filterJobsTable()"><option value="">All Status</option></select><input id="jobs-search" type="text" placeholder="Search jobs..." oninput="filterJobsTable()"></div></div><div id="jobs-table"><div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><p>Switch to this tab to load data</p></div></div></div></div></div>
+
+<div id="tab-catalog" class="tab-content"><div class="page-header"><h1>Catalog Management</h1><p>Manage Doris catalogs for external data sources</p></div><div class="page-body"><div class="page-section"><div class="section-toolbar"><button class="cfg-btn primary" onclick="openCatalogModal()">＋ 创建 Catalog</button><div class="filter-bar" style="margin-left:auto"><input id="catalog-search" type="text" placeholder="Search catalogs..." oninput="filterCatalogTable()"></div></div><div id="catalog-table"><div class="empty-state"><p>Switch to this tab to load data</p></div></div></div></div></div>
 
 <div id="tab-config" class="tab-content"><div class="page-header"><h1>Settings</h1><p>Cluster connection and alert configuration</p></div><div class="page-body"><div class="page-section"><h3 style="font-size:15px;font-weight:600;margin-bottom:16px">Cluster Connection</h3><div class="cfg-form"><div class="cfg-row"><label class="cfg-label">Host</label><input class="cfg-input" id="cfg-host"></div><div class="cfg-row"><label class="cfg-label">MySQL Port</label><input class="cfg-input" id="cfg-port" type="number"></div><div class="cfg-row"><label class="cfg-label">Username</label><input class="cfg-input" id="cfg-user"></div><div class="cfg-row"><label class="cfg-label">Password</label><input class="cfg-input" id="cfg-password" type="password"></div><div class="cfg-row"><label class="cfg-label">FE HTTP Port</label><input class="cfg-input" id="cfg-fe-http" type="number"></div><div class="cfg-row"><label class="cfg-label">BE HTTP Port</label><input class="cfg-input" id="cfg-be-http" type="number"></div><div class="cfg-row"><label class="cfg-label">Connect Timeout</label><input class="cfg-input" id="cfg-timeout" type="number"></div><div class="cfg-row"><label class="cfg-label">Refresh Interval</label><input class="cfg-input" id="cfg-interval" type="number" min="5"></div><div style="display:flex;gap:8px;align-items:center;margin-top:12px;padding-left:122px"><button class="cfg-btn primary" onclick="saveConfig()">Save</button><button class="cfg-btn success" onclick="testConnection()">Test</button><span class="cfg-status" id="cfg-status"></span></div></div><div class="cfg-divider"></div><h3 style="font-size:15px;font-weight:600;margin-bottom:16px">Email Alerts</h3><div class="cfg-form"><div class="cfg-row"><label class="cfg-label">Enabled</label><label class="apple-checkbox"><input type="checkbox" id="alert-enabled"> Send email on anomalies</label></div><div class="cfg-row"><label class="cfg-label">SMTP Host</label><input class="cfg-input" id="alert-smtp-host" placeholder="smtp.example.com"></div><div class="cfg-row"><label class="cfg-label">SMTP Port</label><input class="cfg-input" id="alert-smtp-port" type="number" placeholder="587"></div><div class="cfg-row"><label class="cfg-label">Username</label><input class="cfg-input" id="alert-user"></div><div class="cfg-row"><label class="cfg-label">Password</label><input class="cfg-input" id="alert-pass" type="password"></div><div class="cfg-row"><label class="cfg-label">From</label><input class="cfg-input" id="alert-from" placeholder="alert@example.com"></div><div class="cfg-row"><label class="cfg-label">To</label><input class="cfg-input" id="alert-to" placeholder="admin@example.com"></div><div style="display:flex;gap:8px;align-items:center;margin-top:12px;padding-left:122px"><button class="cfg-btn primary" onclick="saveAlertConfig()">Save</button><button class="cfg-btn success" onclick="testAlert()">Test</button><span class="cfg-status" id="alert-status"></span></div></div></div></div></div>
 </main></div>
@@ -83,6 +86,15 @@
 </div>
 </div></div></div>
 
+<div class="modal-overlay" id="catalog-overlay" onclick="if(event.target===this)closeCatalogModal()"><div class="modal" style="width:680px;max-width:94vw"><div class="modal-header"><h2 id="catalog-modal-title">创建 Catalog</h2><button class="modal-close" onclick="closeCatalogModal()">&times;</button></div><div class="modal-body">
+<div class="cfg-form">
+<div class="cfg-row"><label class="cfg-label">Catalog Name</label><input class="cfg-input" id="cat-name" placeholder="e.g. my_hive_catalog"></div>
+<div class="cfg-row"><label class="cfg-label">Type</label><select class="cfg-input" id="cat-type" onchange="populateDefaultProps()" style="width:200px"><option value="">-- Select Type --</option><option value="hms">Hive/Hudi (HMS)</option><option value="jdbc">JDBC</option><option value="iceberg">Iceberg</option><option value="es">Elasticsearch</option><option value="max_compute">Max Compute</option><option value="paimon">Paimon</option></select></div>
+<div class="cfg-row" style="align-items:flex-start"><label class="cfg-label">Properties</label><div id="cat-props-container" style="flex:1;display:flex;flex-direction:column;gap:4px"><div style="color:var(--text-tertiary);font-size:12px;padding:4px 0">Select a type to load default properties</div></div></div>
+</div>
+<div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;margin-top:16px;padding-top:12px;border-top:1px solid var(--border-color)"><span id="cat-status" class="cfg-status" style="flex:1;text-align:left"></span><button class="cfg-btn success" onclick="testCatalogConnection()" id="cat-test-btn">Test Connection</button><button class="cfg-btn" onclick="closeCatalogModal()">Cancel</button><button class="cfg-btn primary" onclick="saveCatalog()">Save</button></div>
+</div></div></div>
+
 <script>
 var _rt=null,_ld=null;
 function startRefresh(s){if(_rt)clearInterval(_rt);if(s>0)_rt=setInterval(loadMetrics,s*1000)}
@@ -101,6 +113,7 @@ document.querySelectorAll(".nav-item").forEach(function(b){
     if(tab==="tables" && _ld && _ld.tables) renderTblPage(_ld);
     if(tab==="graph" && _ld && _ld.materialized_views) renderMvGraph();
     if(tab==="jobs") renderJobsPage();
+    if(tab==="catalog") loadCatalogs();
     if(tab==="config") loadConfig();
   });
 });
@@ -810,6 +823,166 @@ function cjCreateJob(){
         st.textContent = '✗ 失败: '+d.message; st.style.color = 'var(--error)';
       }
     }).catch(function(e){st.textContent='请求失败: '+e.message;st.style.color='var(--error)'});
+}
+
+// ── Catalog Management ──
+
+var _catalogData = [];
+var _catalogEditing = null;
+
+function loadCatalogs(){
+  var el = document.getElementById('catalog-table');
+  el.innerHTML = '<div class="empty-state"><p>Loading...</p></div>';
+  fetch('/api/catalogs').then(function(r){return r.json()}).then(function(d){
+    if(d.error){el.innerHTML='<div class="empty-state"><p>Error: '+escHtml(d.error)+'</p></div>';return}
+    renderCatalogTable(d.catalogs||[]);
+  }).catch(function(e){el.innerHTML='<div class="empty-state"><p>Failed: '+e.message+'</p></div>'});
+}
+function renderCatalogTable(list){
+  _catalogData = list;
+  var q=(document.getElementById('catalog-search').value||'').toLowerCase();
+  var fl = list.filter(function(c){return c.name.toLowerCase().indexOf(q)>=0||(c.type||'').toLowerCase().indexOf(q)>=0});
+  var el = document.getElementById('catalog-table');
+  if(!fl.length){el.innerHTML='<div class="empty-state"><p>No catalogs found</p></div>';return}
+  el.innerHTML = '<div class="apple-table-wrap"><table class="apple-table"><thead><tr><th>Name</th><th>Type</th><th>Properties</th><th>Actions</th></tr></thead><tbody>'+
+    fl.map(function(c,i){
+      var pkeys = Object.keys(c.properties||{});
+      var propsStr = pkeys.filter(function(k){return k!=='type'}).map(function(k){return escHtml(k)+'='+escHtml(c.properties[k])}).join(', ');
+      if(propsStr.length>100) propsStr = propsStr.substring(0,100)+'...';
+      return '<tr><td><strong>'+escHtml(c.name)+'</strong></td>'+
+        '<td><span style="display:inline-block;background:var(--accent-bg,#e8f0fe);color:var(--accent,#1967d2);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:500">'+escHtml(c.type||'N/A')+'</span></td>'+
+        '<td style="font-size:11px;color:var(--text-secondary);max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+escHtml(propsStr||'-')+'</td>'+
+        '<td><button class="cfg-btn small" onclick="openCatalogModal('+i+')" style="margin-right:4px">Edit</button>'+
+        '<button class="cfg-btn small" style="background:var(--error);color:#fff" onclick="deleteCatalog('+i+',this)">Delete</button></td></tr>';
+    }).join('')+'</tbody></table></div>';
+}
+function filterCatalogTable(){renderCatalogTable(_catalogData);}
+
+var _catPropTemplates = {
+  hms: {'hive.metastore.uris': ''},
+  jdbc: {user: '', password: '', jdbc_url: '', driver_url: ''},
+  iceberg: {'iceberg.catalog.type': 'hms', 'hive.metastore.uris': ''},
+  es: {'elasticsearch.hosts': '', 'elasticsearch.nodes_discovery': 'false', 'elasticsearch.nodes': ''},
+  max_compute: {region: '', access_key: '', secret_key: '', project: '', endpoint: ''},
+  paimon: {'paimon.catalog.type': 'hms', 'hive.metastore.uris': ''}
+};
+
+function openCatalogModal(idx){
+  _catalogEditing = idx!=null ? _catalogData[idx] : null;
+  document.getElementById('catalog-modal-title').textContent = _catalogEditing ? '编辑 Catalog' : '创建 Catalog';
+  document.getElementById('cat-name').value = _catalogEditing ? _catalogEditing.name : '';
+  document.getElementById('cat-name').disabled = !!_catalogEditing;
+  document.getElementById('cat-type').value = _catalogEditing ? (_catalogEditing.type||'') : '';
+  document.getElementById('cat-type').disabled = !!_catalogEditing;
+  document.getElementById('cat-status').textContent = '';
+  document.getElementById('cat-props-container').innerHTML = '';
+  if(_catalogEditing){
+    var props = _catalogEditing.properties||{};
+    var keys = Object.keys(props);
+    if(keys.length){
+      keys.forEach(function(k){addCatalogPropRow(k, props[k])});
+    } else {
+      document.getElementById('cat-props-container').innerHTML = '<div style="color:var(--text-tertiary);font-size:12px;padding:4px 0">No properties available</div>';
+    }
+  }
+  document.getElementById('catalog-overlay').style.display = 'flex';
+}
+function closeCatalogModal(){
+  document.getElementById('catalog-overlay').style.display = 'none';
+  _catalogEditing = null;
+}
+function populateDefaultProps(){
+  var type = document.getElementById('cat-type').value;
+  var container = document.getElementById('cat-props-container');
+  container.innerHTML = '';
+  if(!type){container.innerHTML = '<div style="color:var(--text-tertiary);font-size:12px;padding:4px 0">Select a type to load default properties</div>';return}
+  var tmpl = _catPropTemplates[type]||{};
+  addCatalogPropRow('type', type);
+  Object.keys(tmpl).forEach(function(k){addCatalogPropRow(k, tmpl[k]||'')});
+  addCatalogPropRow('', '', true);
+}
+function addCatalogPropRow(key, val, isAddBtn){
+  var container = document.getElementById('cat-props-container');
+  if(isAddBtn){
+    container.innerHTML += '<div class="cat-prop-add" style="margin-top:2px"><button class="cfg-btn small" onclick="addCatalogPropRow(\'\',\'\',false)">＋ Add property</button></div>';
+    return;
+  }
+  var html = '<div class="cat-prop-row" style="display:flex;gap:4px;align-items:center">'+
+    '<input class="cfg-input cat-prop-key" placeholder="Key" value="'+escHtml(key).replace(/'/g,"&#39;")+'" style="width:160px;font-size:12px">'+
+    ' <span style="color:var(--text-tertiary)">=</span> '+
+    '<input class="cfg-input cat-prop-val" placeholder="Value" value="'+escHtml(val||'').replace(/'/g,"&#39;")+'" style="flex:1;font-size:12px">'+
+    '<button class="cfg-btn small" style="background:transparent;color:var(--error);padding:2px 6px;font-size:14px;line-height:1" onclick="this.parentElement.remove()" title="Remove property">&times;</button></div>';
+  // Replace add button placeholder if exists
+  var addBtn = container.querySelector('.cat-prop-add');
+  if(addBtn){
+    addBtn.insertAdjacentHTML('beforebegin', html);
+  } else {
+    container.innerHTML += html;
+  }
+}
+function testCatalogConnection(){
+  var rows = document.querySelectorAll('.cat-prop-row');
+  var props = {};
+  rows.forEach(function(r){
+    var k = r.querySelector('.cat-prop-key').value.trim();
+    var v = r.querySelector('.cat-prop-val').value.trim();
+    if(k) props[k] = v;
+  });
+  if(!Object.keys(props).length){alert('Please fill in properties first');return}
+  var st = document.getElementById('cat-status');
+  var btn = document.getElementById('cat-test-btn');
+  st.textContent = 'Testing...'; st.style.color = 'var(--text-tertiary)';
+  btn.disabled = true; btn.textContent = 'Testing...';
+  fetch('/api/catalogs/test', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({properties: props})})
+    .then(function(r){return r.json()}).then(function(d){
+      st.textContent = d.status==='ok' ? '✓ '+d.message : '✗ '+d.message;
+      st.style.color = d.status==='ok' ? 'var(--success)' : 'var(--error)';
+      btn.disabled = false; btn.textContent = 'Test Connection';
+    }).catch(function(e){st.textContent='✗ Request failed: '+e.message;st.style.color='var(--error)';btn.disabled=false;btn.textContent='Test Connection'});
+}
+function saveCatalog(){
+  var name = document.getElementById('cat-name').value.trim();
+  var type = document.getElementById('cat-type').value;
+  if(_catalogEditing){name=_catalogEditing.name;type=_catalogEditing.type||document.getElementById('cat-type').value}
+  if(!name){alert('Catalog name is required');return}
+  var rows = document.querySelectorAll('.cat-prop-row');
+  var props = {};
+  rows.forEach(function(r){
+    var k = r.querySelector('.cat-prop-key').value.trim();
+    var v = r.querySelector('.cat-prop-val').value.trim();
+    if(k) props[k] = v;
+  });
+  if(!props.type && type) props.type = type;
+  if(!Object.keys(props).length){alert('At least one property is required');return}
+  var st = document.getElementById('cat-status');
+  st.textContent = 'Saving...'; st.style.color = 'var(--text-tertiary)';
+  var url, method;
+  if(_catalogEditing){
+    url = '/api/catalogs/' + encodeURIComponent(name);
+    method = 'PUT';
+  } else {
+    url = '/api/catalogs';
+    method = 'POST';
+  }
+  fetch(url, {method:method, headers:{'Content-Type':'application/json'}, body:JSON.stringify({name:name, properties:props})})
+    .then(function(r){return r.json()}).then(function(d){
+      if(!d.error){
+        st.textContent = '✓ Saved'; st.style.color = 'var(--success)';
+        setTimeout(function(){closeCatalogModal();loadCatalogs()}, 1000);
+      } else {
+        st.textContent = '✗ '+d.error; st.style.color = 'var(--error)';
+      }
+    }).catch(function(e){st.textContent='Failed: '+e.message; st.style.color='var(--error)'});
+}
+function deleteCatalog(idx, btn){
+  var c = _catalogData[idx];
+  if(!c) return;
+  if(!confirm('确定要删除 Catalog「'+c.name+'」吗？')) return;
+  btn.textContent = 'Deleting...'; btn.disabled = true;
+  fetch('/api/catalogs/'+encodeURIComponent(c.name), {method:'DELETE'})
+    .then(function(r){return r.json()}).then(function(d){
+      if(!d.error){loadCatalogs()} else {alert('Delete failed: '+d.error);btn.disabled=false;btn.textContent='Delete'}
+    }).catch(function(e){alert('Delete failed: '+e.message);btn.disabled=false;btn.textContent='Delete'});
 }
 
 // Init
