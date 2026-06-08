@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm list *)",
+      "Bash(opencode --version)",
+      "Bash(npm install *)",
+      "Bash(opencode . --dry-run)",
+      "Read(//c/Users/12160/AppData/Roaming/npm/**)",
+      "Read(//c/Users/12160/AppData/Roaming/npm/node_modules/**)",
+      "Read(//c/Users/12160/AppData/Roaming/npm/node_modules/@opencode-ai/**)",
+      "Bash(npm root *)",
+      "Read(//c/Users/12160/AppData/Local/Programs/**)",
+      "Read(//c/Users/12160/AppData/Local/Microsoft/WinGet/**)",
+      "Bash(cmd.exe /c \"where opencode\")",
+      "Bash(command -v opencode)",
+      "Bash(cmd.exe /c \"where /r C:\\\\Users\\\\12160 opencode.exe\")",
+      "Read(//c/Users/12160/.bun/**)",
+      "Read(//c/Users/12160/.bun/install/global/node_modules/**)",
+      "Bash(bun pm *)",
+      "Bash(cmd.exe /c \"dir /s /b C:\\\\Users\\\\12160\\\\AppData\\\\Roaming\\\\npm\\\\node_modules\\\\opencode*\")"
+    ]
+  }
+}

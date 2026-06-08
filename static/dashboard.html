@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Doris Monitor</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css">
+<style>
+:root{--accent:#007AFF;--accent-hover:#0066D6;--accent-light:rgba(0,122,255,0.08);--success:#34C759;--success-bg:rgba(52,199,89,0.1);--warning:#FF9500;--warning-bg:rgba(255,149,0,0.1);--error:#FF3B30;--error-bg:rgba(255,59,48,0.1);--purple:#AF52DE;--teal:#5AC8FA;--text-primary:#1D1D1F;--text-secondary:#86868B;--text-tertiary:#C7C7CC;--bg-primary:#FFF;--bg-secondary:#F5F5F7;--bg-sidebar:rgba(245,245,247,0.82);--bg-titlebar:rgba(255,255,255,0.68);--border-color:rgba(0,0,0,0.06);--border-divider:rgba(0,0,0,0.1);--shadow-sm:0 1px 3px rgba(0,0,0,0.04);--shadow-md:0 4px 12px rgba(0,0,0,0.06);--shadow-lg:0 8px 30px rgba(0,0,0,0.10);--radius-sm:6px;--radius-md:10px;--radius-lg:14px;}*{margin:0;padding:0;box-sizing:border-box}html,body{height:100%;overflow:hidden}body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;font-size:13px;color:var(--text-primary);background:var(--bg-secondary);-webkit-font-smoothing:antialiased}.titlebar{position:fixed;top:0;left:0;right:0;height:38px;background:var(--bg-titlebar);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-bottom:1px solid var(--border-color);display:flex;align-items:center;padding:0 12px;z-index:100;user-select:none}.window-controls{display:flex;gap:7px;margin-right:12px}.window-controls .dot{width:12px;height:12px;border-radius:50%}.dot.close{background:#FF5F57}.dot.minimize{background:#FEBC2E}.dot.maximize{background:#28C840}.titlebar-center{flex:1;display:flex;align-items:center;gap:8px;justify-content:center}.titlebar-text{font-size:13px;font-weight:600;color:var(--text-secondary);letter-spacing:-0.01em}.titlebar-right{display:flex;align-items:center;gap:8px;margin-left:auto}.refresh-indicator{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-tertiary)}.refresh-dot{width:6px;height:6px;border-radius:50%;background:var(--success);transition:all .3s}.refresh-dot.loading{background:var(--warning);animation:pulse .8s infinite}.refresh-dot.error{background:var(--error)}.app-layout{display:flex;height:calc(100vh - 38px);margin-top:38px}.sidebar{width:188px;min-width:188px;background:var(--bg-sidebar);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-right:1px solid var(--border-color);padding:12px 0;overflow-y:auto;display:flex;flex-direction:column;gap:2px}.sidebar-label{padding:8px 16px 6px;font-size:11px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.5px}.nav-item{display:flex;align-items:center;gap:10px;padding:8px 16px;margin:0 8px;border-radius:var(--radius-sm);color:var(--text-secondary);text-decoration:none;font-size:12px;font-weight:500;transition:all .15s;cursor:pointer}.nav-item:hover{background:var(--accent-light);color:var(--accent)}.nav-item.active{background:var(--accent);color:#fff;font-weight:600}.nav-item svg{width:16px;height:16px;flex-shrink:0}.nav-badge{background:var(--error);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:auto}.content{flex:1;overflow-y:auto;background:var(--bg-secondary)}.page-header{padding:20px 24px 12px}.page-header h1{font-size:22px;font-weight:700;letter-spacing:-0.02em;color:var(--text-primary)}.page-header p{font-size:13px;color:var(--text-secondary);margin-top:2px}.page-body{padding:0 24px 24px}.page-section{margin-bottom:20px}.section-label{font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:10px}.tab-content{display:none;height:100%}.tab-content.active{display:block}.metrics-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}.metric-card{background:var(--bg-primary);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:14px;transition:box-shadow .2s}.metric-card:hover{box-shadow:var(--shadow-md)}.metric-card .l{font-size:11px;color:var(--text-secondary);margin-bottom:4px}.metric-card .v{font-size:28px;font-weight:700;letter-spacing:-0.02em}.metric-card .v.g{color:var(--success)}.metric-card .v.r{color:var(--error)}.metric-card .v.b{color:var(--accent)}.metric-card .v.p{color:var(--purple)}.metric-card .v.c{color:var(--teal)}.metric-card .v.o{color:var(--warning)}.apple-table-wrap{background:var(--bg-primary);border:1px solid var(--border-color);border-radius:var(--radius-md);overflow:hidden}.apple-table{width:100%;border-collapse:collapse;font-size:12px}.apple-table th{text-align:left;padding:8px 12px;font-weight:600;color:var(--text-secondary);font-size:11px;text-transform:uppercase;letter-spacing:0.3px;background:var(--bg-secondary);border-bottom:1px solid var(--border-color)}.apple-table td{padding:8px 12px;border-bottom:1px solid var(--border-color);color:var(--text-primary)}.apple-table tr:last-child td{border-bottom:none}.apple-table td.m,.apple-table th.m{font-family:SF Mono,Consolas,monospace;font-size:12px}.apple-table tr:hover{background:var(--accent-light)}.filter-bar{display:flex;gap:8px;flex:1;margin-bottom:12px}.filter-bar select,.filter-bar input{padding:6px 10px;border:1px solid var(--border-color);border-radius:var(--radius-sm);background:var(--bg-primary);font-size:12px;color:var(--text-primary);outline:none}.filter-bar select:focus,.filter-bar input:focus{border-color:var(--accent)}.filter-bar input{flex:1;min-width:120px}.empty-state{text-align:center;padding:48px 24px;color:var(--text-tertiary)}.empty-state svg{margin-bottom:12px;opacity:0.3}.empty-state p{font-size:13px}.sdot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle}.sdot.g{background:var(--success)}.sdot.r{background:var(--error)}.sdot.o{background:var(--warning)}.sl{vertical-align:middle;font-size:12px;font-weight:500}.sl.g{color:var(--success)}.sl.r{color:var(--error)}.master-badge{font-size:10px;font-weight:600;color:#fff;background:var(--accent);padding:2px 6px;border-radius:4px}.pbar{display:inline-flex;align-items:center;gap:4px;width:80px}.ptrack{flex:1;height:4px;background:var(--bg-secondary);border-radius:2px;overflow:hidden}.pfill{height:100%;border-radius:2px;transition:width .3s}.pfill.g{background:var(--success)}.pfill.o{background:var(--warning)}.pfill.r{background:var(--error)}.res-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:10px}.res-card{background:var(--bg-primary);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:14px}.res-card .h{font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text-primary)}.kvs{display:flex;flex-wrap:wrap;gap:6px 16px}.kv{font-size:11px;color:var(--text-secondary)}.kv b{color:var(--text-primary);font-weight:600}.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);z-index:1000;justify-content:center;align-items:flex-start;padding-top:60px}.modal-overlay.active{display:flex}.modal{background:var(--bg-primary);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:560px;max-width:92vw;max-height:80vh;display:flex;flex-direction:column}.modal-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;border-bottom:1px solid var(--border-color)}.modal-header h2{font-size:16px;font-weight:700}.modal-close{background:none;border:none;font-size:22px;color:var(--text-tertiary);cursor:pointer;padding:0 4px}.modal-body{padding:16px 20px 20px;overflow-y:auto}.detail-table{width:100%;border-collapse:collapse;font-size:12px}.detail-table th{text-align:right;padding:6px 12px 6px 0;color:var(--text-secondary);font-weight:500;width:100px;vertical-align:top;border-bottom:1px solid var(--border-color)}.detail-table td{padding:6px 0;border-bottom:1px solid var(--border-color);color:var(--text-primary);vertical-align:top}.cfg-form{max-width:480px}.cfg-row{display:flex;align-items:center;margin-bottom:10px;gap:10px}.cfg-row .cfg-label{width:110px;min-width:110px;font-size:12px;font-weight:500;color:var(--text-secondary);text-align:right;flex-shrink:0}.cfg-input{padding:7px 10px;border:1px solid var(--border-color);border-radius:var(--radius-sm);background:var(--bg-primary);font-size:12px;color:var(--text-primary);outline:none;transition:border-color .2s}.cfg-input:focus{border-color:var(--accent)}.cfg-input:disabled{opacity:0.5;background:var(--bg-secondary)}.cfg-btn{padding:7px 16px;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;background:var(--bg-secondary);color:var(--text-primary)}.cfg-btn:hover{opacity:0.85}.cfg-btn.primary{background:var(--accent);color:#fff}.cfg-btn.primary:hover{background:var(--accent-hover)}.cfg-btn.success{background:var(--success);color:#fff}.cfg-btn:disabled{opacity:0.4;cursor:default}.cfg-status{font-size:11px;margin-left:4px}.cfg-divider{height:1px;background:var(--border-color);margin:20px 0}.apple-checkbox{font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:6px;cursor:pointer}.apple-checkbox input{accent-color:var(--accent)}.section-toolbar{display:flex;align-items:center;gap:12px;margin-bottom:12px}.section-toolbar .filter-bar{flex:1;margin-bottom:0}.graph-legend{display:flex;gap:24px;margin-bottom:12px;font-size:12px;color:var(--text-secondary)}.legend-dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:4px;vertical-align:middle}.legend-dot.mv{background:#AF52DE}.legend-dot.table{background:#007AFF}.create-job-modal{width:760px;max-width:92vw}.create-job-modal .modal-body{padding:20px 24px 16px}.step-indicator{display:flex;align-items:center;margin-bottom:24px;user-select:none}.step{display:flex;align-items:center;gap:8px;opacity:0.4;transition:opacity .25s}.step.active{opacity:1}.step-num{width:26px;height:26px;border-radius:50%;background:var(--bg-secondary);border:1.5px solid var(--border-color);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--text-secondary);transition:all .25s}.step.active .step-num{background:var(--accent);border-color:var(--accent);color:#fff}.step-label{font-size:12px;font-weight:500;color:var(--text-primary)}.step-connector{flex:1;height:1px;background:var(--border-divider);margin:0 12px}.cj-step{display:none}.cj-step.active{display:block}.cj-form{max-width:100%}.cj-row{display:flex;align-items:flex-start;margin-bottom:14px;gap:10px}.cj-row .cj-label{width:100px;min-width:100px;font-size:12px;font-weight:500;color:var(--text-secondary);padding-top:7px;text-align:right;flex-shrink:0}.cj-row select.cfg-input,.cj-row input.cfg-input{flex:1}.cj-inline{display:flex;gap:8px;flex:1}.cj-col-toolbar{display:flex;align-items:center;gap:16px;margin-bottom:10px;font-size:12px}.cj-check-all{cursor:pointer;display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-secondary)}.cj-check-all input[type="checkbox"]{accent-color:var(--accent)}.cj-col-count{color:var(--text-tertiary);font-size:11px}.cj-columns-list{max-height:260px;overflow-y:auto;border:1px solid var(--border-color);border-radius:var(--radius-sm);padding:4px 0;background:var(--bg-primary)}.cj-col-item{display:flex;align-items:center;gap:8px;padding:6px 12px;cursor:pointer;font-size:12px;transition:background .1s}.cj-col-item:hover{background:var(--accent-light)}.cj-col-item input[type="checkbox"]{accent-color:var(--accent)}.cj-col-name{font-weight:500;color:var(--text-primary);min-width:120px}.cj-col-type{color:var(--text-tertiary);font-size:11px;font-family:SF Mono,Consolas,monospace;min-width:100px}.cj-col-comment{color:var(--text-secondary);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cj-source-row{display:flex;gap:12px;margin-bottom:16px}.cj-source-col{flex:1;display:flex;flex-direction:column;gap:4px}.cj-source-label{font-size:11px;font-weight:500;color:var(--text-secondary);padding-left:2px}.cj-source-col select{padding:8px 10px;border:1px solid var(--border-color);border-radius:var(--radius-sm);background:var(--bg-primary);font-size:12px;color:var(--text-primary);outline:none;transition:border .2s;width:100%}.cj-source-col select:focus{border-color:var(--accent)}.cj-source-col select:disabled{opacity:0.5;background:var(--bg-secondary)}.cj-tsuffix{display:flex;align-items:center;gap:6px;flex:1;flex-wrap:wrap}.cj-tsuffix input{flex-shrink:0}.cj-base-table{font-size:12px;font-weight:500;color:var(--text-primary);background:var(--bg-secondary);padding:6px 10px;border-radius:var(--radius-sm);min-width:80px;text-align:center;font-family:SF Mono,Consolas,monospace}.cj-tsuffix-eq{font-size:14px;color:var(--text-tertiary);font-weight:300}.cj-final-table{font-size:12px;font-weight:600;color:var(--accent);font-family:SF Mono,Consolas,monospace;padding:6px 10px;background:var(--accent-light);border-radius:var(--radius-sm)}.cj-col-arrow{color:var(--text-tertiary);font-size:11px;margin:0 4px}.cj-col-doris-type{color:var(--success);font-size:11px;font-family:SF Mono,Consolas,monospace}.cj-map-toggle{font-size:11px;color:var(--accent);cursor:pointer;margin-left:auto;user-select:none}.cj-map-toggle:hover{text-decoration:underline}.cj-mapping-table{border:1px solid var(--border-color);border-radius:var(--radius-sm);overflow:hidden;font-size:12px;background:var(--bg-primary)}.cj-mapping-row{display:flex;align-items:center;border-bottom:1px solid var(--border-color);padding:0}.cj-mapping-row:last-child{border-bottom:none}.cj-mapping-row .cj-mm-label{width:40%;padding:6px 10px;font-weight:500;color:var(--text-primary);background:var(--bg-secondary);border-right:1px solid var(--border-color);flex-shrink:0}.cj-mapping-row .cj-mm-input{width:60%;padding:6px 10px;border:none;outline:none;font-size:12px;font-family:SF Mono,Consolas,monospace;background:var(--bg-primary)}.cj-mapping-row .cj-mm-input:focus{background:var(--accent-light)}textarea.ddl-block{resize:vertical;white-space:pre;overflow:auto;tab-size:2;line-height:1.5}.ddl-block{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:var(--radius-sm);padding:12px;font-family:SF Mono,Consolas,monospace;font-size:11px;line-height:1.6;overflow-x:auto;white-space:pre-wrap;word-break:break-all}.job-actions{display:flex;gap:4px}.job-btn{width:28px;height:26px;border:none;border-radius:var(--radius-sm);font-size:14px;cursor:pointer;background:var(--bg-secondary);color:var(--text-secondary);display:flex;align-items:center;justify-content:center;transition:all .15s;padding:0}.job-btn:hover{background:var(--accent-light);color:var(--accent)}.job-btn.resume:hover{background:var(--success-bg);color:var(--success)}.job-btn.pause:hover{background:var(--warning-bg);color:var(--warning)}.job-btn.exec{background:var(--accent);color:#fff;font-size:11px;width:auto;padding:0 8px}.job-btn.exec:hover{background:var(--accent-hover)}.job-btn.drop:hover{background:var(--error-bg);color:var(--error)}.cfg-btn.exec{background:var(--warning);color:#fff}.job-btn.exec{background:var(--accent);color:#fff;font-size:11px;width:auto;padding:0 8px}
+</style>
+</head>
+<body>
+
+<div class="titlebar"><div class="window-controls"><span class="dot close"></span><span class="dot minimize"></span><span class="dot maximize"></span></div><div class="titlebar-center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg><span class="titlebar-text">Doris Monitor</span></div><div class="titlebar-right"><div class="refresh-indicator"><span class="refresh-dot" id="refreshDot"></span><span id="refreshInfo">Ready</span></div></div></div>
+
+<div class="app-layout">
+<nav class="sidebar">
+<div class="sidebar-label">Navigation</div>
+<a class="nav-item active" data-tab="cluster"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/><line x1="9.5" y1="8.5" x2="7.5" y2="15.5" stroke-linecap="round"/><line x1="14.5" y1="8.5" x2="16.5" y2="15.5" stroke-linecap="round"/><line x1="8" y1="16" x2="16" y2="16" stroke-linecap="round"/></svg><span>集群</span><span class="nav-badge" id="queryBadge" style="display:none">0</span></a>
+<a class="nav-item" data-tab="mv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="5" rx="1.5"/><rect x="4" y="9.5" width="16" height="5" rx="1.5"/><rect x="4" y="15" width="16" height="5" rx="1.5"/></svg><span>物化视图</span></a>
+<a class="nav-item" data-tab="tables"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10" stroke-linecap="round"/><line x1="10" y1="4" x2="10" y2="20" stroke-linecap="round"/></svg><span>数据表</span></a>
+<a class="nav-item" data-tab="graph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><line x1="10" y1="7" x2="7" y2="17" stroke-linecap="round"/><line x1="14" y1="7" x2="17" y2="17" stroke-linecap="round"/><line x1="7.5" y1="18" x2="16.5" y2="18" stroke-linecap="round"/></svg><span>关系图谱</span></a>
+<a class="nav-item" data-tab="jobs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="12" cy="16" r="1.5"/><line x1="12" y1="13" x2="12" y2="16"/></svg><span>作业调度</span></a>
+<a class="nav-item" data-tab="config"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="2.5"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke-linecap="round"/></svg><span>设置</span></a>
+</nav>
+
+<main class="content">
+<div id="tab-cluster" class="tab-content active"><div class="page-header"><h1>Cluster Overview</h1><p>Doris cluster real-time monitoring dashboard</p></div><div class="page-body"><div class="page-section"><div class="section-label">Summary</div><div class="metrics-grid" id="summary"></div></div><div id="errors"></div><div class="page-section"><div class="section-label">Frontend Nodes <span id="feBadge" style="color:var(--text-tertiary);font-weight:400">0/0</span></div><div id="fe-table"></div></div><div class="page-section"><div class="section-label">Backend Nodes <span id="beBadge" style="color:var(--text-tertiary);font-weight:400">0/0</span></div><div id="be-table"></div></div><div class="page-section"><div class="section-label">Statistics</div><div class="metrics-grid" id="statistics"></div></div><div class="page-section"><div class="section-label">Frontend Resources</div><div id="fe-metrics"></div></div><div class="page-section"><div class="section-label">Backend Resources</div><div id="be-metrics"></div></div><div class="page-section"><div class="section-label">Active Queries</div><div id="queries"></div></div></div></div>
+
+<div id="tab-mv" class="tab-content"><div class="page-header"><h1>Materialized Views</h1><p>Monitor and manage materialized view refresh status</p></div><div class="page-body"><div class="page-section"><div class="section-label">Overview</div><div class="metrics-grid" id="mv-summary"></div></div><div class="page-section"><div class="filter-bar"><select id="mv-db-filter" onchange="filterMvTable()"><option value="">All Databases</option></select><select id="mv-type-filter" onchange="filterMvTable()"><option value="">All Refresh Types</option></select><input id="mv-search" type="text" placeholder="Search materialized views..." oninput="filterMvTable()"></div><div id="mv-table"></div></div></div></div>
+
+<div id="tab-tables" class="tab-content"><div class="page-header"><h1>Data Tables</h1><p>Browse all tables across databases</p></div><div class="page-body"><div class="page-section"><div class="section-label">Overview</div><div class="metrics-grid" id="tbl-summary"></div></div><div class="page-section"><div class="filter-bar"><select id="tbl-db-filter" onchange="filterTblTable()"></select><input id="tbl-search" type="text" placeholder="Search tables..." oninput="filterTblTable()"></div><div id="tbl-table"><div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="10" y1="4" x2="10" y2="20"/></svg><p>Switch to this tab to load data</p></div></div></div></div></div>
+
+<div id="tab-graph" class="tab-content"><div class="page-header"><h1>Dependency Graph</h1><p>Materialized view dependency relationships</p></div><div class="page-body"><div class="filter-bar"><select id="graph-db-filter" onchange="renderMvGraph()"><option value="">All Databases</option></select><select id="graph-mv-filter" onchange="renderMvGraph()"><option value="">All MVs</option></select></div><div class="graph-legend"><span><span class="legend-dot mv"></span>Materialized View</span><span><span class="legend-dot table"></span>Base Table</span></div><div id="mv-graph" style="width:100%;height:800px;background:#fff;border-radius:var(--radius-md);border:1px solid var(--border-color)"></div></div></div>
+
+<div id="tab-jobs" class="tab-content"><div class="page-header"><h1>作业调度</h1><p>管理 Doris CREATE JOB 定时任务</p></div><div class="page-body"><div class="page-section"><div class="section-label">概览</div><div class="metrics-grid" id="jobs-summary"></div></div><div class="page-section"><div class="section-toolbar"><button class="cfg-btn primary" onclick="openCreateJobModal()">＋ 创建作业</button><div class="filter-bar"><select id="jobs-status-filter" onchange="filterJobsTable()"><option value="">All Status</option></select><input id="jobs-search" type="text" placeholder="Search jobs..." oninput="filterJobsTable()"></div></div><div id="jobs-table"><div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><p>Switch to this tab to load data</p></div></div></div></div></div>
+
+<div id="tab-config" class="tab-content"><div class="page-header"><h1>Settings</h1><p>Cluster connection and alert configuration</p></div><div class="page-body"><div class="page-section"><h3 style="font-size:15px;font-weight:600;margin-bottom:16px">Cluster Connection</h3><div class="cfg-form"><div class="cfg-row"><label class="cfg-label">Host</label><input class="cfg-input" id="cfg-host"></div><div class="cfg-row"><label class="cfg-label">MySQL Port</label><input class="cfg-input" id="cfg-port" type="number"></div><div class="cfg-row"><label class="cfg-label">Username</label><input class="cfg-input" id="cfg-user"></div><div class="cfg-row"><label class="cfg-label">Password</label><input class="cfg-input" id="cfg-password" type="password"></div><div class="cfg-row"><label class="cfg-label">FE HTTP Port</label><input class="cfg-input" id="cfg-fe-http" type="number"></div><div class="cfg-row"><label class="cfg-label">BE HTTP Port</label><input class="cfg-input" id="cfg-be-http" type="number"></div><div class="cfg-row"><label class="cfg-label">Connect Timeout</label><input class="cfg-input" id="cfg-timeout" type="number"></div><div class="cfg-row"><label class="cfg-label">Refresh Interval</label><input class="cfg-input" id="cfg-interval" type="number" min="5"></div><div style="display:flex;gap:8px;align-items:center;margin-top:12px;padding-left:122px"><button class="cfg-btn primary" onclick="saveConfig()">Save</button><button class="cfg-btn success" onclick="testConnection()">Test</button><span class="cfg-status" id="cfg-status"></span></div></div><div class="cfg-divider"></div><h3 style="font-size:15px;font-weight:600;margin-bottom:16px">Email Alerts</h3><div class="cfg-form"><div class="cfg-row"><label class="cfg-label">Enabled</label><label class="apple-checkbox"><input type="checkbox" id="alert-enabled"> Send email on anomalies</label></div><div class="cfg-row"><label class="cfg-label">SMTP Host</label><input class="cfg-input" id="alert-smtp-host" placeholder="smtp.example.com"></div><div class="cfg-row"><label class="cfg-label">SMTP Port</label><input class="cfg-input" id="alert-smtp-port" type="number" placeholder="587"></div><div class="cfg-row"><label class="cfg-label">Username</label><input class="cfg-input" id="alert-user"></div><div class="cfg-row"><label class="cfg-label">Password</label><input class="cfg-input" id="alert-pass" type="password"></div><div class="cfg-row"><label class="cfg-label">From</label><input class="cfg-input" id="alert-from" placeholder="alert@example.com"></div><div class="cfg-row"><label class="cfg-label">To</label><input class="cfg-input" id="alert-to" placeholder="admin@example.com"></div><div style="display:flex;gap:8px;align-items:center;margin-top:12px;padding-left:122px"><button class="cfg-btn primary" onclick="saveAlertConfig()">Save</button><button class="cfg-btn success" onclick="testAlert()">Test</button><span class="cfg-status" id="alert-status"></span></div></div></div></div></div>
+</main></div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-header"><h2 id="modal-title">Detail</h2><button class="modal-close" onclick="closeModal()">&times;</button></div><div class="modal-body" id="modal-body"></div></div></div>
+
+<div class="modal-overlay" id="create-job-overlay" onclick="if(event.target===this)closeCreateJobModal()"><div class="modal create-job-modal"><div class="modal-header"><h2>创建作业</h2><button class="modal-close" onclick="closeCreateJobModal()">&times;</button></div>
+<div class="modal-body" id="create-job-body">
+<div class="step-indicator"><div class="step active" data-step="1"><span class="step-num">1</span><span class="step-label">选择数据源</span></div><div class="step-connector"></div><div class="step" data-step="2"><span class="step-num">2</span><span class="step-label">创建目标表</span></div><div class="step-connector"></div><div class="step" data-step="3"><span class="step-num">3</span><span class="step-label">创建调度</span></div></div>
+
+<div id="cj-step-1" class="cj-step active">
+<div class="cj-form"><div class="cj-source-row">
+<div class="cj-source-col"><label class="cj-source-label">Catalog</label><select id="cj-catalog" onchange="cjLoadDatabases()"><option value="">-- 选择 Catalog --</option></select></div>
+<div class="cj-source-col"><label class="cj-source-label">Database</label><select id="cj-database" onchange="cjLoadTables()" disabled><option value="">-- 选择 Database --</option></select></div>
+<div class="cj-source-col"><label class="cj-source-label">Table</label><select id="cj-table" onchange="cjLoadColumns()" disabled><option value="">-- 选择 Table --</option></select></div>
+</div>
+<div id="cj-columns-area" style="display:none"><label style="font-weight:600;font-size:12px;color:var(--text-secondary);display:block;margin-bottom:8px">选择同步列 <span style="font-weight:400;color:var(--text-tertiary)">（源类型 → Doris 类型）</span></label><div class="cj-col-toolbar"><label class="cj-check-all"><input type="checkbox" id="cj-select-all" onchange="cjToggleAllColumns(this.checked)"> 全选</label><span id="cj-col-count" class="cj-col-count">0 列已选</span><span class="cj-map-toggle" onclick="cjToggleMapping()">字段映射 ▸</span></div><div id="cj-columns-list" class="cj-columns-list"></div><div id="cj-mapping-area" style="display:none;margin-top:10px"><label style="font-weight:600;font-size:12px;color:var(--text-secondary);display:block;margin-bottom:6px">字段映射 <span style="font-weight:400;color:var(--text-tertiary)">（源字段 → 目标字段）</span></label><div id="cj-mapping-table" class="cj-mapping-table"></div></div></div>
+</div>
+<div style="margin-top:16px;text-align:right"><button class="cfg-btn primary" onclick="cjGoToStep(2)" id="cj-btn-s1-next" disabled>下一步</button></div>
+</div>
+
+<div id="cj-step-2" class="cj-step">
+<div class="cj-form"><div class="cj-row"><label class="cj-label">目标数据库</label><select id="cj-target-db" onchange="cjUpdatePreview()"><option value="">-- 请选择 --</option></select></div>
+<div class="cj-row"><label class="cj-label">目标表名</label><div class="cj-tsuffix"><input class="cfg-input" id="cj-prefix" placeholder="前缀" value="" oninput="cjUpdatePreview()" style="width:80px"><span class="cj-base-table" id="cj-base-table">源表名</span><input class="cfg-input" id="cj-suffix" placeholder="后缀" value="_df" oninput="cjUpdatePreview()" style="width:80px"><span class="cj-tsuffix-eq">→</span><span class="cj-final-table" id="cj-final-table">...</span></div></div>
+<div class="cj-row"><label class="cj-label">数据模型</label><select class="cfg-input" id="cj-model" onchange="cjOnModelChange()" style="width:160px"><option value="DUPLICATE">DUPLICATE KEY</option><option value="UNIQUE">UNIQUE KEY</option></select></div>
+<div id="cj-key-cols-area" style="display:none"><label style="font-weight:600;font-size:12px;color:var(--text-secondary);display:block;margin-bottom:6px">Key 列 <span style="font-weight:400;color:var(--text-tertiary)">（UNIQUE KEY 约束列）</span></label><div id="cj-key-cols-list"></div></div>
+<div class="cj-row"><label class="cj-label">更新时间列</label><div style="display:flex;align-items:center;gap:8px;flex:1"><label style="font-size:12px;cursor:pointer;user-select:none"><input type="checkbox" id="cj-etime-enable" checked onchange="cjOnEtimeChange()"> 添加 etl_time 列</label><span style="color:var(--text-tertiary);font-size:12px">表达式:</span><input class="cfg-input" id="cj-etime-expr" value="NOW()" oninput="cjUpdatePreview()" style="width:120px;font-family:SF Mono,Consolas,monospace"></div></div>
+<div id="cj-ddl-area" style="display:none"><label class="cj-label" style="font-weight:600;margin-bottom:8px">建表 DDL</label><pre class="ddl-block" id="cj-ddl-preview" style="max-height:200px"></pre><div style="margin-top:8px"><button class="cfg-btn primary" onclick="cjExecuteDDL()" id="cj-btn-exec-ddl">▶ 执行建表</button><span id="cj-ddl-status" class="cfg-status" style="margin-left:8px"></span></div></div>
+</div>
+<div style="margin-top:16px;display:flex;justify-content:space-between"><button class="cfg-btn" onclick="cjGoToStep(1)">上一步</button><button class="cfg-btn primary" onclick="cjGoToStep(3)" id="cj-btn-s2-next" disabled>下一步</button></div>
+</div>
+
+<div id="cj-step-3" class="cj-step">
+<div class="cj-form"><div class="cj-row"><label class="cj-label">作业名称</label><input class="cfg-input" id="cj-job-name" placeholder="自动生成" oninput="cjUpdateJobSQL()"></div>
+<div class="cj-row"><label class="cj-label">调度频率</label><div class="cj-inline"><input class="cfg-input" id="cj-schedule-value" type="number" value="10" min="1" oninput="cjUpdateJobSQL()" style="width:100px"><select class="cfg-input" id="cj-schedule-unit" onchange="cjUpdateJobSQL()" style="width:110px"><option value="MINUTE">分钟</option><option value="HOUR">小时</option><option value="DAY">天</option></select></div></div>
+<div class="cj-row"><label class="cj-label">开始时间</label><input class="cfg-input" id="cj-start-time" type="datetime-local" oninput="cjUpdateJobSQL()"></div>
+<div class="cj-row"><label class="cj-label">同步模式</label><select class="cfg-input" id="cj-sync-mode" onchange="cjOnModeChange()" style="width:130px"><option value="full_refresh">全量覆盖</option><option value="incremental">增量同步</option></select></div>
+<div id="cj-watermark-config" style="display:none">
+<div class="cj-row"><label class="cj-label">水印列</label><select class="cfg-input" id="cj-watermark-col" onchange="cjUpdateJobSQL()"><option value="">-- 选择 --</option></select></div>
+<div class="cj-row"><label class="cj-label">水印类型</label><select class="cfg-input" id="cj-watermark-type" onchange="cjUpdateJobSQL()" style="width:120px"><option value="datetime">datetime</option><option value="int">int</option></select></div>
+<div class="cj-row"><label class="cj-label">初始值</label><input class="cfg-input" id="cj-watermark-init" placeholder="如: 2020-01-01 00:00:00" oninput="cjUpdateJobSQL()"></div>
+</div>
+<div id="cj-job-sql-area" style="display:none"><label class="cj-label" style="font-weight:600;margin-bottom:8px">调度 SQL <span style="font-weight:400;color:var(--text-tertiary)">（可编辑）</span></label><textarea class="ddl-block editable" id="cj-job-sql-preview" style="max-height:300px;min-height:140px;width:100%" spellcheck="false"></textarea><div style="margin-top:8px"><button class="cfg-btn primary" onclick="cjCreateJob()">▶ 创建调度</button><span id="cj-job-status" class="cfg-status" style="margin-left:8px"></span></div></div>
+</div>
+<div style="margin-top:16px;display:flex;justify-content:space-between"><button class="cfg-btn" onclick="cjGoToStep(2)">上一步</button></div>
+</div>
+</div></div></div>
+
+<script>
+var _rt=null,_ld=null;
+function startRefresh(s){if(_rt)clearInterval(_rt);if(s>0)_rt=setInterval(loadMetrics,s*1000)}
+async function loadMetrics(){var d=document.getElementById("refreshDot"),i=document.getElementById("refreshInfo");d.className="refresh-dot loading";i.textContent="Loading...";try{var r=await fetch("/api/metrics"),j=await r.json();if(j.error){i.textContent="Error: "+j.error;d.className="refresh-dot error";return}_ld=j;i.textContent=new Date().toLocaleTimeString();d.className="refresh-dot";renderPage(j)}catch(e){i.textContent="Request failed";d.className="refresh-dot error"}}
+function renderPage(d){document.getElementById("summary").innerHTML=renderSummary(d);document.getElementById("errors").innerHTML=renderErrors(d.errors||[]);document.getElementById("fe-table").innerHTML=renderFeTable(d.fe_status||[]);document.getElementById("be-table").innerHTML=renderBeTable(d.be_status||[]);var fl=d.fe_status||[],bl=d.be_status||[];document.getElementById("feBadge").textContent=fl.filter(function(n){return n.alive}).length+"/"+fl.length;document.getElementById("beBadge").textContent=bl.filter(function(n){return n.alive}).length+"/"+bl.length;document.getElementById("statistics").innerHTML=renderStats(d.statistic||{});document.getElementById("fe-metrics").innerHTML=renderFeMetrics(d.fe_metrics||{},d.fe_status||[]);document.getElementById("be-metrics").innerHTML=renderBeMetrics(d.be_metrics||{},d.be_status||[]);document.getElementById("queries").innerHTML=renderQueries(d.processlist||[]);var b=document.getElementById("queryBadge"),n=(d.processlist||[]).length;if(n>0){b.textContent=n;b.style.display=""}else b.style.display="none";var mt=document.getElementById("tab-mv");if(mt.classList.contains("active")&&d.materialized_views)renderMvPage(d)}
+
+document.querySelectorAll(".nav-item").forEach(function(b){
+  b.addEventListener("click", function(){
+    var tab = b.getAttribute("data-tab");
+    document.querySelectorAll(".nav-item").forEach(function(x){x.classList.remove("active")});
+    b.classList.add("active");
+    document.querySelectorAll(".tab-content").forEach(function(c){
+      c.classList.toggle("active", c.id === "tab-" + tab);
+    });
+    if(tab==="mv" && _ld && _ld.materialized_views) renderMvPage(_ld);
+    if(tab==="tables" && _ld && _ld.tables) renderTblPage(_ld);
+    if(tab==="graph" && _ld && _ld.materialized_views) renderMvGraph();
+    if(tab==="jobs") renderJobsPage();
+    if(tab==="config") loadConfig();
+  });
+});
+
+function renderSummary(d){
+  var fe=d.fe_status||[],be=d.be_status||[],st=d.statistic||{};
+  var feA=fe.filter(function(n){return n.alive}).length,beA=be.filter(function(n){return n.alive}).length;
+  var feC=feA==fe.length?'g':'r',beC=beA==be.length?'g':'r';
+  return '<div class="metric-card"><div class="l">FE Healthy</div><div class="v '+feC+'">'+feA+'/'+fe.length+'</div></div>'+
+    '<div class="metric-card"><div class="l">BE Healthy</div><div class="v '+beC+'">'+beA+'/'+be.length+'</div></div>'+
+    '<div class="metric-card"><div class="l">Tables</div><div class="v b">'+(st.table_num||0)+'</div></div>'+
+    '<div class="metric-card"><div class="l">Active Queries</div><div class="v c">'+(d.processlist||[]).length+'</div></div>';
+}
+function renderErrors(e){
+  if(!e.length) return '';
+  return '<div style="background:var(--error-bg);border:1px solid rgba(255,59,48,0.2);border-radius:var(--radius-md);padding:10px 14px;margin-bottom:16px;color:var(--error);font-size:12px"><strong>Warnings</strong><ul style="margin:4px 0 0;padding-left:18px">'+e.map(function(v){return '<li>'+v+'</li>'}).join('')+'</ul></div>';
+}
+function renderFeTable(l){
+  if(!l.length) return '<div class="empty-state"><p>No FE data available</p></div>';
+  return '<div class="apple-table-wrap"><table class="apple-table"><thead><tr><th>Name</th><th>IP</th><th>Role</th><th>Leader</th><th>Status</th><th>Journal Lag</th><th>Heartbeat</th><th>Error</th></tr></thead><tbody>'+
+    l.map(function(n){
+      var st=n.alive?'<span class="sdot g"></span><span class="sl g">Healthy</span>':'<span class="sdot r"></span><span class="sl r">Down</span>';
+      var lc=n.journal_lag<100?'var(--success)':(n.journal_lag<1000?'var(--warning)':'var(--error)');
+      return '<tr><td class="m">'+n.name+'</td><td class="m">'+n.host+'</td><td>'+n.role+'</td><td>'+(n.is_master?'<span class="master-badge">Leader</span>':'')+'</td><td>'+st+'</td><td><span style="color:'+lc+'">'+n.journal_lag+'</span></td><td style="font-size:11px;color:var(--text-secondary)">'+n.last_heartbeat+'</td><td style="font-size:11px;color:var(--error)">'+(n.err_msg||'-')+'</td></tr>';
+    }).join('')+'</tbody></table></div>';
+}
+function renderBeTable(l){
+  if(!l.length) return '<div class="empty-state"><p>No BE data available</p></div>';
+  return '<div class="apple-table-wrap"><table class="apple-table"><thead><tr><th>IP</th><th>Status</th><th>Tablets</th><th>Disk Usage</th><th>Used %</th><th>Error</th></tr></thead><tbody>' +
+    l.map(function(n){
+      var p=n.used_pct,bc=p<60?'g':(p<80?'o':'r');
+      var bar='<span class="pbar"><span class="ptrack"><span class="pfill '+bc+'" style="width:'+Math.min(p,100)+'%"></span></span></span>';
+      var st=n.alive?'<span class="sdot g"></span><span class="sl g">Healthy</span>':'<span class="sdot r"></span><span class="sl r">Down</span>';
+      return '<tr><td class="m">'+n.host+'</td><td>'+st+'</td><td>'+n.tablet_num+'</td><td>'+n.used_capacity_gb+'GB / '+n.total_capacity_gb+'GB</td><td>'+bar+' '+n.used_pct+'%</td><td style="font-size:11px;color:var(--error)">'+(n.err_msg||'-')+'</td></tr>';
+    }).join('') + '</tbody></table></div>';
+}
+function renderStats(st){
+  if(!st.table_num && st.table_num!==0) return '<div class="metric-card"><div class="l">Stats</div><div class="v" style="color:var(--text-tertiary)">-</div></div>';
+  var pd='';
+  if(st.per_db && st.per_db.length){
+    pd='<div style="font-size:10px;color:var(--text-tertiary);margin-top:2px">'+st.per_db.map(function(d){return d.name+' ('+d.table_num+' tables)'}).join(' ')+'</div>';
+  }
+  return '<div class="metric-card"><div class="l">Databases</div><div class="v p">'+(st.db_num||0)+'</div>'+pd+'</div>'+
+    '<div class="metric-card"><div class="l">Tables</div><div class="v g">'+(st.table_num||0)+'</div></div>'+
+    '<div class="metric-card"><div class="l">Partitions</div><div class="v c">'+(st.partition_num||0)+'</div></div>'+
+    '<div class="metric-card"><div class="l">Tablets</div><div class="v b">'+(st.tablet_num||0)+'</div></div>'+
+    '<div class="metric-card"><div class="l">Replicas</div><div class="v o">'+(st.replica_num||0)+'</div></div>';
+}
+function renderFeMetrics(m,status){
+  return '<div class="res-grid">'+status.map(function(n){
+    var ip=n.host,o=m[ip]||{};
+    if(o.error) return '<div class="res-card"><div class="h">FE '+ip+'</div><div style="color:var(--error);font-size:12px">'+o.error+'</div></div>';
+    var u=o.jvm_heap_used_mb,x=o.jvm_heap_max_mb;
+    var p=u&&x?(u/x*100).toFixed(1):'-';
+    return '<div class="res-card"><div class="h">FE '+ip+'</div><div class="kvs"><span class="kv">JVM: <b>'+(u||'-')+'</b> / <b>'+(x||'-')+'</b> MB ('+p+'%)</span><span class="kv">Threads: <b>'+(o.threads||'-')+'</b></span><span class="kv">Requests: <b>'+(o.query_total||'-')+'</b></span></div></div>';
+  }).join('')+'</div>';
+}
+function renderBeMetrics(m,status){
+  return '<div class="res-grid">'+status.map(function(n){
+    var ip=n.host,o=m[ip]||{};
+    if(o.error) return '<div class="res-card"><div class="h">BE '+ip+'</div><div style="color:var(--error);font-size:12px">'+o.error+'</div></div>';
+    var disks=(o.disks||[]).map(function(d){
+      var bc=d.used_pct<60?'g':(d.used_pct<80?'o':'r');
+      var bar='<span class="ptrack"><span class="pfill '+bc+'" style="width:'+Math.min(d.used_pct,100)+'%"></span></span>';
+      return d.device+': '+bar+' '+d.used_pct+'%';
+    }).join('  ');
+    var html='<div class="res-card"><div class="h">BE '+ip+'</div><div class="kvs"><span class="kv">Load: <b>'+(o.load_1m||'-')+'</b></span>';
+    if(o.avail_cpu_num) html+='<span class="kv">CPU: <b>'+o.avail_cpu_num+'</b> cores</span>';
+    if(o.memory_allocated_mb) html+='<span class="kv">Memory: <b>'+o.memory_allocated_mb+'</b> MB</span>';
+    if(o.process_thread_num) html+='<span class="kv">Threads: <b>'+o.process_thread_num+'</b></span>';
+    if(disks) html+='<div class="kv" style="margin-top:4px">Disks: '+disks+'</div>';
+    html+='</div></div>';
+    return html;
+  }).join('')+'</div>';
+}
+function renderQueries(l){
+  if(!l||!l.length) return '<div class="apple-table-wrap"><table class="apple-table"><thead><tr><th>Query ID</th><th>User</th><th>Host</th><th>Database</th><th>Start</th><th>Time</th><th>State</th><th>SQL</th><th>Scan Rows</th><th>Scan Bytes</th><th>Mem</th></tr></thead><tbody><tr><td colspan="11" style="text-align:center;color:var(--text-tertiary);padding:20px">No active queries</td></tr></tbody></table></div>';
+  return '<div class="apple-table-wrap"><table class="apple-table"><thead><tr><th>Query ID</th><th>User</th><th>Host</th><th>Database</th><th>Start</th><th>Time</th><th>State</th><th>SQL</th><th>Scan Rows</th><th>Scan Bytes</th><th>Mem</th></tr></thead><tbody>'+
+    l.slice(0,50).map(function(q,i){
+      return '<tr onclick="showQueryDetail('+i+')" style="cursor:pointer"><td class="m" style="font-size:11px">'+(q.query_id||'').slice(0,16)+'</td><td>'+q.user+'</td><td class="m" style="font-size:11px">'+q.host+'</td><td>'+q.db+'</td><td class="m" style="font-size:11px">'+(q.start_time||'--')+'</td><td>'+q.time+'s</td><td>'+q.state+'</td><td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:SF Mono,Consolas,monospace;font-size:11px;color:var(--text-secondary)">'+escHtml((q.info||'').slice(0,100))+'</td><td>'+(q.scan_rows||'--')+'</td><td>'+(q.scan_bytes||'--')+'</td><td>'+(q.mem_used||'--')+'</td></tr>';
+    }).join('')+'</tbody></table></div>';
+}
+function showQueryDetail(idx){
+  var l=_ld&&_ld.processlist;
+  if(!l||!l[idx]) return;
+  var q=l[idx];
+  showModal('Query Detail','<div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px">Query ID: <code style="color:var(--text-primary)">'+(q.query_id||'-')+'</code></div>'+
+    '<table class="detail-table"><tbody>'+
+    '<tr><th style="width:80px">User</th><td>'+q.user+'</td></tr>'+
+    '<tr><th>Host</th><td class="m" style="font-size:11px">'+q.host+'</td></tr>'+
+    '<tr><th>Database</th><td>'+q.db+'</td></tr>'+
+    '<tr><th>Command</th><td>'+q.command+'</td></tr>'+
+    '<tr><th>Start</th><td class="m" style="font-size:11px">'+(q.start_time||'--')+'</td></tr>'+
+    '<tr><th>Runtime</th><td>'+q.time+'s</td></tr>'+
+    '<tr><th>State</th><td>'+q.state+'</td></tr>'+
+    '<tr><th>Scan Rows</th><td>'+(q.scan_rows||'--')+'</td></tr>'+
+    '<tr><th>Scan Bytes</th><td>'+(q.scan_bytes||'--')+'</td></tr>'+
+    '<tr><th>Memory</th><td>'+(q.mem_used||'--')+'</td></tr>'+
+    '<tr><th>SQL</th><td style="font-family:SF Mono,Consolas,monospace;font-size:11px;white-space:pre-wrap;word-break:break-all;max-height:300px;overflow:auto;line-height:1.5">'+escHtml(q.info||'--')+'</td></tr></tbody></table>');
+}
+function showModal(t,h){document.getElementById('modal-title').textContent=t;document.getElementById('modal-body').innerHTML=h;document.getElementById('modal-overlay').classList.add('active')}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('active')}
+function escHtml(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function renderMvPage(d){
+  var mvs=d.materialized_views||[];
+  document.getElementById('mv-summary').innerHTML=renderMvSummary(mvs);
+  populateMvFilters(mvs);
+  document.getElementById('mv-table').innerHTML=renderMvTable(mvs);
+}
+function renderMvSummary(mvs){
+  var t=mvs.length,byType={};
+  mvs.forEach(function(m){byType[m.refresh_type]=(byType[m.refresh_type]||0)+1});
+  var th=Object.keys(byType).map(function(k){return k+': <b>'+byType[k]+'</b>'}).join('  ');
+  var ok=mvs.filter(function(m){return m.last_status==='SUCCESS'||!m.last_status}).length;
+  var fail=mvs.filter(function(m){return m.last_status==='FAILED'}).length;
+  return '<div class="metric-card"><div class="l">Materialized Views</div><div class="v b">'+t+'</div></div>'+
+    '<div class="metric-card"><div class="l">Healthy</div><div class="v g">'+ok+'</div></div>'+
+    '<div class="metric-card"><div class="l">Failed</div><div class="v '+(fail?'r':'g')+'">'+fail+'</div></div>'+
+    '<div class="metric-card"><div class="l">Refresh Types</div><div style="font-size:12px;color:var(--text-secondary);margin-top:4px">'+th+'</div></div>';
+}
+function populateMvFilters(mvs){
+  var s=document.getElementById('mv-db-filter'),cv=s.value;
+  var dbs=[...new Set(mvs.map(function(m){return m.database}))].sort();
+  s.innerHTML='<option value="">All Databases</option>'+dbs.map(function(d){return '<option value="'+d+'">'+d+'</option>'}).join('');
+  if(dbs.indexOf(cv)>=0)s.value=cv;
+  var ts=document.getElementById('mv-type-filter'),ct=ts.value;
+  var tps=[...new Set(mvs.map(function(m){return m.refresh_type}).filter(Boolean))].sort();
+  ts.innerHTML='<option value="">All Refresh Types</option>'+tps.map(function(t){return '<option value="'+t+'">'+t+'</option>'}).join('');
+  if(tps.indexOf(ct)>=0)ts.value=ct;
+}
+function renderMvTable(mvs){
+  if(!mvs.length) return '<div class="empty-state"><p>No materialized views found</p></div>';
+  return '<div class="apple-table-wrap"><table class="apple-table"><thead><tr><th>Name</th><th>Database</th><th>Status</th><th>Type</th><th>Interval</th><th>Depends</th><th>Today</th><th>Rows</th><th>Size</th><th>Duration</th><th>Last Refresh</th></tr></thead><tbody>'+
+    mvs.map(function(mv){
+      var st=mv.last_status==='SUCCESS'?'<span class="sdot g"></span><span class="sl g">OK</span>':(mv.last_status==='FAILED'?'<span class="sdot r"></span><span class="sl r">Failed</span>':(mv.last_status==='RUNNING'?'<span class="sdot o"></span><span class="sl" style="color:var(--warning)">Running</span>':'<span class="sdot" style="background:var(--text-tertiary)"></span><span style="color:var(--text-tertiary)">-</span>'));
+      var dur=mv.last_duration_ms?(mv.last_duration_ms>=1000?(mv.last_duration_ms/1000).toFixed(1)+'s':mv.last_duration_ms+'ms'):'-';
+      var sz=mv.data_size_mb>=1024?(mv.data_size_mb/1024).toFixed(1)+'GB':(mv.data_size_mb||0).toFixed(1)+'MB';
+      return '<tr data-mv="'+mv.name+'" data-db="'+mv.database+'" onclick="handleRowClick(this)" style="cursor:pointer">'+
+        '<td class="m">'+mv.name+'</td><td>'+mv.database+'</td><td>'+st+'</td><td>'+(mv.refresh_type||'-')+'</td><td>'+(mv.refresh_interval||'-')+'</td>'+
+        '<td>'+(mv.base_tables||[]).length+'</td><td>'+(mv.daily_refresh_count||0)+'</td>'+
+        '<td style="text-align:right">'+(mv.row_count||0).toLocaleString()+'</td><td style="text-align:right">'+sz+'</td><td>'+dur+'</td>'+
+        '<td style="font-size:11px;color:var(--text-secondary)">'+(mv.last_finish_time||'-')+'</td></tr>';
+    }).join('')+'</tbody></table></div>';
+}
+function filterMvTable(){
+  var q=document.getElementById('mv-search').value.toLowerCase();
+  var db=document.getElementById('mv-db-filter').value;
+  var tp=document.getElementById('mv-type-filter').value;
+  document.querySelectorAll('#mv-table tbody tr').forEach(function(r){
+    var n=r.cells[0].textContent.toLowerCase(),rd=r.cells[1].textContent,rt=r.cells[3].textContent;
+    r.style.display=(!db||rd===db)&&(!tp||rt===tp)&&n.indexOf(q)>=0?'':'none';
+  });
+}
+function showMvDetail(name,db){
+  var body=document.getElementById('modal-body');
+  showModal(name,'<div style="text-align:center;padding:40px;color:var(--text-tertiary)">Loading...</div>');
+  fetch('/api/mv-history?db='+encodeURIComponent(db)+'&name='+encodeURIComponent(name))
+    .then(function(r){return r.json()})
+    .then(function(data){
+      var mvs=_ld&&_ld.materialized_views||[];
+      var mv=mvs.find(function(m){return m.name===name&&m.database===db});
+      body.innerHTML=buildMvDetail(mv,data.history||[],mvs);
+    }).catch(function(e){body.innerHTML='<div style="color:var(--error)">'+e.message+'</div>'});
+}
+function buildMvDetail(mv,hist,mvs){
+  if(!mv) return '<div class="empty-state"><p>MV not found</p></div>';
+  var h='<table class="detail-table"><tbody><tr><th>Name</th><td class="m">'+mv.name+'</td></tr><tr><th>Database</th><td>'+mv.database+'</td></tr><tr><th>Type</th><td>'+(mv.refresh_type||'-')+'</td></tr><tr><th>Interval</th><td>'+(mv.refresh_interval||'-')+'</td></tr><tr><th>Status</th><td>'+(mv.last_status||'-')+'</td></tr><tr><th>Last Refresh</th><td>'+(mv.last_finish_time||'-')+'</td></tr><tr><th>Duration</th><td>'+(mv.last_duration_ms?mv.last_duration_ms+'ms':'')+'</td></tr><tr><th>Rows</th><td>'+(mv.row_count||0).toLocaleString()+'</td></tr><tr><th>Size</th><td>'+(mv.data_size_mb?mv.data_size_mb.toFixed(1)+'MB':'')+'</td></tr></tbody></table>';
+  if(hist.length) h+='<div style="margin-top:16px"><div style="font-weight:600;font-size:12px;margin-bottom:8px">Refresh History</div><div class="apple-table-wrap"><table class="apple-table"><thead><tr><th>Start</th><th>End</th><th>Duration</th><th>Status</th></tr></thead><tbody>'+hist.map(function(hh){return '<tr><td>'+hh.start_time+'</td><td>'+hh.finish_time+'</td><td>'+(hh.duration_ms?hh.duration_ms+'ms':'')+'</td><td>'+hh.status+'</td></tr>'}).join('')+'</tbody></table></div></div>';
+  return h;
+}
+function handleRowClick(el){var name=el.getAttribute('data-mv'),db=el.getAttribute('data-db');if(name)showMvDetail(name,db)}
+function renderTblPage(d){
+  var tbls=d.tables||[];
+  document.getElementById('tbl-summary').innerHTML=renderTblSummary(tbls);
+  populateTblFilters(tbls);
+  renderTblTable(tbls);
+}
+function renderTblSummary(tbls){
+  var grp={};tbls.forEach(function(t){grp[t.database]=(grp[t.database]||0)+1});
+  var dbs=Object.keys(grp);
+  return '<div class="metric-card"><div class="l">Databases</div><div class="v p">'+dbs.length+'</div></div>'+
+    '<div class="metric-card"><div class="l">Tables</div><div class="v g">'+tbls.length+'</div></div>';
+}
+function populateTblFilters(tbls){
+  var s=document.getElementById('tbl-db-filter'),cv=s.value;
+  var dbs=[...new Set(tbls.map(function(t){return t.database}))].sort();
+  s.innerHTML='<option value="">All Databases</option>'+dbs.map(function(d){return '<option value="'+d+'">'+d+'</option>'}).join('');
+  if(dbs.indexOf(cv)>=0)s.value=cv;
+  renderTblTable(tbls);
+}
+function renderTblTable(tbls){
+  var q=document.getElementById('tbl-search').value.toLowerCase();
+  var db=document.getElementById('tbl-db-filter').value;
+  var fl=tbls.filter(function(t){return (!db||t.database===db)&&t.name.toLowerCase().indexOf(q)>=0});
+  var target=document.getElementById('tbl-table');
+  if(!fl.length){target.innerHTML='<div class="empty-state"><p>No tables found</p></div>';return}
+  target.innerHTML='<div class="apple-table-wrap"><table class="apple-table"><thead><tr><th>Table</th><th>Database</th><th>Engine</th></tr></thead><tbody>'+
+    fl.map(function(t){return '<tr><td class="m">'+(t.name||'-')+'</td><td>'+t.database+'</td><td>'+(t.engine||'-')+'</td></tr>'}).join('')+'</tbody></table></div>';
+}
+function filterTblTable(){
+  var tbls=_ld&&_ld.tables||[];
+  renderTblTable(tbls);
+}
+function renderMvGraph(){
+  var db=document.getElementById('graph-db-filter').value;
+  var mv=document.getElementById('graph-mv-filter').value;
+  var mvs=_ld&&_ld.materialized_views||[];
+  var nodes=[],edges=[],added={};
+  var fl=mvs.filter(function(m){return (!db||m.database===db)&&(!mv||m.name===mv)});
+  fl.forEach(function(m){
+    var nid='mv_'+m.database+'_'+m.name;
+    if(!added[nid]){nodes.push({id:nid,label:m.name,group:'mv',title:m.database,shape:'dot',size:16,color:{background:'#AF52DE',border:'#8B30B5'},font:{size:10}});added[nid]=1}
+    var bt=m.base_tables||[];
+    bt.forEach(function(b){
+      var bid='tbl_'+b;
+      if(!added[bid]){nodes.push({id:bid,label:b.split('.').pop(),group:'table',title:b,shape:'dot',size:14,color:{background:'#007AFF',border:'#0055CC'},font:{size:10}});added[bid]=1}
+      edges.push({from:bid,to:nid,arrows:'to',color:{color:'rgba(0,0,0,0.08)'},width:1});
+    });
+  });
+  var container=document.getElementById('mv-graph');
+  if(!nodes.length){container.innerHTML='<div style="text-align:center;padding:80px;color:var(--text-tertiary)">No dependencies to display</div>';return}
+  new vis.Network(container,{nodes:nodes,edges:edges},{layout:{improvedLayout:true},physics:{stabilization:{iterations:50}},interaction:{hover:true},height:'100%'});
+}
+function loadConfig(){
+  fetch('/api/config').then(function(r){return r.json()}).then(function(d){
+    if(d.error) return;
+    document.getElementById('cfg-host').value=d.host||'';
+    document.getElementById('cfg-port').value=d.port||'';
+    document.getElementById('cfg-user').value=d.user||'';
+    document.getElementById('cfg-password').value=d.password||'';
+    document.getElementById('cfg-fe-http').value=d.fe_http_port||'';
+    document.getElementById('cfg-be-http').value=d.be_http_port||'';
+    document.getElementById('cfg-timeout').value=d.connect_timeout||'';
+    document.getElementById('cfg-interval').value=d.refresh_interval_seconds||30;
+    if(d.alert) loadAlertConfig(d.alert);
+  }).catch(function(){});
+}
+function saveConfig(){
+  var body={host:document.getElementById('cfg-host').value,port:parseInt(document.getElementById('cfg-port').value)||0,user:document.getElementById('cfg-user').value,password:document.getElementById('cfg-password').value,fe_http_port:parseInt(document.getElementById('cfg-fe-http').value)||0,be_http_port:parseInt(document.getElementById('cfg-be-http').value)||0,connect_timeout:parseInt(document.getElementById('cfg-timeout').value)||10,refresh_interval_seconds:parseInt(document.getElementById('cfg-interval').value)||30};
+  fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json()}).then(function(d){document.getElementById('cfg-status').textContent=d.status==='ok'?'✓ Saved':'✗ '+d.message;document.getElementById('cfg-status').style.color=d.status==='ok'?'var(--success)':'var(--error)';if(d.status==='ok'){var si=parseInt(document.getElementById('cfg-interval').value);localStorage.setItem('doris_refresh_interval',si);startRefresh(si)}}).catch(function(e){});
+}
+function testConnection(){
+  var st=document.getElementById('cfg-status');st.textContent='Testing...';st.style.color='var(--text-tertiary)';
+  fetch('/api/test-connection').then(function(r){return r.json()}).then(function(d){st.textContent=d.status==='ok'?'✓ Connected':'✗ '+d.message;st.style.color=d.status==='ok'?'var(--success)':'var(--error)'}).catch(function(e){st.textContent='Failed: '+e.message;st.style.color='var(--error)'});
+}
+
+// ── Job Scheduler ──
+
+var _cj = {step: 1, columns: [], ddlDone: false};
+
+function renderJobsPage(){
+  fetch('/api/jobs').then(function(r){return r.json()}).then(function(d){
+    var jobs = d.jobs || [];
+    var running = jobs.filter(function(j){return j.status==='RUNNING'}).length;
+    var paused = jobs.filter(function(j){return j.status==='PAUSED'||j.status==='SUSPENDED'}).length;
+    document.getElementById('jobs-summary').innerHTML =
+      '<div class="metric-card"><div class="l">作业总数</div><div class="v b">'+jobs.length+'</div></div>'+
+      '<div class="metric-card"><div class="l">运行中</div><div class="v g">'+running+'</div></div>'+
+      '<div class="metric-card"><div class="l">已暂停</div><div class="v o">'+paused+'</div></div>';
+    populateJobFilters(jobs);
+    renderJobsTable(jobs);
+  }).catch(function(){});
+}
+function populateJobFilters(jobs){
+  var s=document.getElementById('jobs-status-filter'),cv=s.value;
+  var sts=[...new Set(jobs.map(function(j){return j.status}).filter(Boolean))];
+  s.innerHTML='<option value="">All Status</option>'+sts.map(function(st){return '<option value="'+st+'">'+st+'</option>'}).join('');
+  if(sts.indexOf(cv)>=0)s.value=cv;
+}
+function filterJobsTable(){
+  var jobs = _ld && _ld.jobs || [];
+  var rows = document.querySelectorAll('#jobs-table tbody tr');
+  var q = document.getElementById('jobs-search').value.toLowerCase();
+  var st = document.getElementById('jobs-status-filter').value;
+  rows.forEach(function(r){
+    var name = (r.cells[1]?r.cells[1].textContent:'').toLowerCase();
+    var status = r.getAttribute('data-status')||'';
+    r.style.display = (!st||status===st) && (!q||name.indexOf(q)>=0) ? '' : 'none';
+  });
+  // refresh if no data yet
+  if(!rows.length) renderJobsPage();
+}
+function renderJobsTable(jobs){
+  var target = document.getElementById('jobs-table');
+  if(!jobs.length){target.innerHTML='<div class="empty-state"><p>No jobs found</p></div>';return}
+  // store in _ld for filtering
+  if(!_ld)_ld={};_ld.jobs=jobs;
+
+  var h = '<div class="apple-table-wrap"><table class="apple-table"><thead><tr><th>ID</th><th>Name</th><th>Status</th><th>Type</th><th>Schedule</th><th>Database</th><th>上次刷新</th><th>刷新次数</th><th>Actions</th></tr></thead><tbody>';
+  jobs.forEach(function(j){
+    var st='',cl='';
+    if(j.status==='RUNNING'){st='<span class="sdot g"></span><span class="sl g">Running</span>';cl='g'}
+    else if(j.status==='PAUSED'||j.status==='SUSPENDED'){st='<span class="sdot o"></span><span class="sl" style="color:var(--warning)">Paused</span>';cl='o'}
+    else if(j.status==='FINISHED'){st='<span class="sdot" style="background:var(--text-tertiary)"></span><span style="color:var(--text-tertiary)">Finished</span>'}
+    else if(j.status==='CANCELLED'||j.status==='STOPPED'){st='<span class="sdot r"></span><span class="sl r">Stopped</span>';cl='r'}
+    else if(j.status==='FAILED'){st='<span class="sdot r"></span><span class="sl r">Failed</span>';cl='r'}
+    else st='<span class="sdot" style="background:var(--text-tertiary)"></span><span style="color:var(--text-tertiary)">'+j.status+'</span>';
+    var jsrc = j.source || 'doris';
+    var typeLabel = j.mode ? (j.mode === 'incremental' ? '增量同步' : '全量覆盖') : (j.type||'-');
+    var lastRun = j.last_run || '-';
+    var runCnt = j.run_count != null ? j.run_count : '-';
+    var actionsHtml = '<td class="job-actions" onclick="event.stopPropagation()">';
+    if(j.status==='PAUSED'||j.status==='SUSPENDED'){
+      if(jsrc==='scheduler') actionsHtml += '<button class="job-btn resume" title="Resume" onclick="schedAction(\'resume\',\''+j.id+'\',this)">▶</button>';
+      else actionsHtml += '<button class="job-btn resume" title="Resume" onclick="handleJobAction(\'resume\',\''+escHtml(j.name)+'\',this)">▶</button>';
+    }
+    if(j.status==='RUNNING'){
+      if(jsrc==='scheduler') actionsHtml += '<button class="job-btn pause" title="Pause" onclick="schedAction(\'pause\',\''+j.id+'\',this)">⏸</button>';
+      else actionsHtml += '<button class="job-btn pause" title="Pause" onclick="handleJobAction(\'pause\',\''+escHtml(j.name)+'\',this)">⏸</button>';
+    }
+    if(jsrc==='scheduler') actionsHtml += '<button class="job-btn exec" title="立即执行" onclick="schedAction(\'execute\',\''+j.id+'\',this)">▶▶</button>';
+    if(jsrc==='scheduler') actionsHtml += '<button class="job-btn drop" title="Drop" onclick="confirmJobDrop(\''+j.id+'\',\'scheduler\')">✕</button>';
+    else actionsHtml += '<button class="job-btn drop" title="Drop" onclick="confirmJobDrop(\''+escHtml(j.name)+'\',\'doris\')">✕</button>';
+    actionsHtml += '</td>';
+    h += '<tr data-status="'+j.status+'">'+
+      '<td>'+(jsrc==='scheduler'?j.id.slice(0,8):j.id)+'</td><td class="m">'+escHtml(j.name||'-')+'</td><td>'+st+'</td>'+
+      '<td style="font-size:11px">'+typeLabel+'</td><td style="font-size:11px">'+(j.schedule||'-')+'</td>'+
+      '<td>'+(j.database||'-')+'</td><td style="font-size:11px;color:var(--text-secondary)">'+lastRun+'</td><td style="text-align:center">'+runCnt+'</td>'+
+      actionsHtml+'</tr>';
+  });
+  h += '</tbody></table></div>';
+  target.innerHTML = h;
+}
+function handleJobAction(action, name, btn){
+  btn.disabled=true;
+  fetch('/api/jobs/'+action, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:name})})
+    .then(function(r){return r.json()}).then(function(d){
+      renderJobsPage();
+    }).catch(function(){btn.disabled=false});
+}
+function schedAction(action, id, btn){
+  btn.disabled=true;
+  var url = action==='execute' ? '/api/jobs/execute' : '/api/jobs/'+action;
+  fetch(url, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:id})})
+    .then(function(r){return r.json()}).then(function(d){
+      if(action==='execute' && d.status==='ok') showToast('Job 已触发执行');
+      renderJobsPage();
+    }).catch(function(){btn.disabled=false});
+}
+function confirmJobDrop(name, source){
+  if(!confirm('确定删除作业 "'+name+'" 吗?')) return;
+  var url = source==='scheduler' ? '/api/jobs/drop' : '/api/jobs/drop';
+  var body = source==='scheduler' ? {id:name} : {name:name};
+  fetch(url, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+    .then(function(r){return r.json()}).then(function(d){
+      renderJobsPage();
+      if(d.message) showToast(d.message);
+    }).catch(function(){});
+}
+function showToast(msg){
+  var el=document.createElement('div');
+  el.style.cssText='position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.3)';
+  el.textContent=msg;
+  document.body.appendChild(el);
+  setTimeout(function(){el.style.opacity='0';setTimeout(function(){el.remove()},300)},2000);
+}
+
+function openCreateJobModal(){
+  _cj = {step:1, columns:[], ddlDone:false};
+  document.getElementById('cj-btn-s1-next').disabled = true;
+  document.getElementById('cj-btn-s2-next').disabled = true;
+  document.getElementById('cj-ddl-area').style.display = 'none';
+  document.getElementById('cj-columns-area').style.display = 'none';
+  document.getElementById('cj-job-sql-area').style.display = 'none';
+  document.getElementById('cj-watermark-config').style.display = 'none';
+  document.getElementById('cj-model').value = 'DUPLICATE';
+  document.getElementById('cj-key-cols-area').style.display = 'none';
+  document.getElementById('cj-key-cols-list').innerHTML = '';
+  document.getElementById('cj-etime-enable').checked = true;
+  document.getElementById('cj-etime-expr').value = 'NOW()';
+  cjGoToStep(1);
+  // Load catalogs
+  var catSel = document.getElementById('cj-catalog');
+  fetch('/api/jobs/catalogs').then(function(r){return r.json()}).then(function(d){
+    catSel.innerHTML = '<option value="">-- 选择 Catalog --</option>';
+    (d.catalogs||[]).forEach(function(c){catSel.innerHTML += '<option value="'+c+'">'+c+'</option>'});
+  });
+  // Load internal dbs for target
+  var dbSel = document.getElementById('cj-target-db');
+  fetch('/api/jobs/internal-dbs').then(function(r){return r.json()}).then(function(d){
+    dbSel.innerHTML = '<option value="">-- 请选择 --</option>';
+    (d.databases||[]).forEach(function(db){dbSel.innerHTML += '<option value="'+db+'">'+db+'</option>'});
+  });
+  document.getElementById('create-job-overlay').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeCreateJobModal(){
+  document.getElementById('create-job-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+function cjGoToStep(n){
+  _cj.step = n;
+  document.querySelectorAll('.cj-step').forEach(function(s){s.classList.toggle('active',parseInt(s.id.slice(-1))===n)});
+  document.querySelectorAll('.step').forEach(function(s){s.classList.toggle('active',parseInt(s.getAttribute('data-step'))===n)});
+}
+function cjLoadDatabases(){
+  var cat = document.getElementById('cj-catalog').value;
+  var sel = document.getElementById('cj-database');
+  sel.disabled = true; sel.innerHTML = '<option value="">-- 选择 Database --</option>';
+  document.getElementById('cj-table').disabled = true; document.getElementById('cj-table').innerHTML = '<option value="">-- 选择 Table --</option>';
+  document.getElementById('cj-columns-area').style.display = 'none';
+  if(!cat) return;
+  fetch('/api/jobs/databases?catalog='+encodeURIComponent(cat)).then(function(r){return r.json()}).then(function(d){
+    sel.disabled = false;
+    (d.databases||[]).forEach(function(db){sel.innerHTML += '<option value="'+db+'">'+db+'</option>'});
+    // Auto-select target DB
+    var tdb = document.getElementById('cj-target-db');
+    var found = false;
+    for(var i=0;i<tdb.options.length;i++){if(tdb.options[i].value===cat.split('.').pop()){tdb.value=cat.split('.').pop();found=true;break}}
+    if(!found){
+      for(var i=0;i<tdb.options.length;i++){if(tdb.options[i].value===cat){tdb.value=cat;found=true;break}}
+    }
+  });
+}
+function cjLoadTables(){
+  var cat = document.getElementById('cj-catalog').value;
+  var db = document.getElementById('cj-database').value;
+  var sel = document.getElementById('cj-table');
+  sel.disabled = true; sel.innerHTML = '<option value="">-- 选择 Table --</option>';
+  document.getElementById('cj-columns-area').style.display = 'none';
+  document.getElementById('cj-base-table').textContent = '源表名';
+  if(!cat||!db) return;
+  fetch('/api/jobs/tables?catalog='+encodeURIComponent(cat)+'&db='+encodeURIComponent(db)).then(function(r){return r.json()}).then(function(d){
+    sel.disabled = false;
+    (d.tables||[]).forEach(function(t){sel.innerHTML += '<option value="'+t+'">'+t+'</option>'});
+  });
+}
+function cjLoadColumns(){
+  var cat = document.getElementById('cj-catalog').value;
+  var db = document.getElementById('cj-database').value;
+  var tbl = document.getElementById('cj-table').value;
+  var area = document.getElementById('cj-columns-area');
+  _cj.columns = [];
+  if(!cat||!db||!tbl){area.style.display='none';return}
+  document.getElementById('cj-base-table').textContent = tbl;
+  cjUpdatePreview();
+  fetch('/api/jobs/columns?catalog='+encodeURIComponent(cat)+'&db='+encodeURIComponent(db)+'&table='+encodeURIComponent(tbl))
+    .then(function(r){return r.json()}).then(function(d){
+      if(d.error){alert(d.error);return}
+      _cj.columns = d.columns || [];
+      area.style.display = 'block';
+      renderColumns();
+      document.getElementById('cj-btn-s1-next').disabled = false;
+    }).catch(function(){});
+}
+
+function renderColumns(){
+  var cols = _cj.columns;
+  var cbAll = document.getElementById('cj-select-all');
+  cbAll.checked = true;
+  updateColCount();
+  var container = document.getElementById('cj-columns-list');
+  var mappingArea = document.getElementById('cj-mapping-area');
+  var mappingTable = document.getElementById('cj-mapping-table');
+  var html = '';
+  cols.forEach(function(c, i){
+    var srcType = c.type || '';
+    var dt = c.doris_type || mapClientType(c.type);
+    html += '<label class="cj-col-item"><input type="checkbox" class="cj-col-cb" data-idx="'+i+'" checked onchange="updateColCount()"> <span class="cj-col-name">'+escHtml(c.name)+'</span> <span class="cj-col-type">'+escHtml(srcType)+'</span><span class="cj-col-arrow">→</span><span class="cj-col-doris-type">'+dt+'</span>'+(c.comment?' <span class="cj-col-comment">-- '+escHtml(c.comment)+'</span>':'')+'</label>';
+  });
+  container.innerHTML = html;
+  // Mapping table
+  var mhtml = '';
+  cols.forEach(function(c, i){
+    mhtml += '<div class="cj-mapping-row"><div class="cj-mm-label">' + escHtml(c.name) + '</div><input class="cj-mm-input" id="cj-map-' + i + '" value="' + escHtml(c.name) + '" oninput="cjOnMappingChange()"></div>';
+  });
+  mappingTable.innerHTML = mhtml;
+}
+
+function mapClientType(raw){
+  if(!raw) return 'VARCHAR(65533)';
+  var t = raw.toLowerCase().replace(/\s*\(.*\)/, '').trim();
+  var m = raw.match(/\(([^)]+)\)/);
+  var params = m ? m[1] : '';
+  if(['int','integer','tinyint','smallint','mediumint'].indexOf(t)>=0) return 'INT';
+  if(t==='bigint') return 'BIGINT';
+  if(['varchar','string','text','character varying'].indexOf(t)>=0){
+    if(params && params.match(/^\d+$/) && parseInt(params)<65533) return 'VARCHAR('+params+')';
+    return 'VARCHAR(65533)';
+  }
+  if(t==='char'){
+    if(params && params.match(/^\d+$/)) return 'CHAR('+params+')';
+    return 'CHAR(1)';
+  }
+  if(['decimal','numeric','number','dec'].indexOf(t)>=0) return 'DECIMAL('+params+')';
+  if(t==='double'||t==='float') return 'DOUBLE';
+  if(t==='date') return 'DATE';
+  if(t==='datetime'||t==='timestamp') return 'DATETIME';
+  if(t==='boolean'||t==='bool') return 'BOOLEAN';
+  return 'VARCHAR(65533)';
+}
+
+function updateColCount(){
+  var n = document.querySelectorAll('#cj-columns-list .cj-col-cb:checked').length;
+  document.getElementById('cj-col-count').textContent = n + ' 列已选';
+  var total = _cj.columns.length;
+  document.getElementById('cj-select-all').checked = n === total;
+}
+
+function cjToggleAllColumns(checked){
+  document.querySelectorAll('#cj-columns-list .cj-col-cb').forEach(function(cb){cb.checked = checked});
+  updateColCount();
+}
+
+function cjToggleMapping(){
+  var area = document.getElementById('cj-mapping-area');
+  var toggle = document.querySelector('.cj-map-toggle');
+  if(area.style.display === 'none'){
+    area.style.display = 'block';
+    toggle.textContent = '字段映射 ▾';
+  } else {
+    area.style.display = 'none';
+    toggle.textContent = '字段映射 ▸';
+  }
+}
+
+function cjOnMappingChange(){
+  cjUpdatePreview();
+}
+
+function cjGetTargetTableName(){
+  var prefix = document.getElementById('cj-prefix').value;
+  var base = document.getElementById('cj-base-table').textContent;
+  var suffix = document.getElementById('cj-suffix').value;
+  return (prefix || 'ods_' + (document.getElementById('cj-catalog').value.split('.').pop() || '') + '_') + base + (suffix || '');
+}
+
+function getSelectedColumns(){
+  var result = [];
+  document.querySelectorAll('#cj-columns-list .cj-col-cb:checked').forEach(function(cb){
+    var idx = parseInt(cb.getAttribute('data-idx'));
+    if(idx >= 0 && idx < _cj.columns.length){
+      var col = JSON.parse(JSON.stringify(_cj.columns[idx]));
+      var input = document.getElementById('cj-map-' + idx);
+      col.target_name = (input && input.value.trim()) || col.name;
+      result.push(col);
+    }
+  });
+  return result;
+}
+
+function cjOnModelChange(){
+  var model = document.getElementById('cj-model').value;
+  var area = document.getElementById('cj-key-cols-area');
+  var list = document.getElementById('cj-key-cols-list');
+  if(model === 'UNIQUE'){
+    area.style.display = 'block';
+    var cols = getSelectedColumns();
+    var html = '<label style="font-size:11px;cursor:pointer;margin-right:12px;color:var(--text-secondary)"><input type="checkbox" onchange="cjToggleAllKeys(this.checked)"> 全部</label>';
+    cols.forEach(function(c, i){
+      html += '<label style="font-size:11px;cursor:pointer;padding:4px 8px;background:var(--bg-secondary);border-radius:4px;white-space:nowrap"><input type="checkbox" class="cj-key-cb" data-idx="'+i+'" ' + (c.name === 'id' ? 'checked' : '') + '> ' + escHtml(c.name) + '</label>';
+    });
+    list.innerHTML = html;
+  } else {
+    area.style.display = 'none';
+  }
+  cjUpdatePreview();
+}
+
+function cjToggleAllKeys(checked){
+  document.querySelectorAll('#cj-key-cols-list .cj-key-cb').forEach(function(cb){cb.checked = checked});
+}
+
+function getKeyColumns(){
+  var keys = [];
+  if(document.getElementById('cj-model').value === 'UNIQUE'){
+    document.querySelectorAll('#cj-key-cols-list .cj-key-cb:checked').forEach(function(cb){
+      var idx = parseInt(cb.getAttribute('data-idx'));
+      var cols = getSelectedColumns();
+      if(idx >= 0 && idx < cols.length) keys.push(cols[idx].name);
+    });
+  }
+  return keys;
+}
+
+function cjOnEtimeChange(){
+  cjUpdatePreview();
+}
+
+function cjGetEtimeSuffix(){
+  var cb = document.getElementById('cj-etime-enable');
+  if(!cb.checked) return {col: '', expr: ''};
+  return {col: ', `etl_time` DATETIME DEFAULT CURRENT_TIMESTAMP', expr: ', ' + (document.getElementById('cj-etime-expr').value || 'NOW()') + ' AS `etl_time`'};
+}
+
+function cjUpdatePreview(){
+  var db = document.getElementById('cj-target-db').value;
+  var tbl = cjGetTargetTableName();
+  var area = document.getElementById('cj-ddl-area');
+  var cols = getSelectedColumns();
+  document.getElementById('cj-final-table').textContent = tbl || '...';
+  if(db && tbl && cols.length){
+    area.style.display = 'block';
+    var model = document.getElementById('cj-model').value;
+    var keys = getKeyColumns();
+    fetch('/api/jobs/preview', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      columns:cols, target_db:db, target_table:tbl, model:model,
+      key_columns:keys.length?keys:null,
+      etime_enabled: document.getElementById('cj-etime-enable').checked
+    })})
+      .then(function(r){return r.json()}).then(function(d){document.getElementById('cj-ddl-preview').textContent=d.ddl||d.error})
+      .catch(function(){});
+  } else {
+    area.style.display = 'none';
+  }
+}
+
+function cjExecuteDDL(){
+  var sql = document.getElementById('cj-ddl-preview').textContent;
+  if(!sql){alert('DDL 为空');return}
+  var btn = document.getElementById('cj-btn-exec-ddl');
+  var st = document.getElementById('cj-ddl-status');
+  btn.disabled = true; st.textContent = '执行中...'; st.style.color = 'var(--text-tertiary)';
+  fetch('/api/jobs/execute-ddl', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql:sql})})
+    .then(function(r){return r.json()}).then(function(d){
+      if(d.status==='ok'){
+        st.textContent = '✓ 建表成功'; st.style.color = 'var(--success)';
+        _cj.ddlDone = true;
+        document.getElementById('cj-btn-s2-next').disabled = false;
+        var tn = cjGetTargetTableName();
+        var jn = document.getElementById('cj-job-name');
+        if(!jn.value) jn.value = tn;
+        cjUpdateJobSQL();
+      } else {
+        st.textContent = '✗ 失败: '+d.message; st.style.color = 'var(--error)';
+      }
+    }).catch(function(e){st.textContent='请求失败: '+e.message;st.style.color='var(--error)'})
+    .finally(function(){btn.disabled=false});
+}
+
+function cjOnModeChange(){
+  var mode = document.getElementById('cj-sync-mode').value;
+  var wcArea = document.getElementById('cj-watermark-config');
+  if(mode === 'incremental'){
+    wcArea.style.display = 'block';
+    var cols = getSelectedColumns();
+    var wsel = document.getElementById('cj-watermark-col');
+    wsel.innerHTML = '<option value="">-- 选择 --</option>';
+    cols.forEach(function(c){wsel.innerHTML += '<option value="'+escHtml(c.name)+'">'+escHtml(c.name)+'</option>'});
+  } else {
+    wcArea.style.display = 'none';
+  }
+  cjUpdateJobSQL();
+}
+
+function cjUpdateJobSQL(){
+  var cols = getSelectedColumns();
+  var jn = document.getElementById('cj-job-name').value;
+  var sv = document.getElementById('cj-schedule-value').value;
+  var su = document.getElementById('cj-schedule-unit').value;
+  var st = document.getElementById('cj-start-time').value;
+  var td = document.getElementById('cj-target-db').value;
+  var tt = cjGetTargetTableName();
+  var cat = document.getElementById('cj-catalog').value;
+  var db = document.getElementById('cj-database').value;
+  var tbl = document.getElementById('cj-table').value;
+  var mode = document.getElementById('cj-sync-mode').value;
+  var area = document.getElementById('cj-job-sql-area');
+  if(jn && td && tt && cols.length && sv && su && st && cat && db && tbl){
+    area.style.display = 'block';
+    var selCols = cols.map(function(c){
+      var src = c.name, tgt = c.target_name || c.name;
+      return src === tgt ? '`'+src+'`' : '`'+src+'` AS `'+tgt+'`';
+    }).join(', ');
+    var insertKw = mode === 'full_refresh' ? 'INSERT OVERWRITE TABLE' : 'INSERT INTO';
+    if(mode === 'incremental'){
+      var wsel = document.getElementById('cj-watermark-col');
+      if(wsel.options.length <= 1){
+        wsel.innerHTML = '<option value="">-- 选择 --</option>';
+        cols.forEach(function(c){wsel.innerHTML += '<option value="'+escHtml(c.name)+'">'+escHtml(c.name)+'</option>'});
+      }
+    }
+    var whereClause = '';
+    if(mode === 'incremental'){
+      var wc = document.getElementById('cj-watermark-col').value;
+      if(wc) whereClause = "\nWHERE `" + wc + "` > '{{LAST_RUN_TS}}'";
+    }
+    document.getElementById('cj-job-sql-preview').value = insertKw + ' `'+td+'`.`'+tt+'`\nSELECT '+selCols + cjGetEtimeSuffix().expr + '\nFROM `'+cat+'`.`'+db+'`.`'+tbl+'`'+whereClause+';';
+  } else {
+    area.style.display = 'none';
+  }
+}
+
+function cjCreateJob(){
+  var st = document.getElementById('cj-job-status');
+  var sql = document.getElementById('cj-job-sql-preview').value;
+  if(!sql){alert('调度 SQL 不能为空');return}
+  var body = {
+    sql: sql,
+    name: document.getElementById('cj-job-name').value,
+    target_db: document.getElementById('cj-target-db').value,
+    mode: document.getElementById('cj-sync-mode').value,
+    schedule_value: parseInt(document.getElementById('cj-schedule-value').value)||10,
+    schedule_unit: document.getElementById('cj-schedule-unit').value,
+    start_time: document.getElementById('cj-start-time').value.replace('T',' ')+':00',
+    watermark_column: document.getElementById('cj-watermark-col').value || null,
+    watermark_type: document.getElementById('cj-watermark-type').value || null,
+  };
+  if(!body.name || !body.target_db || !body.start_time){alert('请填写作业名称、目标数据库和开始时间');return}
+  st.textContent = '创建中...'; st.style.color = 'var(--text-tertiary)';
+  fetch('/api/jobs/create', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+    .then(function(r){return r.json()}).then(function(d){
+      if(d.status==='ok'){
+        st.textContent = '✓ 调度创建成功'; st.style.color = 'var(--success)';
+        setTimeout(function(){closeCreateJobModal();renderJobsPage()}, 1500);
+      } else {
+        st.textContent = '✗ 失败: '+d.message; st.style.color = 'var(--error)';
+      }
+    }).catch(function(e){st.textContent='请求失败: '+e.message;st.style.color='var(--error)'});
+}
+
+// Init
+var si=parseInt(localStorage.getItem('doris_refresh_interval'))||30;
+startRefresh(si);loadMetrics();
+</script>
+</body>
+</html>
