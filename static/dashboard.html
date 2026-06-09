@@ -29,7 +29,7 @@
 <main class="content">
 <div id="tab-cluster" class="tab-content active"><div class="page-header"><h1>Cluster Overview</h1><p>Doris cluster real-time monitoring dashboard</p></div><div class="page-body"><div class="page-section"><div class="section-label">Summary</div><div class="metrics-grid" id="summary"></div></div><div id="errors"></div><div class="page-section"><div class="section-label">Frontend Nodes <span id="feBadge" style="color:var(--text-tertiary);font-weight:400">0/0</span></div><div id="fe-table"></div></div><div class="page-section"><div class="section-label">Backend Nodes <span id="beBadge" style="color:var(--text-tertiary);font-weight:400">0/0</span></div><div id="be-table"></div></div><div class="page-section"><div class="section-label">Statistics</div><div class="metrics-grid" id="statistics"></div></div><div class="page-section"><div class="section-label">Frontend Resources</div><div id="fe-metrics"></div></div><div class="page-section"><div class="section-label">Backend Resources</div><div id="be-metrics"></div></div><div class="page-section"><div class="section-label">Active Queries</div><div id="queries"></div></div></div></div>
 
-<div id="tab-mv" class="tab-content"><div class="page-header"><h1>Materialized Views</h1><p>Monitor and manage materialized view refresh status</p></div><div class="page-body"><div class="page-section"><div class="section-label">Overview</div><div class="metrics-grid" id="mv-summary"></div></div><div class="page-section"><div class="filter-bar"><select id="mv-db-filter" onchange="filterMvTable()"><option value="">All Databases</option></select><select id="mv-type-filter" onchange="filterMvTable()"><option value="">All Refresh Types</option></select><input id="mv-search" type="text" placeholder="Search materialized views..." oninput="filterMvTable()"><span class="graph-fullscreen-btn" onclick="loadMetrics()">↻ Refresh</span></div><div id="mv-table"></div></div></div></div>
+<div id="tab-mv" class="tab-content"><div class="page-header"><h1>Materialized Views</h1><p>Monitor and manage materialized view refresh status</p></div><div class="page-body"><div class="page-section"><div class="section-label">Overview</div><div class="metrics-grid" id="mv-summary"></div></div><div class="page-section"><div class="filter-bar"><select id="mv-db-filter" onchange="filterMvTable()"><option value="">All Databases</option></select><select id="mv-type-filter" onchange="filterMvTable()"><option value="">All Refresh Types</option></select><input id="mv-search" type="text" placeholder="Search materialized views..." oninput="filterMvTable()"><button class="cfg-btn primary" onclick="openMvEditor()" style="font-size:12px;padding:6px 12px">＋ New MV</button><span class="graph-fullscreen-btn" onclick="loadMetrics()">↻</span></div><div id="mv-table"></div><div id="mv-pagination" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px"></div></div></div></div>
 
 <div id="tab-graph" class="tab-content"><div class="page-header"><h1>Dependency Graph</h1><p>Materialized view dependency relationships</p></div><div class="page-body" id="graph-page-body"><div class="filter-bar"><select id="graph-db-filter" onchange="renderMvGraph()"><option value="">All Databases</option></select><input id="graph-mv-search" type="text" placeholder="Search MVs..." oninput="filterMvGraphOptions()"><select id="graph-mv-filter" onchange="renderMvGraph()"><option value="">All MVs</option></select><span class="graph-fullscreen-btn" id="graph-fs-btn" onclick="toggleGraphFullscreen()">⛶ Fullscreen</span></div><div class="graph-legend"><span><span class="legend-dot mv"></span>Materialized View</span><span><span class="legend-dot table"></span>Base Table</span><span><span class="legend-dot db"></span>Database</span></div><div id="mv-graph" style="width:100%;height:800px;background:#fff;border-radius:var(--radius-md);border:1px solid var(--border-color)"></div></div></div>
 
@@ -93,6 +93,14 @@
 <div class="cfg-row" style="align-items:flex-start"><label class="cfg-label">Properties</label><div id="cat-props-container" style="flex:1;display:flex;flex-direction:column;gap:4px"><div style="color:var(--text-tertiary);font-size:12px;padding:4px 0">Select a type to load default properties</div></div></div>
 </div>
 <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;margin-top:16px;padding-top:12px;border-top:1px solid var(--border-color)"><span id="cat-status" class="cfg-status" style="flex:1;text-align:left"></span><button class="cfg-btn success" onclick="testCatalogConnection()" id="cat-test-btn">Test Connection</button><button class="cfg-btn" onclick="closeCatalogModal()">Cancel</button><button class="cfg-btn primary" onclick="saveCatalog()">Save</button></div>
+</div></div></div>
+
+<div class="modal-overlay" id="mv-editor-overlay" onclick="if(event.target===this)closeMvEditor()"><div class="modal" style="width:900px;max-width:94vw"><div class="modal-header"><h2 id="mv-editor-title">Create Materialized View</h2><button class="modal-close" onclick="closeMvEditor()">&times;</button></div><div class="modal-body">
+<div class="cfg-form">
+<div class="cfg-row"><label class="cfg-label">Database</label><select class="cfg-input" id="mv-editor-db" style="width:300px"></select></div>
+<div class="cfg-row" style="align-items:flex-start"><label class="cfg-label">SQL</label><textarea class="cfg-input" id="mv-editor-sql" rows="14" style="flex:1;font-family:SF Mono,Consolas,monospace;font-size:12px;resize:vertical"></textarea></div>
+</div>
+<div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;margin-top:16px;padding-top:12px;border-top:1px solid var(--border-color)"><span id="mv-editor-status" class="cfg-status" style="flex:1;text-align:left"></span><button class="cfg-btn" onclick="closeMvEditor()">Cancel</button><button class="cfg-btn primary" onclick="saveMvEditor()">Save</button></div>
 </div></div></div>
 
 <script>
@@ -221,7 +229,7 @@ function renderMvPage(d){
   var mvs=d.materialized_views||[];
   document.getElementById('mv-summary').innerHTML=renderMvSummary(mvs);
   populateMvFilters(mvs);
-  document.getElementById('mv-table').innerHTML=renderMvTable(mvs);
+  renderMvTable(mvs);
 }
 function renderMvSummary(mvs){
   var t=mvs.length,byType={};
@@ -244,28 +252,123 @@ function populateMvFilters(mvs){
   ts.innerHTML='<option value="">All Refresh Types</option>'+tps.map(function(t){return '<option value="'+t+'">'+t+'</option>'}).join('');
   if(tps.indexOf(ct)>=0)ts.value=ct;
 }
+var _mvAllData=[],_mvPageSize=20,_mvPage=1;
 function renderMvTable(mvs){
-  if(!mvs.length) return '<div class="empty-state"><p>No materialized views found</p></div>';
-  return '<div class="apple-table-wrap"><table class="apple-table"><thead><tr><th>Name</th><th>Database</th><th>Status</th><th>Type</th><th>Interval</th><th>Depends</th><th>Today</th><th>Rows</th><th>Size</th><th>Duration</th><th>Last Refresh</th></tr></thead><tbody>'+
-    mvs.map(function(mv){
+  _mvAllData=mvs;
+  _mvPage=1;
+  renderMvPageForCurrent();
+}
+function renderMvPageForCurrent(){
+  var mvs=_mvAllData;
+  // apply filters
+  var q=(document.getElementById('mv-search').value||'').toLowerCase();
+  var db=document.getElementById('mv-db-filter').value;
+  var tp=document.getElementById('mv-type-filter').value;
+  var fl=mvs.filter(function(m){return (!db||m.database===db)&&(!tp||m.refresh_type===tp)&&m.name.toLowerCase().indexOf(q)>=0});
+  // paginate
+  var total=fl.length,totalPages=Math.ceil(total/_mvPageSize)||1;
+  if(_mvPage>totalPages)_mvPage=totalPages;
+  var start=(_mvPage-1)*_mvPageSize,page=fl.slice(start,start+_mvPageSize);
+  var el=document.getElementById('mv-table');
+  if(!page.length){el.innerHTML='<div class="empty-state"><p>No materialized views found</p></div>';renderMvPagination(total,totalPages);return}
+  el.innerHTML='<div class="apple-table-wrap"><table class="apple-table"><thead><tr><th>Name</th><th>Database</th><th>Status</th><th>Type</th><th>Interval</th><th>Depends</th><th>Today</th><th>Rows</th><th>Size</th><th>Duration</th><th>Last Refresh</th><th>Actions</th></tr></thead><tbody>'+
+    page.map(function(mv){
       var st=mv.last_status==='SUCCESS'?'<span class="sdot g"></span><span class="sl g">OK</span>':(mv.last_status==='FAILED'?'<span class="sdot r"></span><span class="sl r">Failed</span>':(mv.last_status==='RUNNING'?'<span class="sdot o"></span><span class="sl" style="color:var(--warning)">Running</span>':'<span class="sdot" style="background:var(--text-tertiary)"></span><span style="color:var(--text-tertiary)">-</span>'));
       var dur=mv.last_duration_ms?(mv.last_duration_ms>=1000?(mv.last_duration_ms/1000).toFixed(1)+'s':mv.last_duration_ms+'ms'):'-';
       var sz=mv.data_size_mb>=1024?(mv.data_size_mb/1024).toFixed(1)+'GB':(mv.data_size_mb||0).toFixed(1)+'MB';
-      return '<tr data-mv="'+mv.name+'" data-db="'+mv.database+'" onclick="handleRowClick(this)" style="cursor:pointer">'+
-        '<td class="m">'+mv.name+'</td><td>'+mv.database+'</td><td>'+st+'</td><td>'+(mv.refresh_type||'-')+'</td><td>'+(mv.refresh_interval||'-')+'</td>'+
+      var n=escHtml(mv.name),d=escHtml(mv.database);
+      return '<tr data-mv="'+n+'" data-db="'+d+'" onclick="handleRowClick(this)" style="cursor:pointer">'+
+        '<td class="m">'+n+'</td><td>'+d+'</td><td>'+st+'</td><td>'+(mv.refresh_type||'-')+'</td><td>'+(mv.refresh_interval||'-')+'</td>'+
         '<td>'+(mv.base_tables||[]).length+'</td><td>'+(mv.daily_refresh_count||0)+'</td>'+
         '<td style="text-align:right">'+(mv.row_count||0).toLocaleString()+'</td><td style="text-align:right">'+sz+'</td><td>'+dur+'</td>'+
-        '<td style="font-size:11px;color:var(--text-secondary)">'+(mv.last_finish_time||'-')+'</td></tr>';
+        '<td style="font-size:11px;color:var(--text-secondary)">'+(mv.last_finish_time||'-')+'</td>'+
+        '<td><div class="job-actions">'+
+          '<button class="job-btn" title="Edit" onclick="event.stopPropagation();openMvEditor(\''+d+'\',\''+n+'\')">✎</button>'+
+          '<button class="job-btn" title="Refresh" onclick="event.stopPropagation();refreshMv(\''+d+'\',\''+n+'\')">⟳</button>'+
+          '<button class="job-btn drop" title="Delete" onclick="event.stopPropagation();deleteMv(\''+d+'\',\''+n+'\')">✕</button>'+
+        '</div></td></tr>';
     }).join('')+'</tbody></table></div>';
+  renderMvPagination(total,totalPages);
+}
+function renderMvPagination(total,totalPages){
+  var el=document.getElementById('mv-pagination');
+  if(totalPages<=1){el.innerHTML='';return}
+  var h='<span style="font-size:12px;color:var(--text-secondary)">'+(total)+' items</span>';
+  h+='<button class="cfg-btn small" onclick="mvGoPage(1)"'+(1)+'">«</button>';
+  h+='<button class="cfg-btn small" onclick="mvGoPage('+(_mvPage-1)+')"'+(1)+'">‹</button>';
+  for(var i=Math.max(1,_mvPage-2);i<=Math.min(totalPages,_mvPage+2);i++){
+    h+='<button class="cfg-btn small'+(i===_mvPage?' primary':'')+'" onclick="mvGoPage('+i+')">'+i+'</button>';
+  }
+  h+='<button class="cfg-btn small" onclick="mvGoPage('+(_mvPage+1)+')"'+(1)+'">›</button>';
+  h+='<button class="cfg-btn small" onclick="mvGoPage('+totalPages+')"'+(1)+'">»</button>';
+  el.innerHTML=h;
+}
+function mvGoPage(p){
+  _mvPage=p;
+  renderMvPageForCurrent();
 }
 function filterMvTable(){
-  var q=document.getElementById('mv-search').value.toLowerCase();
-  var db=document.getElementById('mv-db-filter').value;
-  var tp=document.getElementById('mv-type-filter').value;
-  document.querySelectorAll('#mv-table tbody tr').forEach(function(r){
-    var n=r.cells[0].textContent.toLowerCase(),rd=r.cells[1].textContent,rt=r.cells[3].textContent;
-    r.style.display=(!db||rd===db)&&(!tp||rt===tp)&&n.indexOf(q)>=0?'':'none';
-  });
+  renderMvPageForCurrent();
+}
+function openMvEditor(db,name){
+  var title=document.getElementById('mv-editor-title');
+  var dbSel=document.getElementById('mv-editor-db');
+  var sqlEl=document.getElementById('mv-editor-sql');
+  var st=document.getElementById('mv-editor-status');
+  st.textContent='';st.style.color='';
+  // populate DBs
+  var dbs={};_mvAllData.forEach(function(m){dbs[m.database]=1});
+  dbSel.innerHTML=Object.keys(dbs).sort().map(function(d){return '<option value="'+escHtml(d)+'"'+(d===db?' selected':'')+'>'+escHtml(d)+'</option>'}).join('');
+  if(name){
+    title.textContent='Edit Materialized View';
+    // fetch current DDL
+    fetch('/api/mv-history?db='+encodeURIComponent(db)+'&name='+encodeURIComponent(name)).then(function(r){return r.json()}).then(function(d){
+      var mv=_mvAllData.find(function(m){return m.name===name&&m.database===db});
+      sqlEl.value=mv&&mv.ddl?'-- Edit the DDL below\n'+mv.ddl:'-- SHOW DDL not available for '+name+'\n-- You can write ALTER or REPLACE statement';
+    });
+  }else{
+    title.textContent='Create Materialized View';
+    sqlEl.value='CREATE MATERIALIZED VIEW `'+db+'`.`mv_name`\nAS\nSELECT ...\nFROM ...\n-- optionally add REFRESH clause';
+  }
+  document.getElementById('mv-editor-overlay').style.display='flex';
+}
+function closeMvEditor(){
+  document.getElementById('mv-editor-overlay').style.display='none';
+}
+function saveMvEditor(){
+  var db=document.getElementById('mv-editor-db').value;
+  var sql=document.getElementById('mv-editor-sql').value.trim();
+  var st=document.getElementById('mv-editor-status');
+  var title=document.getElementById('mv-editor-title').textContent;
+  var isEdit=title.indexOf('Edit')>=0;
+  if(!db||!sql){st.textContent='Please fill in database and SQL';st.style.color='var(--error)';return}
+  st.textContent='Saving...';st.style.color='var(--text-tertiary)';
+  var url=isEdit?'/api/materialized-view':'/api/materialized-view';
+  var method=isEdit?'PUT':'POST';
+  fetch(url,{method:method,headers:{'Content-Type':'application/json'},body:JSON.stringify({database:db,sql:sql})})
+    .then(function(r){return r.json()}).then(function(d){
+      if(!d.error){
+        st.textContent='✓ '+d.message;st.style.color='var(--success)';
+        setTimeout(function(){closeMvEditor();loadMetrics()},1000);
+      }else{
+        st.textContent='✗ '+(d.error||'Failed');st.style.color='var(--error)';
+      }
+    }).catch(function(e){st.textContent='✗ Request failed: '+e.message;st.style.color='var(--error)'});
+}
+function refreshMv(db,name){
+  if(!confirm('确定要刷新物化视图「'+name+'」吗？'))return;
+  fetch('/api/materialized-view/refresh',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({database:db,name:name})})
+    .then(function(r){return r.json()}).then(function(d){
+      if(!d.error){loadMetrics();alert('✓ '+d.message)}else{alert('✗ '+(d.error||'Failed'))}
+    }).catch(function(e){alert('✗ Request failed')});
+}
+function deleteMv(db,name){
+  if(!confirm('确定要删除物化视图「'+name+'」吗？\n此操作不可撤销！'))return;
+  if(!confirm('再次确认：删除「'+name+'」？'))return;
+  fetch('/api/materialized-view?db='+encodeURIComponent(db)+'&name='+encodeURIComponent(name),{method:'DELETE'})
+    .then(function(r){return r.json()}).then(function(d){
+      if(!d.error){loadMetrics();alert('✓ '+d.message)}else{alert('✗ '+(d.error||'Failed'))}
+    }).catch(function(e){alert('✗ Request failed')});
 }
 function showMvDetail(name,db){
   var body=document.getElementById('modal-body');

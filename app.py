@@ -903,6 +903,68 @@ def api_mv_history():
     history = fetch_mv_history(db, name)
     return jsonify({"history": history})
 
+def execute_ddl(sql):
+    conn = get_db()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(sql)
+        return True, ""
+    except Exception as e:
+        return False, str(e)
+    finally:
+        conn.close()
+
+@app.route("/api/materialized-view", methods=["POST"])
+def api_create_mv():
+    data = request.get_json()
+    database = (data.get("database") or "").strip()
+    sql = (data.get("sql") or "").strip()
+    if not database or not sql:
+        return jsonify({"error": "database and sql required"}), 400
+    ok, err = execute_ddl(f"USE `{database}`")
+    if not ok: return jsonify({"error": f"USE failed: {err}"}), 400
+    ok, err = execute_ddl(sql)
+    if ok:
+        return jsonify({"status": "ok", "message": "MV created"})
+    return jsonify({"error": err}), 400
+
+@app.route("/api/materialized-view", methods=["PUT"])
+def api_alter_mv():
+    data = request.get_json()
+    database = (data.get("database") or "").strip()
+    sql = (data.get("sql") or "").strip()
+    if not database or not sql:
+        return jsonify({"error": "database and sql required"}), 400
+    ok, err = execute_ddl(f"USE `{database}`")
+    if not ok: return jsonify({"error": f"USE failed: {err}"}), 400
+    ok, err = execute_ddl(sql)
+    if ok:
+        return jsonify({"status": "ok", "message": "MV updated"})
+    return jsonify({"error": err}), 400
+
+@app.route("/api/materialized-view", methods=["DELETE"])
+def api_drop_mv():
+    database = request.args.get("db", "")
+    name = request.args.get("name", "")
+    if not database or not name:
+        return jsonify({"error": "db and name required"}), 400
+    ok, err = execute_ddl(f"DROP MATERIALIZED VIEW `{database}`.`{name}`")
+    if ok:
+        return jsonify({"status": "ok", "message": f"MV {name} dropped"})
+    return jsonify({"error": err}), 400
+
+@app.route("/api/materialized-view/refresh", methods=["POST"])
+def api_refresh_mv():
+    data = request.get_json()
+    database = (data.get("database") or "").strip()
+    name = (data.get("name") or "").strip()
+    if not database or not name:
+        return jsonify({"error": "database and name required"}), 400
+    ok, err = execute_ddl(f"REFRESH MATERIALIZED VIEW `{database}`.`{name}`")
+    if ok:
+        return jsonify({"status": "ok", "message": f"MV {name} refresh triggered"})
+    return jsonify({"error": err}), 400
+
 @app.route("/api/tables")
 def api_tables():
     tables = get_all_tables()
