@@ -967,6 +967,20 @@ def api_refresh_mv():
         return jsonify({"status": "ok", "message": f"MV {name} refresh triggered"})
     return jsonify({"error": err}), 400
 
+@app.route("/api/materialized-view/toggle", methods=["POST"])
+def api_toggle_mv():
+    data = request.get_json()
+    database = (data.get("database") or "").strip()
+    name = (data.get("name") or "").strip()
+    action = (data.get("action") or "").strip()
+    if not database or not name or action not in ("pause", "resume"):
+        return jsonify({"error": "database, name, and action (pause|resume) required"}), 400
+    sql = f"ALTER MATERIALIZED VIEW `{database}`.`{name}` {'PAUSE' if action == 'pause' else 'RESUME'}"
+    ok, err = execute_ddl(sql)
+    if ok:
+        return jsonify({"status": "ok", "message": f"MV {name} {action}d"})
+    return jsonify({"error": err}), 400
+
 @app.route("/api/tables")
 def api_tables():
     tables = get_all_tables()
