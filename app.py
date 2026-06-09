@@ -495,9 +495,13 @@ def get_mv_today_counts(database):
     except Exception:
         return {}
 
-def get_mv_row_sizes(database):
+def get_mv_row_sizes(database, mv_names=None):
     try:
-        rows = query(f"SELECT TABLE_NAME,TABLE_ROWS,DATA_LENGTH FROM information_schema.TABLES WHERE TABLE_SCHEMA='{database}' AND TABLE_NAME LIKE '%mv%'")
+        if mv_names:
+            names_q = ",".join("'"+n+"'" for n in mv_names)
+            rows = query(f"SELECT TABLE_NAME,TABLE_ROWS,DATA_LENGTH FROM information_schema.TABLES WHERE TABLE_SCHEMA='{database}' AND TABLE_NAME IN ({names_q})")
+        else:
+            rows = query(f"SELECT TABLE_NAME,TABLE_ROWS,DATA_LENGTH FROM information_schema.TABLES WHERE TABLE_SCHEMA='{database}' AND TABLE_NAME LIKE '%mv%'")
         return {r.get("TABLE_NAME",""):{"row_count":int(r.get("TABLE_ROWS",0) or 0),"data_size_mb":round((int(r.get("DATA_LENGTH",0) or 0))/(1024**2),2)} for r in rows}
     except Exception:
         return {}
@@ -617,7 +621,7 @@ def collect_metrics():
             if not mvs: continue
             tasks = get_mv_latest_tasks(database=db)
             today = get_mv_today_counts(database=db)
-            sizes = get_mv_row_sizes(database=db)
+            sizes = get_mv_row_sizes(database=db, mv_names=[m["name"] for m in mvs])
             for mv in mvs:
                 t = tasks.get(mv["name"], {})
                 s = sizes.get(mv["name"], {})
