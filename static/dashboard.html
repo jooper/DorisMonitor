@@ -31,7 +31,7 @@
 
 <div id="tab-mv" class="tab-content"><div class="page-header"><h1>Materialized Views</h1><p>Monitor and manage materialized view refresh status</p></div><div class="page-body"><div class="page-section"><div class="section-label">Overview</div><div class="metrics-grid" id="mv-summary"></div></div><div class="page-section"><div class="filter-bar"><select id="mv-db-filter" onchange="filterMvTable()"><option value="">All Databases</option></select><select id="mv-type-filter" onchange="filterMvTable()"><option value="">All Refresh Types</option></select><input id="mv-search" type="text" placeholder="Search materialized views..." oninput="filterMvTable()"></div><div id="mv-table"></div></div></div></div>
 
-<div id="tab-graph" class="tab-content"><div class="page-header"><h1>Dependency Graph</h1><p>Materialized view dependency relationships</p></div><div class="page-body" id="graph-page-body"><div class="filter-bar"><select id="graph-db-filter" onchange="renderMvGraph()"><option value="">All Databases</option></select><select id="graph-mv-filter" onchange="renderMvGraph()"><option value="">All MVs</option></select><span class="graph-fullscreen-btn" id="graph-fs-btn" onclick="toggleGraphFullscreen()">⛶ Fullscreen</span></div><div class="graph-legend"><span><span class="legend-dot mv"></span>Materialized View</span><span><span class="legend-dot table"></span>Base Table</span><span><span class="legend-dot db"></span>Database</span></div><div id="mv-graph" style="width:100%;height:800px;background:#fff;border-radius:var(--radius-md);border:1px solid var(--border-color)"></div></div></div>
+<div id="tab-graph" class="tab-content"><div class="page-header"><h1>Dependency Graph</h1><p>Materialized view dependency relationships</p></div><div class="page-body" id="graph-page-body"><div class="filter-bar"><select id="graph-db-filter" onchange="renderMvGraph()"><option value="">All Databases</option></select><input id="graph-mv-search" type="text" placeholder="Search MVs..." oninput="filterMvGraphOptions()"><select id="graph-mv-filter" onchange="renderMvGraph()"><option value="">All MVs</option></select><span class="graph-fullscreen-btn" id="graph-fs-btn" onclick="toggleGraphFullscreen()">⛶ Fullscreen</span></div><div class="graph-legend"><span><span class="legend-dot mv"></span>Materialized View</span><span><span class="legend-dot table"></span>Base Table</span><span><span class="legend-dot db"></span>Database</span></div><div id="mv-graph" style="width:100%;height:800px;background:#fff;border-radius:var(--radius-md);border:1px solid var(--border-color)"></div></div></div>
 
 <div id="tab-tables" class="tab-content"><div class="page-header"><h1>Data Tables</h1><p>Browse all tables across databases</p></div><div class="page-body"><div class="page-section"><div class="section-label">Overview</div><div class="metrics-grid" id="tbl-summary"></div></div><div class="page-section"><div class="filter-bar"><select id="tbl-db-filter" onchange="filterTblTable()"></select><input id="tbl-search" type="text" placeholder="Search tables..." oninput="filterTblTable()"></div><div id="tbl-table"><div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="10" y1="4" x2="10" y2="20"/></svg><p>Switch to this tab to load data</p></div></div></div></div></div>
 
@@ -352,8 +352,12 @@ function renderMvGraph(){
   var hasDb=false;for(var i=0;i<dbSel.options.length;i++){if(dbSel.options[i].value===curDb){hasDb=true;break}}if(hasDb)dbSel.value=curDb;
   // populate MV filter
   var mvSel=document.getElementById('graph-mv-filter');
+  var mvSearch=document.getElementById('graph-mv-search');
+  _graphAllMvs=mvs;
   var curMv=mvSel.value;
-  mvSel.innerHTML='<option value="">All MVs</option>'+mvs.map(function(m){return '<option value="'+escHtml(m.name)+'">'+escHtml(m.name)+'</option>'}).join('');
+  var q=(mvSearch.value||'').trim().toLowerCase();
+  var filtered=mvs.filter(function(m){return !q||m.name.toLowerCase().indexOf(q)!==-1});
+  mvSel.innerHTML='<option value="">All MVs</option>'+filtered.map(function(m){return '<option value="'+escHtml(m.name)+'">'+escHtml(m.name)+'</option>'}).join('');
   var hasMv=false;for(var i=0;i<mvSel.options.length;i++){if(mvSel.options[i].value===curMv){hasMv=true;break}}if(hasMv)mvSel.value=curMv;
   // build graph
   var sysDbs={__internal_schema:1,information_schema:1,mysql:1,sys:1,_statistics_:1};
@@ -400,7 +404,10 @@ function renderMvGraph(){
     }
   });
 }
-var _graphFullscreen=false;
+var _graphFullscreen=false,_graphAllMvs=[];
+function filterMvGraphOptions(){
+  renderMvGraph();
+}
 function toggleGraphFullscreen(){
   _graphFullscreen=!_graphFullscreen;
   var body=document.getElementById('graph-page-body');
