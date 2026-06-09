@@ -520,7 +520,13 @@ def build_mv_dep_map(mvs):
 
 def fetch_mv_history(db, name, limit=20):
     try:
-        return query(f"SELECT * FROM tasks('type'='mv') WHERE MvDatabaseName='{db}' AND MvName='{name}' ORDER BY CreateTime DESC LIMIT {limit}")
+        rows = query(f"SELECT * FROM tasks('type'='mv') WHERE MvDatabaseName='{db}' AND MvName='{name}' ORDER BY CreateTime DESC LIMIT {limit}")
+        return [{
+            "start_time": r.get("CreateTime", ""),
+            "finish_time": r.get("FinishTime", ""),
+            "duration_ms": r.get("DurationMs", 0),
+            "status": r.get("Status", ""),
+        } for r in rows]
     except Exception:
         return []
 
