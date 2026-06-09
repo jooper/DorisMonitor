@@ -374,7 +374,7 @@ function renderMvGraph(){
       // ensure source DB node exists
       if(!dbNodes[tdb]){
         var tdbid='db_'+tdb;
-        if(!added[tdbid]){nodes.push({id:tdbid,label:tdb,group:'db',title:tdb,shape:'box',size:12,color:{background:'rgba(0,122,255,0.05)',border:'rgba(0,122,255,0.25)'},font:{size:10,color:'var(--text-tertiary)'},_db:tdb});added[tdbid]=1}
+        if(!added[tdbid]){nodes.push({id:tdbid,label:tdb,group:'db',title:tdb,shape:'dot',size:12,color:{background:'rgba(0,122,255,0.2)',border:'rgba(0,122,255,0.4)'},font:{size:10,color:'var(--text-tertiary)'},_db:tdb});added[tdbid]=1}
         dbNodes[tdb]=1
       }
       var bid='tbl_'+b;
