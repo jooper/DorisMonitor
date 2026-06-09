@@ -43,10 +43,10 @@ python app.py
 ```json
 {
   "cluster": {
-    "host": "10.11.2.101",
+    "host": "your_doris_host",
     "port": 9030,
-    "user": "admin",
-    "password": "bigdata@",
+    "user": "your_username",
+    "password": "your_password",
     "fe_http_port": 8030,
     "be_http_port": 8040,
     "connect_timeout": 10
