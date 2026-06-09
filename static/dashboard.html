@@ -943,6 +943,11 @@ function renderCatalogTable(list){
 }
 function filterCatalogTable(){renderCatalogTable(_catalogData);}
 
+var _catPropOptions = {
+  'iceberg.catalog.type': ['hms','glue','rest','jdbc','object_store','hadoop'],
+  'paimon.catalog.type': ['hms','filesystem','jdbc'],
+  'elasticsearch.nodes_discovery': ['true','false']
+};
 var _catPropTemplates = {
   hms: {'hive.metastore.uris': ''},
   jdbc: {user: '', password: '', jdbc_url: '', driver_url: ''},
@@ -992,10 +997,14 @@ function addCatalogPropRow(key, val, isAddBtn){
     container.innerHTML += '<div class="cat-prop-add" style="margin-top:2px"><button class="cfg-btn small" onclick="addCatalogPropRow(\'\',\'\',false)">＋ Add property</button></div>';
     return;
   }
+  var opts = _catPropOptions[key];
+  var valHtml = opts
+    ? '<select class="cfg-input cat-prop-val" style="flex:1;font-size:12px"><option value="">--</option>'+opts.map(function(o){return '<option value="'+o+'"'+(val===o?' selected':'')+'>'+o+'</option>'}).join('')+'</select>'
+    : '<input class="cfg-input cat-prop-val" placeholder="Value" value="'+escHtml(val||'').replace(/'/g,"&#39;")+'" style="flex:1;font-size:12px">';
   var html = '<div class="cat-prop-row" style="display:flex;gap:4px;align-items:center">'+
     '<input class="cfg-input cat-prop-key" placeholder="Key" value="'+escHtml(key).replace(/'/g,"&#39;")+'" style="width:160px;font-size:12px">'+
     ' <span style="color:var(--text-tertiary)">=</span> '+
-    '<input class="cfg-input cat-prop-val" placeholder="Value" value="'+escHtml(val||'').replace(/'/g,"&#39;")+'" style="flex:1;font-size:12px">'+
+    valHtml+
     '<button class="cfg-btn small" style="background:transparent;color:var(--error);padding:2px 6px;font-size:14px;line-height:1" onclick="this.parentElement.remove()" title="Remove property">&times;</button></div>';
   // Replace add button placeholder if exists
   var addBtn = container.querySelector('.cat-prop-add');
