@@ -566,11 +566,12 @@ def get_all_tables():
             })
     return all_tables
 
-def get_table_detail(db, name):
+def get_table_detail(db, name, catalog=""):
     """Get DDL + columns for a specific table."""
     result = {"name": name, "database": db, "columns": [], "ddl": "", "partitions": []}
+    tbl_ref = f"`{catalog}`.`{db}`.`{name}`" if catalog else f"`{db}`.`{name}`"
     try:
-        col_rows = query(f"SHOW FULL COLUMNS FROM `{db}`.`{name}`")
+        col_rows = query(f"SHOW FULL COLUMNS FROM {tbl_ref}")
         result["columns"] = [{
             "field": c.get("Field",""), "type": c.get("Type",""),
             "key": c.get("Key",""), "extra": c.get("Extra",""),
@@ -579,7 +580,7 @@ def get_table_detail(db, name):
     except Exception:
         pass
     try:
-        ddl_rows = query(f"SHOW CREATE TABLE `{db}`.`{name}`")
+        ddl_rows = query(f"SHOW CREATE TABLE {tbl_ref}")
         if ddl_rows:
             result["ddl"] = ddl_rows[0].get("Create Table","")
     except Exception:
@@ -900,7 +901,8 @@ def api_mv_history():
     db = request.args.get("db", "")
     name = request.args.get("name", "")
     if not name: return jsonify({"error": "name required"}), 400
-    history = fetch_mv_history(db, name)
+    limit = request.args.get("limit", 20, type=int)
+    history = fetch_mv_history(db, name, limit=limit)
     return jsonify({"history": history})
 
 def execute_ddl(sql):
@@ -960,7 +962,7 @@ def api_refresh_mv():
     name = (data.get("name") or "").strip()
     if not database or not name:
         return jsonify({"error": "database and name required"}), 400
-    ok, err = execute_ddl(f"REFRESH MATERIALIZED VIEW `{database}`.`{name}`")
+    ok, err = execute_ddl(f"REFRESH MATERIALIZED VIEW `{database}`.`{name}` AUTO")
     if ok:
         return jsonify({"status": "ok", "message": f"MV {name} refresh triggered"})
     return jsonify({"error": err}), 400
@@ -974,8 +976,9 @@ def api_tables():
 def api_table_detail():
     db = request.args.get("db", "")
     name = request.args.get("name", "")
+    catalog = request.args.get("catalog", "")
     if not name: return jsonify({"error": "name required"}), 400
-    return jsonify(get_table_detail(db, name))
+    return jsonify(get_table_detail(db, name, catalog))
 
 @app.route("/api/config", methods=["GET", "POST"])
 def api_config():
