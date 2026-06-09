@@ -707,14 +707,14 @@ function renderJobsTable(jobs){
     var runCnt = j.run_count != null ? j.run_count : '-';
     var actionsHtml = '<td class="job-actions" onclick="event.stopPropagation()">';
     if(j.status==='PAUSED'||j.status==='SUSPENDED'){
-      if(jsrc==='scheduler') actionsHtml += '<button class="job-btn resume" title="Resume" onclick="schedAction(\'resume\',\''+j.id+'\',this)">▶</button>';
-      else actionsHtml += '<button class="job-btn resume" title="Resume" onclick="handleJobAction(\'resume\',\''+escHtml(j.name)+'\',this)">▶</button>';
+      if(jsrc==='scheduler') actionsHtml += '<button class="job-btn resume" title="Resume" onclick="schedAction(\'resume\',\''+j.id+'\',this)">⟳</button>';
+      else actionsHtml += '<button class="job-btn resume" title="Resume" onclick="handleJobAction(\'resume\',\''+escHtml(j.name)+'\',this)">⟳</button>';
     }
     if(j.status==='RUNNING'){
       if(jsrc==='scheduler') actionsHtml += '<button class="job-btn pause" title="Pause" onclick="schedAction(\'pause\',\''+j.id+'\',this)">⏸</button>';
       else actionsHtml += '<button class="job-btn pause" title="Pause" onclick="handleJobAction(\'pause\',\''+escHtml(j.name)+'\',this)">⏸</button>';
     }
-    if(jsrc==='scheduler') actionsHtml += '<button class="job-btn exec" title="立即执行" onclick="schedAction(\'execute\',\''+j.id+'\',this)">▶▶</button>';
+    if(jsrc==='scheduler') actionsHtml += '<button class="job-btn exec" title="立即执行" onclick="schedAction(\'execute\',\''+j.id+'\',this)">▶</button>';
     if(jsrc==='scheduler') actionsHtml += '<button class="job-btn drop" title="Drop" onclick="confirmJobDrop(\''+j.id+'\',\'scheduler\')">✕</button>';
     else actionsHtml += '<button class="job-btn drop" title="Drop" onclick="confirmJobDrop(\''+escHtml(j.name)+'\',\'doris\')">✕</button>';
     actionsHtml += '</td>';
