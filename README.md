@@ -1,4 +1,4 @@
-# Doris Monitor
+# Doris 作业平台
 
 Apache Doris 集群实时监控与管理 Web 面板。基于 Python Flask + 原生 JavaScript SPA，通过 MySQL 协议和 HTTP 接口采集集群状态，支持物化视图管理、Catalog 管理、作业调度、依赖关系图谱等。
 

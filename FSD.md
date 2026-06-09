@@ -1,4 +1,4 @@
-# Doris Monitor — 功能规格说明书 (FSD)
+# Doris 作业平台 — 功能规格说明书 (FSD)
 
 **版本**: 1.0  
 **项目**: `doris_mt_pro`  

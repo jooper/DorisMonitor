@@ -1393,6 +1393,6 @@ if __name__ == "__main__":
     scheduler = _ss.SchedulerService(get_db)
     scheduler.start()
     cfg = get_fe_config()
-    print(f"  Doris Monitor @ http://localhost:5000")
+    print(f"  Doris 作业平台 @ http://localhost:5000")
     start_alert_checker()
     app.run(host="0.0.0.0", port=5000, debug=False, threaded=True)

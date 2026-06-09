@@ -15,5 +15,5 @@ if [ ! -f config.json ]; then
   fi
 fi
 
-echo "Starting Doris Monitor..."
+echo "Starting Doris 作业平台..."
 exec python3 app.py
