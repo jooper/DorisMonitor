@@ -112,7 +112,7 @@
 <div style="margin-top:14px;font-size:12px;font-weight:600;color:var(--text-secondary);border-bottom:1px solid var(--border-divider);padding-bottom:4px">Definition (SELECT query)</div>
 <div style="margin-top:8px;border:1px solid var(--border-color);border-radius:var(--radius-sm);overflow:hidden"><div id="mv-editor-cm"></div><textarea id="mv-editor-sql" style="display:none"></textarea></div>
 <div style="margin-top:14px;font-size:12px;font-weight:600;color:var(--text-secondary);border-bottom:1px solid var(--border-divider);padding-bottom:4px">Preview</div>
-<pre id="mv-editor-preview" style="background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:var(--radius-sm);padding:12px;font-size:11px;font-family:SF Mono,Consolas,monospace;margin-top:8px;white-space:pre-wrap;word-break:break-all;max-height:160px;overflow-y:auto">-- Generated SQL will appear here</pre>
+<textarea id="mv-editor-preview" style="width:100%;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:var(--radius-sm);padding:12px;font-size:11px;font-family:SF Mono,Consolas,monospace;margin-top:8px;white-space:pre;word-break:normal;overflow:auto;resize:vertical;min-height:100px;max-height:200px;outline:none;color:var(--text-primary)" spellcheck="false">-- Generated SQL will appear here</textarea>
 </div></div><div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;padding:12px 20px 16px;border-top:1px solid var(--border-color)"><span id="mv-editor-status" class="cfg-status" style="flex:1;text-align:left"></span><button class="cfg-btn" onclick="closeMvEditor()">Cancel</button><button class="cfg-btn primary" id="mv-editor-save-btn" onclick="saveMvEditor()">✚ Create</button></div></div></div>
 
 <script>
@@ -553,6 +553,7 @@ function generateMvSql(){
   var sql='CREATE MATERIALIZED VIEW `'+db+'`.`'+name+'`\n';
   var rt=document.querySelector('input[name="mv-refresh-type"]:checked');
   var sm=document.querySelector('input[name="mv-schedule-mode"]:checked');
+  sql+='BUILD IMMEDIATE\n';
   if(rt){
     sql+='REFRESH '+rt.value;
     if(sm&&sm.value==='scheduled'){
@@ -560,7 +561,7 @@ function generateMvSql(){
       var unit=document.getElementById('mv-editor-interval-unit').value;
       var starts=document.getElementById('mv-editor-starts').value.trim();
       sql+=' ON SCHEDULE EVERY '+interval+' '+unit;
-      if(starts)sql+='\n    STARTS \''+starts.replace(/'/g,'')+'\'';
+      if(starts)sql+=' STARTS \''+starts.replace(/'/g,'')+'\'';
     }else if(sm&&sm.value==='on_commit'){
       sql+=' ON COMMIT';
     }
@@ -582,14 +583,15 @@ function updateMvPreview(){
   var el=document.getElementById('mv-editor-preview');
   if(!el)return;
   var sql=generateMvSql();
-  el.textContent=sql;
+  el.value=sql;
 }
 function saveMvEditor(){
   var db=document.getElementById('mv-editor-db').value;
-  var sql=generateMvSql();
+  var el=document.getElementById('mv-editor-preview');
+  var sql=el?el.value.trim():'';
   var st=document.getElementById('mv-editor-status');
   var title=document.getElementById('mv-editor-title').textContent;
-  if(!db||!sql||sql.indexOf('Please fill in')>=0||sql.indexOf('No SQL')>=0){showToast('请填写完整的数据库、MV名称和SQL','error');return}
+  if(!db||!sql||sql.indexOf('Please fill in')>=0||sql.indexOf('-- ')===0){showToast('请填写完整的数据库、MV名称和SQL','error');return}
   st.textContent='Saving...';st.style.color='var(--text-tertiary)';
   var isEdit=title.indexOf('Edit')>=0;
   var method=isEdit?'PUT':'POST';

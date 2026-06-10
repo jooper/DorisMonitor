@@ -160,11 +160,12 @@ def start_alert_checker():
 
 # ─── DB helpers ───────────────────────────────────────────
 
-def get_db():
+def get_db(database=None):
     cfg = get_fe_config()
     return pymysql.connect(
         host=cfg["host"], port=cfg["port"], user=cfg["user"],
-        password=cfg["password"], connect_timeout=5, read_timeout=10
+        password=cfg["password"], database=database,
+        connect_timeout=5, read_timeout=10
     )
 
 def query(sql):
@@ -923,12 +924,20 @@ def api_create_mv():
     sql = (data.get("sql") or "").strip()
     if not database or not sql:
         return jsonify({"error": "database and sql required"}), 400
-    ok, err = execute_ddl(f"USE `{database}`")
-    if not ok: return jsonify({"error": f"USE failed: {err}"}), 400
-    ok, err = execute_ddl(sql)
-    if ok:
+    print(f"[DEBUG] CREATING MV db='{database}' len={len(sql)}", flush=True)
+    conn = get_db()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(f"USE `{database}`")
+            cur.execute("SELECT DATABASE()")
+            db_check = cur.fetchone()
+            print(f"[DEBUG] Current DB after USE: {db_check}", flush=True)
+            cur.execute(sql)
         return jsonify({"status": "ok", "message": "MV created"})
-    return jsonify({"error": err}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+    finally:
+        conn.close()
 
 @app.route("/api/materialized-view", methods=["PUT"])
 def api_alter_mv():
@@ -937,12 +946,17 @@ def api_alter_mv():
     sql = (data.get("sql") or "").strip()
     if not database or not sql:
         return jsonify({"error": "database and sql required"}), 400
-    ok, err = execute_ddl(f"USE `{database}`")
-    if not ok: return jsonify({"error": f"USE failed: {err}"}), 400
-    ok, err = execute_ddl(sql)
-    if ok:
+    print(f"[DEBUG] ALTERING MV:\n{sql}\n[END DEBUG]")
+    conn = get_db()
+    try:
+        conn.select_db(database)
+        with conn.cursor() as cur:
+            cur.execute(sql)
         return jsonify({"status": "ok", "message": "MV updated"})
-    return jsonify({"error": err}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+    finally:
+        conn.close()
 
 @app.route("/api/materialized-view", methods=["DELETE"])
 def api_drop_mv():
