@@ -516,7 +516,11 @@ function openMvEditor(db,name){
       if(saveBtn)saveBtn.textContent='💾 Save';
       fetch('/api/mv-history?db='+encodeURIComponent(db)+'&name='+encodeURIComponent(name)).then(function(r){return r.json()}).then(function(d){
         var mv=_mvAllData.find(function(m){return m.name===name&&m.database===db});
-        var txt=mv&&mv.ddl?mv.ddl:'-- DDL not available for '+name+'\n-- Edit freely below';
+        var ddl=mv&&mv.ddl?mv.ddl:'';
+        var txt='-- Original DDL (for reference):';
+        if(ddl)txt+= '\n'+ddl.split('\n').map(function(l){return '-- '+l}).join('\n');
+        else txt+='\n-- Not available for '+name;
+        txt+='\n\n-- Write ALTER statement below:\nALTER MATERIALIZED VIEW `'+db+'`.`'+name+'`\nREFRESH COMPLETE ON SCHEDULE EVERY 20 MINUTE;';
         initEditor(txt);
       });
     }else{
@@ -595,11 +599,17 @@ function saveMvEditor(){
   st.textContent='Saving...';st.style.color='var(--text-tertiary)';
   var isEdit=title.indexOf('Edit')>=0;
   var method=isEdit?'PUT':'POST';
+  var newName=isEdit?'':document.getElementById('mv-editor-name').value.trim();
   fetch('/api/materialized-view',{method:method,headers:{'Content-Type':'application/json'},body:JSON.stringify({database:db,sql:sql})})
     .then(function(r){return r.json()}).then(function(d){
       if(!d.error){
         st.textContent='✓ '+d.message;st.style.color='var(--success)';
-        setTimeout(function(){closeMvEditor();loadMetrics()},1000);
+        closeMvEditor();
+        if(newName){
+          document.getElementById('mv-db-filter').value=db;
+          document.getElementById('mv-search-input').value=newName;
+        }
+        loadMetrics().then(function(){if(newName)filterMvTable()});
       }else{
         st.textContent='✗ '+(d.error||'Failed');st.style.color='var(--error)';
       }
