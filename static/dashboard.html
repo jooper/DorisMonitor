@@ -524,7 +524,7 @@ function openMvEditor(db,name){
         var txt='-- Original DDL (for reference):';
         if(ddl)txt+= '\n'+ddl.split('\n').map(function(l){return '-- '+l}).join('\n');
         else txt+='\n-- Not available for '+name;
-        txt+='\n\n-- Write ALTER statement below:\nALTER MATERIALIZED VIEW `'+db+'`.`'+name+'`\nREFRESH COMPLETE ON SCHEDULE EVERY 20 MINUTE;';
+        txt+='\n\n-- Write ALTER statement below:\nALTER MATERIALIZED VIEW `'+db+'`.`'+name+'`\nSET (\n    "grace_period" = "0"\n);';
         initEditor(txt);
       });
     }else{
@@ -539,6 +539,26 @@ function openMvEditor(db,name){
 function closeMvEditor(){
   document.getElementById('mv-editor-overlay').style.display='none';
   if(_mvEditor){if(typeof _mvEditor.toTextArea==='function')_mvEditor.toTextArea();_mvEditor=null}
+  // Reset form fields to defaults
+  document.getElementById('mv-editor-name').value='';
+  var rts=document.querySelectorAll('input[name="mv-refresh-type"]');
+  rts.forEach(function(r){r.checked=r.value==='COMPLETE'});
+  var sms=document.querySelectorAll('input[name="mv-schedule-mode"]');
+  sms.forEach(function(r){r.checked=r.value==='scheduled'});
+  document.getElementById('mv-schedule-options').style.display='flex';
+  document.getElementById('mv-editor-interval').value='20';
+  document.getElementById('mv-editor-interval-unit').value='MINUTE';
+  var dts=document.querySelectorAll('input[name="mv-dist-type"]');
+  dts.forEach(function(r){r.checked=r.value==='RANDOM'});
+  document.getElementById('mv-editor-dist-col').value='';
+  document.getElementById('mv-editor-dist-col').disabled=true;
+  document.getElementById('mv-editor-buckets').value='1';
+  document.getElementById('mv-editor-preview').value='-- Generated SQL will appear here';
+  var st=document.getElementById('mv-editor-status');
+  st.textContent='';st.style.color='';
+  document.getElementById('mv-editor-title').textContent='Create Materialized View';
+  var sb=document.getElementById('mv-editor-save-btn');
+  if(sb)sb.textContent='✚ Create';
 }
 function toggleMvSchedule(){
   var mode=document.querySelector('input[name="mv-schedule-mode"]:checked');

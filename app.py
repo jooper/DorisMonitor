@@ -949,12 +949,15 @@ def api_alter_mv():
     print(f"[DEBUG] ALTERING MV:\n{sql}\n[END DEBUG]")
     conn = get_db()
     try:
-        conn.select_db(database)
         with conn.cursor() as cur:
+            cur.execute(f"USE `{database}`")
             cur.execute(sql)
         return jsonify({"status": "ok", "message": "MV updated"})
     except Exception as e:
-        return jsonify({"error": str(e)}), 400
+        err = str(e)
+        for old, new in [("MySQL server", "Doris"), ("MySQL", "Doris"), ("mysql", "doris")]:
+            err = err.replace(old, new)
+        return jsonify({"error": err}), 400
     finally:
         conn.close()
 
