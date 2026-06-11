@@ -410,7 +410,7 @@ def parse_mv_ddl(create_sql):
         result["refreshType"] = "AUTO"
     # Extract SELECT
     idx = -1
-    for pat in ["\nAS SELECT", "\nAS\nSELECT", "AS SELECT", "\nAS select"]:
+    for pat in ["\nAS SELECT", "\nAS\nSELECT", "AS SELECT", "\nAS\nWITH", "\nAS WITH", "AS\nWITH"]:
         i = create_sql.upper().rfind(pat)
         if i >= 0: idx = i; break
     if idx >= 0:
@@ -429,7 +429,7 @@ def parse_mv_ddl(create_sql):
                 for d in (' ', ',', '\n', '\r', ';'):
                     di = rest.find(d)
                     if 0 <= di < end: end = di
-                raw = rest[:end].strip().rstrip(',').replace('`','')
+                raw = rest[:end].strip().rstrip(',)').replace('`','')
                 if raw and not raw.startswith('('):
                     tables.add(raw)
                 pos = p + offset
@@ -586,6 +586,11 @@ def get_table_detail(db, name, catalog=""):
             result["ddl"] = ddl_rows[0].get("Create Table","")
     except Exception:
         pass
+    try:
+        parsed = parse_mv_ddl(result["ddl"])
+        result["base_tables"] = parsed["baseTables"]
+    except Exception:
+        result["base_tables"] = []
     return result
 
 # ─── Unified metrics ─────────────────────────────────────

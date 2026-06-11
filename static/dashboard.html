@@ -243,6 +243,12 @@ function showQueryDetail(idx){
 function showModal(t,h){document.getElementById('modal-title').textContent=t;document.getElementById('modal-body').innerHTML=h;document.getElementById('modal-overlay').classList.add('active')}
 function closeModal(){document.getElementById('modal-overlay').classList.remove('active')}
 function escHtml(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function makeTableLink(bt,defDb){
+  var parts=bt.split('.'),pn=parts.length;
+  if(pn===1) return '<a href="#" onclick="showTableDetail(\''+escHtml(defDb)+'\',\''+escHtml(bt)+'\',\'\');return false">'+escHtml(bt)+'</a>';
+  if(pn===2) return '<a href="#" onclick="showTableDetail(\''+escHtml(parts[0])+'\',\''+escHtml(parts[1])+'\',\'\');return false">'+escHtml(bt)+'</a>';
+  return '<a href="#" onclick="showTableDetail(\''+escHtml(parts[parts.length-2])+'\',\''+escHtml(parts[parts.length-1])+'\',\''+escHtml(parts.slice(0,-2).join('.'))+'\');return false">'+escHtml(bt)+'</a>';
+}
 function showToast(msg,type){
   type=type||'info';
   var el=document.createElement('div');
@@ -298,6 +304,8 @@ function renderMvTable(mvs){
 }
 function renderMvPageForCurrent(){
   var mvs=_mvAllData;
+  // merge chinese_name from _mvMeta
+  mvs.forEach(function(m){var k=m.database+'.'+m.name;if(_mvMeta[k]&&_mvMeta[k].chinese_name)m.chinese_name=_mvMeta[k].chinese_name});
   // apply filters
   var q=(document.getElementById('mv-search-input').value||'').toLowerCase();
   var db=document.getElementById('mv-db-filter').value;
@@ -754,7 +762,12 @@ function saveMvEditor(){
           document.getElementById('mv-db-filter').value=db;
           document.getElementById('mv-search-input').value=newName;
           var _cn=document.getElementById('mv-editor-cn').value.trim();
-          if(_cn)fetch('/api/materialized-view/meta',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({database:db,name:newName,chinese_name:_cn})});
+          if(_cn){
+            var _metaKey=db+'.'+newName;
+            if(!_mvMeta[_metaKey])_mvMeta[_metaKey]={};
+            _mvMeta[_metaKey].chinese_name=_cn;
+            fetch('/api/materialized-view/meta',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({database:db,name:newName,chinese_name:_cn})});
+          }
         }
         loadMetrics().then(function(){
           if(newName)filterMvTable();
@@ -812,7 +825,9 @@ function showMvDetail(name,db){
 }
 function buildMvDetail(mv,hist,mvs){
   if(!mv) return '<div class="empty-state"><p>MV not found</p></div>';
-  var h='<table class="detail-table"><tbody><tr><th>Name</th><td class="m">'+mv.name+'</td></tr><tr><th>中文名</th><td>'+(mv.chinese_name||'-')+'</td></tr><tr><th>Database</th><td>'+mv.database+'</td></tr><tr><th>Type</th><td>'+(mv.refresh_type||'-')+'</td></tr><tr><th>Interval</th><td>'+(mv.refresh_interval||'-')+'</td></tr><tr><th>Status</th><td>'+(mv.last_status||'-')+'</td></tr><tr><th>Last Refresh</th><td>'+(mv.last_finish_time||'-')+'</td></tr><tr><th>Duration</th><td>'+(mv.last_duration_ms?mv.last_duration_ms+'ms':'')+'</td></tr><tr><th>Rows</th><td>'+(mv.row_count||0).toLocaleString()+'</td></tr><tr><th>Size</th><td>'+(mv.data_size_mb?mv.data_size_mb.toFixed(1)+'MB':'')+'</td></tr><tr><th>Daily Refresh</th><td>'+(mv.daily_refresh_count||0)+'</td></tr><tr><th>Base Tables</th><td>'+(mv.base_tables&&mv.base_tables.length?mv.base_tables.join(', '):'-')+'</td></tr><tr><th>Definition</th><td><pre style="max-height:200px;overflow:auto;font-size:11px;background:var(--bg-secondary);padding:8px;border-radius:var(--radius-sm);margin:0;white-space:pre-wrap">'+(mv.definition?escHtml(mv.definition):'-')+'</pre></td></tr></tbody></table>';
+  var downstream=mvs.filter(function(_m){return(_m.base_tables||[]).some(function(bt){return bt.split('.').pop()===mv.name})&&(_m.database!==mv.database||_m.name!==mv.name)});
+  var dwnHtml=downstream.length?downstream.map(function(_m){return'<a href="#" onclick="showMvDetail(\''+escHtml(_m.name)+'\',\''+escHtml(_m.database)+'\');return false">'+escHtml(_m.database+'.'+_m.name)+'</a>'}).join(', '):'-';
+  var h='<table class="detail-table"><tbody><tr><th>Name</th><td class="m">'+mv.name+'</td></tr><tr><th>中文名</th><td>'+(mv.chinese_name||(_mvMeta[mv.database+'.'+mv.name]||{}).chinese_name||'-')+'</td></tr><tr><th>Database</th><td>'+mv.database+'</td></tr><tr><th>Type</th><td>'+(mv.refresh_type||'-')+'</td></tr><tr><th>Interval</th><td>'+(mv.refresh_interval||'-')+'</td></tr><tr><th>Status</th><td>'+(mv.last_status||'-')+'</td></tr><tr><th>Last Refresh</th><td>'+(mv.last_finish_time||'-')+'</td></tr><tr><th>Duration</th><td>'+(mv.last_duration_ms?mv.last_duration_ms+'ms':'')+'</td></tr><tr><th>Rows</th><td>'+(mv.row_count||0).toLocaleString()+'</td></tr><tr><th>Size</th><td>'+(mv.data_size_mb?mv.data_size_mb.toFixed(1)+'MB':'')+'</td></tr><tr><th>Daily Refresh</th><td>'+(mv.daily_refresh_count||0)+'</td></tr><tr><th>Base Tables</th><td>'+(mv.base_tables&&mv.base_tables.length?mv.base_tables.map(function(bt){return makeTableLink(bt,mv.database)}).join(', '):'-')+'</td></tr><tr><th>Downstream Dependents</th><td>'+dwnHtml+'</td></tr><tr><th>Definition</th><td><pre style="max-height:200px;overflow:auto;font-size:11px;background:var(--bg-secondary);padding:8px;border-radius:var(--radius-sm);margin:0;white-space:pre-wrap">'+(mv.definition?escHtml(mv.definition):'-')+'</pre></td></tr></tbody></table>';
   if(mv.ddl) h+='<div style="margin-top:16px"><div style="font-weight:600;font-size:12px;margin-bottom:8px">DDL</div><pre style="max-height:300px;overflow:auto;font-size:11px;background:var(--bg-secondary);padding:8px;border-radius:var(--radius-sm);white-space:pre-wrap">'+escHtml(mv.ddl)+'</pre></div>';
   if(hist.length) h+='<div style="margin-top:16px"><div style="font-weight:600;font-size:12px;margin-bottom:8px">Refresh History</div><div class="apple-table-wrap"><table class="apple-table"><thead><tr><th>Start</th><th>End</th><th>Duration</th><th>Status</th></tr></thead><tbody>'+hist.map(function(hh){return '<tr><td>'+hh.start_time+'</td><td>'+hh.finish_time+'</td><td>'+(hh.duration_ms?hh.duration_ms+'ms':'')+'</td><td>'+hh.status+'</td></tr>'}).join('')+'</tbody></table></div></div>';
   return h;
@@ -827,11 +842,16 @@ function showTableDetail(db,name,fullPath){
     .then(function(r){return r.json()})
     .then(function(d){
       var fp=fullPath||db+'.'+name;
-      var h='<table class="detail-table"><tbody><tr><th>Table Name</th><td class="m">'+escHtml(name)+'</td></tr><tr><th>Full Path</th><td>'+escHtml(fp)+'</td></tr><tr><th>Database</th><td>'+escHtml(db)+'</td></tr><tr><th>Columns</th><td>'+(d.columns?d.columns.length:0)+'</td></tr></tbody></table>';
+      var h='<table class="detail-table"><tbody><tr><th>Table Name</th><td class="m">'+escHtml(name)+'</td></tr><tr><th>Full Path</th><td>'+escHtml(fp)+'</td></tr><tr><th>Database</th><td>'+escHtml(db)+'</td></tr>'+(d.base_tables?'<tr><th>Base Tables</th><td>'+(d.base_tables.length?d.base_tables.map(function(bt){return makeTableLink(bt,db)}).join(', '):'-')+'</td></tr>':'')+'<tr><th>Columns</th><td>'+(d.columns?d.columns.length:0)+'</td></tr></tbody></table>';
       if(d.columns&&d.columns.length){
         h+='<div style="margin-top:16px"><div style="font-weight:600;font-size:12px;margin-bottom:8px">Columns ('+d.columns.length+')</div><div class="apple-table-wrap"><table class="apple-table"><thead><tr><th>Field</th><th>Type</th><th>Key</th><th>Default</th><th>Extra</th><th>Comment</th></tr></thead><tbody>'+d.columns.map(function(c){return '<tr><td>'+escHtml(c.field||'')+'</td><td>'+escHtml(c.type||'')+'</td><td>'+escHtml(c.key||'')+'</td><td>'+escHtml(c.default||'')+'</td><td>'+escHtml(c.extra||'')+'</td><td>'+escHtml(c.comment||'')+'</td></tr>'}).join('')+'</tbody></table></div></div>'
       }
       if(d.ddl) h+='<div style="margin-top:16px"><div style="font-weight:600;font-size:12px;margin-bottom:8px">DDL</div><pre style="background:var(--bg-secondary);border-radius:var(--radius-sm);padding:12px;font-size:11px;overflow-x:auto;max-height:400px">'+escHtml(d.ddl)+'</pre></div>';
+      var allMvs=_ld&&_ld.materialized_views||[];
+      var usingMvs=allMvs.filter(function(m){return(m.base_tables||[]).some(function(bt){var tn=bt.split('.').pop();return tn===name})});
+      if(usingMvs.length){
+        h+='<div style="margin-top:16px"><div style="font-weight:600;font-size:12px;margin-bottom:8px">Downstream Dependents ('+usingMvs.length+' MVs)</div><div class="apple-table-wrap"><table class="apple-table"><thead><tr><th>MV Name</th><th>Database</th></tr></thead><tbody>'+usingMvs.map(function(m){return'<tr class="clickable" onclick="showMvDetail(\''+escHtml(m.name)+'\',\''+escHtml(m.database)+'\')"><td>'+escHtml(m.name)+'</td><td>'+escHtml(m.database)+'</td></tr>'}).join('')+'</tbody></table></div></div>'
+      }
       body.innerHTML=h;
     }).catch(function(e){body.innerHTML='<div style="color:var(--error)">'+e.message+'</div>'});
 }
