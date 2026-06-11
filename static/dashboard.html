@@ -102,7 +102,7 @@
 </div></div></div>
 
 <div class="modal-overlay" id="mv-editor-overlay"><div class="modal" style="width:960px;max-width:94vw"><div class="modal-header"><h2 id="mv-editor-title">Create Materialized View</h2><button class="modal-close" onclick="closeMvEditor()">&times;</button></div><div class="modal-body" style="max-height:72vh;overflow-y:auto"><div class="cfg-form" style="max-width:none">
-<div style="display:flex;gap:12px"><div style="flex:1"><label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:4px">Database</label><select class="cfg-input" id="mv-editor-db" onchange="updateMvPreview()" style="width:100%"></select></div><div style="flex:1"><label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:4px">MV Name</label><input class="cfg-input" id="mv-editor-name" placeholder="your_mv_name" oninput="updateMvPreview()" style="width:100%"></div></div>
+<div style="display:flex;gap:12px"><div style="flex:1"><label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:4px">Database</label><select class="cfg-input" id="mv-editor-db" onchange="updateMvPreview()" style="width:100%"></select></div><div style="flex:1"><label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:4px">MV Name</label><input class="cfg-input" id="mv-editor-name" placeholder="your_mv_name" oninput="updateMvPreview()" style="width:100%"></div><div style="flex:1"><label style="font-size:12px;font-weight:500;color:var(--text-secondary);display:block;margin-bottom:4px">中文名称</label><input class="cfg-input" id="mv-editor-cn" placeholder="物化视图中文名称（可选）" style="width:100%"></div></div>
 <div style="margin-top:14px;font-size:12px;font-weight:600;color:var(--text-secondary);border-bottom:1px solid var(--border-divider);padding-bottom:4px">Refresh</div>
 <div style="display:flex;gap:16px;margin-top:8px"><label style="font-size:12px;display:flex;align-items:center;gap:4px"><input type="radio" name="mv-refresh-type" value="COMPLETE" checked onchange="updateMvPreview()"> COMPLETE</label><span style="font-size:11px;color:var(--text-tertiary)">(全量刷新)</span><label style="font-size:12px;display:flex;align-items:center;gap:4px"><input type="radio" name="mv-refresh-type" value="AUTO" onchange="updateMvPreview()"> AUTO</label><span style="font-size:11px;color:var(--text-tertiary)">(增量刷新，仅刷新分区变更)</span></div>
 <div style="display:flex;gap:16px;margin-top:6px;align-items:center"><label style="font-size:12px;display:flex;align-items:center;gap:4px"><input type="radio" name="mv-schedule-mode" value="scheduled" checked onchange="toggleMvSchedule()"> Scheduled</label><span style="font-size:11px;color:var(--text-tertiary)">(按时间间隔自动刷新)</span><label style="font-size:12px;display:flex;align-items:center;gap:4px"><input type="radio" name="mv-schedule-mode" value="on_commit" onchange="toggleMvSchedule()"> On Commit</label><span style="font-size:11px;color:var(--text-tertiary)">(基表提交时自动刷新)</span><label style="font-size:12px;display:flex;align-items:center;gap:4px"><input type="radio" name="mv-schedule-mode" value="manual" onchange="toggleMvSchedule()"> Manual</label><span style="font-size:11px;color:var(--text-tertiary)">(仅手动刷新)</span></div>
@@ -118,7 +118,7 @@
 <script>
 var _rt=null,_ld=null;
 function startRefresh(s){if(_rt)clearInterval(_rt);if(s>0)_rt=setInterval(loadMetrics,s*1000)}
-async function loadMetrics(){var d=document.getElementById("refreshDot"),i=document.getElementById("refreshInfo");d.className="refresh-dot loading";i.textContent="Loading...";try{var r=await fetch("/api/metrics"),j=await r.json();if(j.error){i.textContent="Error: "+j.error;d.className="refresh-dot error";return}_ld=j;i.textContent=new Date().toLocaleTimeString();d.className="refresh-dot";renderPage(j)}catch(e){i.textContent="Request failed";d.className="refresh-dot error"}}
+async function loadMetrics(){var d=document.getElementById("refreshDot"),i=document.getElementById("refreshInfo");d.className="refresh-dot loading";i.textContent="Loading...";try{var r=await fetch("/api/metrics"),j=await r.json();if(j.error){i.textContent="Error: "+j.error;d.className="refresh-dot error";return}_ld=j;i.textContent=new Date().toLocaleTimeString();d.className="refresh-dot";renderPage(j);fetch('/api/materialized-view/meta').then(function(r2){return r2.json()}).then(function(m){_mvMeta=m||{};if(j.materialized_views)renderMvPage(j)})}catch(e){i.textContent="Request failed";d.className="refresh-dot error"}}
 function renderPage(d){document.getElementById("summary").innerHTML=renderSummary(d);document.getElementById("errors").innerHTML=renderErrors(d.errors||[]);document.getElementById("fe-table").innerHTML=renderFeTable(d.fe_status||[]);document.getElementById("be-table").innerHTML=renderBeTable(d.be_status||[]);var fl=d.fe_status||[],bl=d.be_status||[];document.getElementById("feBadge").textContent=fl.filter(function(n){return n.alive}).length+"/"+fl.length;document.getElementById("beBadge").textContent=bl.filter(function(n){return n.alive}).length+"/"+bl.length;document.getElementById("statistics").innerHTML=renderStats(d.statistic||{});document.getElementById("fe-metrics").innerHTML=renderFeMetrics(d.fe_metrics||{},d.fe_status||[]);document.getElementById("be-metrics").innerHTML=renderBeMetrics(d.be_metrics||{},d.be_status||[]);document.getElementById("queries").innerHTML=renderQueries(d.processlist||[]);var b=document.getElementById("queryBadge"),n=(d.processlist||[]).length;if(n>0){b.textContent=n;b.style.display=""}else b.style.display="none";var mt=document.getElementById("tab-mv");if(mt.classList.contains("active")&&d.materialized_views)renderMvPage(d)}
 
 document.querySelectorAll(".nav-item").forEach(function(b){
@@ -288,7 +288,7 @@ function populateMvFilters(mvs){
   ts.innerHTML='<option value="">All Refresh Types</option>'+tps.map(function(t){return '<option value="'+t+'">'+t+'</option>'}).join('');
   if(tps.indexOf(ct)>=0)ts.value=ct;
 }
-var _mvAllData=[],_mvPageSize=20,_mvPage=1,_mvSearchTags=[];
+var _mvAllData=[],_mvPageSize=20,_mvPage=1,_mvSearchTags=[],_mvMeta={};
 function renderMvTable(mvs){
   _mvAllData=mvs;
   _mvPage=1;
@@ -304,7 +304,7 @@ function renderMvPageForCurrent(){
   var tp=document.getElementById('mv-type-filter').value;
   var st=document.getElementById('mv-status-filter').value;
   var fl=mvs.filter(function(m){
-    var searchFields=[m.name, m.database, m.refresh_type, m.last_status, m.refresh_interval].filter(Boolean).map(function(v){return v.toLowerCase()});
+    var searchFields=[m.name, m.database, m.refresh_type, m.last_status, m.refresh_interval, m.chinese_name].filter(Boolean).map(function(v){return v.toLowerCase()});
     var tags=(_mvSearchTags||[]).concat(q).filter(Boolean);
     var matchSearch=tags.length===0||tags.some(function(kw){return searchFields.some(function(v){return v.indexOf(kw)>=0})});
     return (!db||m.database===db)&&(!tp||m.refresh_type===tp)&&(!st||m.last_status===st)&&matchSearch;
@@ -315,7 +315,7 @@ function renderMvPageForCurrent(){
   var start=(_mvPage-1)*_mvPageSize,page=fl.slice(start,start+_mvPageSize);
   var el=document.getElementById('mv-table');
   if(!page.length){el.innerHTML='<div class="empty-state"><p>No materialized views found</p></div>';renderMvPagination(total,totalPages);return}
-  el.innerHTML='<div class="apple-table-wrap"><table class="apple-table"><thead><tr><th style="width:32px"><input type="checkbox" id="mv-select-all" onchange="toggleAllMvCbs(this)"></th><th>Name</th><th>Database</th><th>Status</th><th>Type</th><th>Interval</th><th>Depends</th><th>Today</th><th>Rows</th><th>Size</th><th>Duration</th><th>Last Refresh</th><th>Actions</th></tr></thead><tbody>'+
+  el.innerHTML='<div class="apple-table-wrap"><table class="apple-table"><thead><tr><th style="width:32px"><input type="checkbox" id="mv-select-all" onchange="toggleAllMvCbs(this)"></th><th>Name</th><th>中文名</th><th>Database</th><th>Status</th><th>Type</th><th>Interval</th><th>Depends</th><th>Today</th><th>Rows</th><th>Size</th><th>Duration</th><th>Last Refresh</th><th>Actions</th></tr></thead><tbody>'+
     page.map(function(mv){
       var st=mv.last_status==='SUCCESS'?'<span class="sdot g"></span><span class="sl g">OK</span>':(mv.last_status==='FAILED'?'<span class="sdot r"></span><span class="sl r">Failed</span>':(mv.last_status==='RUNNING'?'<span class="sdot o"></span><span class="sl" style="color:var(--warning)">Running</span>':'<span class="sdot" style="background:var(--text-tertiary)"></span><span style="color:var(--text-tertiary)">-</span>'));
       var dur=mv.last_duration_ms?(mv.last_duration_ms>=1000?(mv.last_duration_ms/1000).toFixed(1)+'s':mv.last_duration_ms+'ms'):'-';
@@ -323,7 +323,7 @@ function renderMvPageForCurrent(){
       var n=escHtml(mv.name),d=escHtml(mv.database);
       return '<tr data-mv="'+n+'" data-db="'+d+'" onclick="handleRowClick(this)" style="cursor:pointer">'+
         '<td style="width:32px;text-align:center" onclick="event.stopPropagation()"><input class="mv-row-cb" type="checkbox" data-db="'+d+'" data-name="'+n+'" onchange="updateMvBatchBar()"></td>'+
-        '<td class="m">'+n+'</td><td>'+d+'</td><td>'+st+'</td><td>'+(mv.refresh_type||'-')+'</td><td>'+(mv.refresh_interval||'-')+'</td>'+
+        '<td class="m">'+n+'</td><td>'+(mv.chinese_name?escHtml(mv.chinese_name):'-')+'</td><td>'+d+'</td><td>'+st+'</td><td>'+(mv.refresh_type||'-')+'</td><td>'+(mv.refresh_interval||'-')+'</td>'+
         '<td>'+(mv.base_tables||[]).length+'</td><td>'+(mv.daily_refresh_count||0)+'</td>'+
         '<td style="text-align:right">'+(mv.row_count||0).toLocaleString()+'</td><td style="text-align:right">'+sz+'</td><td>'+dur+'</td>'+
         '<td style="font-size:11px;color:var(--text-secondary)">'+(mv.last_finish_time||'-')+'</td>'+
@@ -541,6 +541,7 @@ function closeMvEditor(){
   if(_mvEditor){if(typeof _mvEditor.toTextArea==='function')_mvEditor.toTextArea();_mvEditor=null}
   // Reset form fields to defaults
   document.getElementById('mv-editor-name').value='';
+  document.getElementById('mv-editor-cn').value='';
   var rts=document.querySelectorAll('input[name="mv-refresh-type"]');
   rts.forEach(function(r){r.checked=r.value==='COMPLETE'});
   var sms=document.querySelectorAll('input[name="mv-schedule-mode"]');
@@ -631,6 +632,8 @@ function saveMvEditor(){
         if(newName){
           document.getElementById('mv-db-filter').value=db;
           document.getElementById('mv-search-input').value=newName;
+          var _cn=document.getElementById('mv-editor-cn').value.trim();
+          if(_cn)fetch('/api/materialized-view/meta',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({database:db,name:newName,chinese_name:_cn})});
         }
         loadMetrics().then(function(){
           if(newName)filterMvTable();
@@ -688,7 +691,7 @@ function showMvDetail(name,db){
 }
 function buildMvDetail(mv,hist,mvs){
   if(!mv) return '<div class="empty-state"><p>MV not found</p></div>';
-  var h='<table class="detail-table"><tbody><tr><th>Name</th><td class="m">'+mv.name+'</td></tr><tr><th>Database</th><td>'+mv.database+'</td></tr><tr><th>Type</th><td>'+(mv.refresh_type||'-')+'</td></tr><tr><th>Interval</th><td>'+(mv.refresh_interval||'-')+'</td></tr><tr><th>Status</th><td>'+(mv.last_status||'-')+'</td></tr><tr><th>Last Refresh</th><td>'+(mv.last_finish_time||'-')+'</td></tr><tr><th>Duration</th><td>'+(mv.last_duration_ms?mv.last_duration_ms+'ms':'')+'</td></tr><tr><th>Rows</th><td>'+(mv.row_count||0).toLocaleString()+'</td></tr><tr><th>Size</th><td>'+(mv.data_size_mb?mv.data_size_mb.toFixed(1)+'MB':'')+'</td></tr><tr><th>Daily Refresh</th><td>'+(mv.daily_refresh_count||0)+'</td></tr><tr><th>Base Tables</th><td>'+(mv.base_tables&&mv.base_tables.length?mv.base_tables.join(', '):'-')+'</td></tr><tr><th>Definition</th><td><pre style="max-height:200px;overflow:auto;font-size:11px;background:var(--bg-secondary);padding:8px;border-radius:var(--radius-sm);margin:0;white-space:pre-wrap">'+(mv.definition?escHtml(mv.definition):'-')+'</pre></td></tr></tbody></table>';
+  var h='<table class="detail-table"><tbody><tr><th>Name</th><td class="m">'+mv.name+'</td></tr><tr><th>中文名</th><td>'+(mv.chinese_name||'-')+'</td></tr><tr><th>Database</th><td>'+mv.database+'</td></tr><tr><th>Type</th><td>'+(mv.refresh_type||'-')+'</td></tr><tr><th>Interval</th><td>'+(mv.refresh_interval||'-')+'</td></tr><tr><th>Status</th><td>'+(mv.last_status||'-')+'</td></tr><tr><th>Last Refresh</th><td>'+(mv.last_finish_time||'-')+'</td></tr><tr><th>Duration</th><td>'+(mv.last_duration_ms?mv.last_duration_ms+'ms':'')+'</td></tr><tr><th>Rows</th><td>'+(mv.row_count||0).toLocaleString()+'</td></tr><tr><th>Size</th><td>'+(mv.data_size_mb?mv.data_size_mb.toFixed(1)+'MB':'')+'</td></tr><tr><th>Daily Refresh</th><td>'+(mv.daily_refresh_count||0)+'</td></tr><tr><th>Base Tables</th><td>'+(mv.base_tables&&mv.base_tables.length?mv.base_tables.join(', '):'-')+'</td></tr><tr><th>Definition</th><td><pre style="max-height:200px;overflow:auto;font-size:11px;background:var(--bg-secondary);padding:8px;border-radius:var(--radius-sm);margin:0;white-space:pre-wrap">'+(mv.definition?escHtml(mv.definition):'-')+'</pre></td></tr></tbody></table>';
   if(mv.ddl) h+='<div style="margin-top:16px"><div style="font-weight:600;font-size:12px;margin-bottom:8px">DDL</div><pre style="max-height:300px;overflow:auto;font-size:11px;background:var(--bg-secondary);padding:8px;border-radius:var(--radius-sm);white-space:pre-wrap">'+escHtml(mv.ddl)+'</pre></div>';
   if(hist.length) h+='<div style="margin-top:16px"><div style="font-weight:600;font-size:12px;margin-bottom:8px">Refresh History</div><div class="apple-table-wrap"><table class="apple-table"><thead><tr><th>Start</th><th>End</th><th>Duration</th><th>Status</th></tr></thead><tbody>'+hist.map(function(hh){return '<tr><td>'+hh.start_time+'</td><td>'+hh.finish_time+'</td><td>'+(hh.duration_ms?hh.duration_ms+'ms':'')+'</td><td>'+hh.status+'</td></tr>'}).join('')+'</tbody></table></div></div>';
   return h;
@@ -780,7 +783,7 @@ function renderMvGraph(){
       dbNodes[m.database]=1
     }
     var nid='mv_'+m.database+'_'+m.name;
-    if(!added[nid]){nodes.push({id:nid,label:m.name,group:'mv',title:m.database,shape:'dot',size:16,color:{background:'#FF6B6B',border:'#E05555'},font:{size:10,color:'#E05555'},_db:m.database,_name:m.name});added[nid]=1}
+    if(!added[nid]){nodes.push({id:nid,label:m.name,group:'mv',title:''+m.database+'.'+m.name,shape:'dot',size:16,color:{background:'#FF6B6B',border:'#E05555'},font:{size:10,color:'#E05555'},_db:m.database,_name:m.name});added[nid]=1}
     var bt=m.base_tables||[];
     bt.forEach(function(b){
       var parts=b.split('.'),tdb=parts.length>=3?parts[1]:parts[0],tname=parts[parts.length-1];
