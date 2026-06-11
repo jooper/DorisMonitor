@@ -987,6 +987,39 @@ def api_refresh_mv():
         return jsonify({"status": "ok", "message": f"MV {name} refresh triggered ({mode})"})
     return jsonify({"error": err}), 400
 
+MV_META_FILE = "data/mv_meta.json"
+
+def _load_mv_meta():
+    if os.path.exists(MV_META_FILE):
+        with open(MV_META_FILE, encoding="utf-8") as f:
+            return json.load(f)
+    return {}
+
+def _save_mv_meta(meta):
+    os.makedirs(os.path.dirname(MV_META_FILE), exist_ok=True)
+    with open(MV_META_FILE, "w", encoding="utf-8") as f:
+        json.dump(meta, f, ensure_ascii=False, indent=2)
+
+@app.route("/api/materialized-view/meta", methods=["GET"])
+def api_get_mv_meta():
+    return jsonify(_load_mv_meta())
+
+@app.route("/api/materialized-view/meta", methods=["POST"])
+def api_set_mv_meta():
+    data = request.get_json()
+    database = (data.get("database") or "").strip()
+    name = (data.get("name") or "").strip()
+    cn = (data.get("chinese_name") or "").strip()
+    if not database or not name:
+        return jsonify({"error": "database and name required"}), 400
+    key = f"{database}.{name}"
+    meta = _load_mv_meta()
+    if key not in meta:
+        meta[key] = {}
+    meta[key]["chinese_name"] = cn
+    _save_mv_meta(meta)
+    return jsonify({"status": "ok"})
+
 @app.route("/api/materialized-view/toggle", methods=["POST"])
 def api_toggle_mv():
     data = request.get_json()
