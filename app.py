@@ -974,11 +974,14 @@ def api_refresh_mv():
     data = request.get_json()
     database = (data.get("database") or "").strip()
     name = (data.get("name") or "").strip()
+    mode = (data.get("mode") or "AUTO").strip().upper()
     if not database or not name:
         return jsonify({"error": "database and name required"}), 400
-    ok, err = execute_ddl(f"REFRESH MATERIALIZED VIEW `{database}`.`{name}` AUTO")
+    if mode not in ("AUTO", "COMPLETE"):
+        return jsonify({"error": "mode must be AUTO or COMPLETE"}), 400
+    ok, err = execute_ddl(f"REFRESH MATERIALIZED VIEW `{database}`.`{name}` {mode}")
     if ok:
-        return jsonify({"status": "ok", "message": f"MV {name} refresh triggered"})
+        return jsonify({"status": "ok", "message": f"MV {name} refresh triggered ({mode})"})
     return jsonify({"error": err}), 400
 
 @app.route("/api/materialized-view/toggle", methods=["POST"])

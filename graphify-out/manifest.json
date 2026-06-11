@@ -1,0 +1,62 @@
+{
+  "D:\\Projects\\Sources\\Doris-Ext\\doris_mt_pro\\app.py": {
+    "mtime": 1781069551.2140765,
+    "ast_hash": "c7e3b29499da0bdf03f0db00eb64ba36",
+    "semantic_hash": "c7e3b29499da0bdf03f0db00eb64ba36"
+  },
+  "D:\\Projects\\Sources\\Doris-Ext\\doris_mt_pro\\config.json": {
+    "mtime": 1780926478.71998,
+    "ast_hash": "27b5eee84671323e1d03e9fc70203d60",
+    "semantic_hash": "27b5eee84671323e1d03e9fc70203d60"
+  },
+  "D:\\Projects\\Sources\\Doris-Ext\\doris_mt_pro\\opencode.json": {
+    "mtime": 1780898970.5389128,
+    "ast_hash": "e0064afee85edb0e67a1ece6126a5fe6",
+    "semantic_hash": "e0064afee85edb0e67a1ece6126a5fe6"
+  },
+  "D:\\Projects\\Sources\\Doris-Ext\\doris_mt_pro\\scheduler_service.py": {
+    "mtime": 1780910677.1808338,
+    "ast_hash": "07a1982c1ea08b0b58ddd3692e872388",
+    "semantic_hash": "07a1982c1ea08b0b58ddd3692e872388"
+  },
+  "D:\\Projects\\Sources\\Doris-Ext\\doris_mt_pro\\start.sh": {
+    "mtime": 1780995110.8851042,
+    "ast_hash": "efac468aa17b22a376b4f2507237cf79",
+    "semantic_hash": "efac468aa17b22a376b4f2507237cf79"
+  },
+  "D:\\Projects\\Sources\\Doris-Ext\\doris_mt_pro\\.claude\\settings.local.json": {
+    "mtime": 1780899644.9988525,
+    "ast_hash": "573349a82627bceb01d94b3dda949365",
+    "semantic_hash": "573349a82627bceb01d94b3dda949365"
+  },
+  "D:\\Projects\\Sources\\Doris-Ext\\doris_mt_pro\\data\\scheduler_jobs.json": {
+    "mtime": 1781078320.661441,
+    "ast_hash": "269932eba9320a86cf653c2e8c9665f3",
+    "semantic_hash": "269932eba9320a86cf653c2e8c9665f3"
+  },
+  "D:\\Projects\\Sources\\Doris-Ext\\doris_mt_pro\\static\\gen_html.py": {
+    "mtime": 1780638355.5426176,
+    "ast_hash": "340784645858cbef37732c8850b2165b",
+    "semantic_hash": "340784645858cbef37732c8850b2165b"
+  },
+  "D:\\Projects\\Sources\\Doris-Ext\\doris_mt_pro\\FSD.md": {
+    "mtime": 1780995112.27228,
+    "ast_hash": "3e7729c094aa1f45ac9576c9043b7685",
+    "semantic_hash": "3e7729c094aa1f45ac9576c9043b7685"
+  },
+  "D:\\Projects\\Sources\\Doris-Ext\\doris_mt_pro\\README.md": {
+    "mtime": 1780995111.8601449,
+    "ast_hash": "a156f0f3c159b21bf196e653e4139615",
+    "semantic_hash": "a156f0f3c159b21bf196e653e4139615"
+  },
+  "D:\\Projects\\Sources\\Doris-Ext\\doris_mt_pro\\static\\dashboard.html": {
+    "mtime": 1781077604.212933,
+    "ast_hash": "1fb28d5805aafc70676b96da24654e64",
+    "semantic_hash": "1fb28d5805aafc70676b96da24654e64"
+  },
+  "D:\\Projects\\Sources\\Doris-Ext\\doris_mt_pro\\architecture.png": {
+    "mtime": 1780624706.0200665,
+    "ast_hash": "313ebbcad7b70d4336724e279a910cb4",
+    "semantic_hash": "313ebbcad7b70d4336724e279a910cb4"
+  }
+}

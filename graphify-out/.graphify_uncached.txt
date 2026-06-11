@@ -1,0 +1,12 @@
+D:\Projects\Sources\Doris-Ext\doris_mt_pro\app.py
+D:\Projects\Sources\Doris-Ext\doris_mt_pro\config.json
+D:\Projects\Sources\Doris-Ext\doris_mt_pro\opencode.json
+D:\Projects\Sources\Doris-Ext\doris_mt_pro\scheduler_service.py
+D:\Projects\Sources\Doris-Ext\doris_mt_pro\start.sh
+D:\Projects\Sources\Doris-Ext\doris_mt_pro\.claude\settings.local.json
+D:\Projects\Sources\Doris-Ext\doris_mt_pro\data\scheduler_jobs.json
+D:\Projects\Sources\Doris-Ext\doris_mt_pro\static\gen_html.py
+D:\Projects\Sources\Doris-Ext\doris_mt_pro\FSD.md
+D:\Projects\Sources\Doris-Ext\doris_mt_pro\README.md
+D:\Projects\Sources\Doris-Ext\doris_mt_pro\static\dashboard.html
+D:\Projects\Sources\Doris-Ext\doris_mt_pro\architecture.png

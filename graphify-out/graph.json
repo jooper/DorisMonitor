@@ -1,0 +1,4454 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {
+    "hyperedges": [
+      {
+        "id": "he_data_pipeline",
+        "label": "Data Pipeline: Doris \u2192 collect \u2192 cache \u2192 API \u2192 UI",
+        "nodes": [
+          "app_collect_metrics",
+          "app_cache_layer",
+          "app_app",
+          "static_dashboard"
+        ],
+        "relation": "form",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "app.py"
+      },
+      {
+        "id": "he_alert_system",
+        "label": "Alert System: detect \u2192 dedup \u2192 notify",
+        "nodes": [
+          "app_alert_system",
+          "fsd_alert_dedup",
+          "app_collect_metrics"
+        ],
+        "relation": "participate_in",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "app.py"
+      },
+      {
+        "id": "he_job_scheduling",
+        "label": "Job Scheduling: wizard \u2192 API \u2192 scheduler \u2192 persistence",
+        "nodes": [
+          "static_dashboard_job_wizard",
+          "app_job_management",
+          "scheduler_service_scheduler_service",
+          "data_scheduler_jobs"
+        ],
+        "relation": "implement",
+        "confidence": "INFERRED",
+        "confidence_score": 0.95,
+        "source_file": "static/dashboard.html"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "label": "app.py",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1",
+      "id": "app_py",
+      "community": 1,
+      "norm_label": "app.py"
+    },
+    {
+      "label": "EnhancedEncoder",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L12",
+      "id": "doris_mt_pro_app_enhancedencoder",
+      "community": 2,
+      "norm_label": "enhancedencoder"
+    },
+    {
+      "label": ".default()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L13",
+      "id": "doris_mt_pro_app_enhancedencoder_default",
+      "community": 2,
+      "norm_label": ".default()"
+    },
+    {
+      "label": "load_config()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L26",
+      "id": "doris_mt_pro_app_load_config",
+      "community": 3,
+      "norm_label": "load_config()"
+    },
+    {
+      "label": "get_fe_config()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L30",
+      "id": "doris_mt_pro_app_get_fe_config",
+      "community": 3,
+      "norm_label": "get_fe_config()"
+    },
+    {
+      "label": "load_alert_config()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L53",
+      "id": "doris_mt_pro_app_load_alert_config",
+      "community": 3,
+      "norm_label": "load_alert_config()"
+    },
+    {
+      "label": "save_alert_config()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L58",
+      "id": "doris_mt_pro_app_save_alert_config",
+      "community": 3,
+      "norm_label": "save_alert_config()"
+    },
+    {
+      "label": "send_email()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L64",
+      "id": "doris_mt_pro_app_send_email",
+      "community": 3,
+      "norm_label": "send_email()"
+    },
+    {
+      "label": "check_alerts()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L86",
+      "id": "doris_mt_pro_app_check_alerts",
+      "community": 3,
+      "norm_label": "check_alerts()"
+    },
+    {
+      "label": "build_alert_body()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L116",
+      "id": "doris_mt_pro_app_build_alert_body",
+      "community": 3,
+      "norm_label": "build_alert_body()"
+    },
+    {
+      "label": "alert_checker_loop()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L129",
+      "id": "doris_mt_pro_app_alert_checker_loop",
+      "community": 3,
+      "norm_label": "alert_checker_loop()"
+    },
+    {
+      "label": "start_alert_checker()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L155",
+      "id": "doris_mt_pro_app_start_alert_checker",
+      "community": 1,
+      "norm_label": "start_alert_checker()"
+    },
+    {
+      "label": "get_db()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L163",
+      "id": "doris_mt_pro_app_get_db",
+      "community": 3,
+      "norm_label": "get_db()"
+    },
+    {
+      "label": "query()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L171",
+      "id": "doris_mt_pro_app_query",
+      "community": 4,
+      "norm_label": "query()"
+    },
+    {
+      "label": "fetch_url()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L183",
+      "id": "doris_mt_pro_app_fetch_url",
+      "community": 4,
+      "norm_label": "fetch_url()"
+    },
+    {
+      "label": "parse_capacity()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L190",
+      "id": "doris_mt_pro_app_parse_capacity",
+      "community": 17,
+      "norm_label": "parse_capacity()"
+    },
+    {
+      "label": "get_fe_status()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L205",
+      "id": "doris_mt_pro_app_get_fe_status",
+      "community": 4,
+      "norm_label": "get_fe_status()"
+    },
+    {
+      "label": "get_be_status()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L223",
+      "id": "doris_mt_pro_app_get_be_status",
+      "community": 17,
+      "norm_label": "get_be_status()"
+    },
+    {
+      "label": "get_cluster_stats()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L251",
+      "id": "doris_mt_pro_app_get_cluster_stats",
+      "community": 4,
+      "norm_label": "get_cluster_stats()"
+    },
+    {
+      "label": "get_tablet_health()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L270",
+      "id": "doris_mt_pro_app_get_tablet_health",
+      "community": 4,
+      "norm_label": "get_tablet_health()"
+    },
+    {
+      "label": "get_fe_metrics_all()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L282",
+      "id": "doris_mt_pro_app_get_fe_metrics_all",
+      "community": 4,
+      "norm_label": "get_fe_metrics_all()"
+    },
+    {
+      "label": "get_be_metrics_all()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L312",
+      "id": "doris_mt_pro_app_get_be_metrics_all",
+      "community": 4,
+      "norm_label": "get_be_metrics_all()"
+    },
+    {
+      "label": "get_queries()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L375",
+      "id": "doris_mt_pro_app_get_queries",
+      "community": 4,
+      "norm_label": "get_queries()"
+    },
+    {
+      "label": "parse_mv_ddl()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L397",
+      "id": "doris_mt_pro_app_parse_mv_ddl",
+      "community": 9,
+      "norm_label": "parse_mv_ddl()"
+    },
+    {
+      "label": "discover_mvs()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L439",
+      "id": "doris_mt_pro_app_discover_mvs",
+      "community": 9,
+      "norm_label": "discover_mvs()"
+    },
+    {
+      "label": "_fetch_mv_ddls()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L457",
+      "id": "doris_mt_pro_app_fetch_mv_ddls",
+      "community": 9,
+      "norm_label": "_fetch_mv_ddls()"
+    },
+    {
+      "label": "get_mv_latest_tasks()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L472",
+      "id": "doris_mt_pro_app_get_mv_latest_tasks",
+      "community": 4,
+      "norm_label": "get_mv_latest_tasks()"
+    },
+    {
+      "label": "get_mv_today_counts()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L491",
+      "id": "doris_mt_pro_app_get_mv_today_counts",
+      "community": 4,
+      "norm_label": "get_mv_today_counts()"
+    },
+    {
+      "label": "get_mv_row_sizes()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L499",
+      "id": "doris_mt_pro_app_get_mv_row_sizes",
+      "community": 4,
+      "norm_label": "get_mv_row_sizes()"
+    },
+    {
+      "label": "build_mv_dep_map()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L510",
+      "id": "doris_mt_pro_app_build_mv_dep_map",
+      "community": 1,
+      "norm_label": "build_mv_dep_map()"
+    },
+    {
+      "label": "fetch_mv_history()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L526",
+      "id": "doris_mt_pro_app_fetch_mv_history",
+      "community": 1,
+      "norm_label": "fetch_mv_history()"
+    },
+    {
+      "label": "get_all_tables()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L540",
+      "id": "doris_mt_pro_app_get_all_tables",
+      "community": 11,
+      "norm_label": "get_all_tables()"
+    },
+    {
+      "label": "get_table_detail()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L570",
+      "id": "doris_mt_pro_app_get_table_detail",
+      "community": 14,
+      "norm_label": "get_table_detail()"
+    },
+    {
+      "label": "collect_metrics()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L593",
+      "id": "doris_mt_pro_app_collect_metrics",
+      "community": 4,
+      "norm_label": "collect_metrics()"
+    },
+    {
+      "label": "get_jobs()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L654",
+      "id": "doris_mt_pro_app_get_jobs",
+      "community": 1,
+      "norm_label": "get_jobs()"
+    },
+    {
+      "label": "_exec_job_cmd()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L682",
+      "id": "doris_mt_pro_app_exec_job_cmd",
+      "community": 7,
+      "norm_label": "_exec_job_cmd()"
+    },
+    {
+      "label": "pause_job()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L697",
+      "id": "doris_mt_pro_app_pause_job",
+      "community": 7,
+      "norm_label": "pause_job()"
+    },
+    {
+      "label": "resume_job()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L700",
+      "id": "doris_mt_pro_app_resume_job",
+      "community": 7,
+      "norm_label": "resume_job()"
+    },
+    {
+      "label": "drop_job()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L703",
+      "id": "doris_mt_pro_app_drop_job",
+      "community": 7,
+      "norm_label": "drop_job()"
+    },
+    {
+      "label": "get_catalogs()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L708",
+      "id": "doris_mt_pro_app_get_catalogs",
+      "community": 1,
+      "norm_label": "get_catalogs()"
+    },
+    {
+      "label": "get_catalog_databases()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L716",
+      "id": "doris_mt_pro_app_get_catalog_databases",
+      "community": 1,
+      "norm_label": "get_catalog_databases()"
+    },
+    {
+      "label": "get_catalog_tables()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L723",
+      "id": "doris_mt_pro_app_get_catalog_tables",
+      "community": 1,
+      "norm_label": "get_catalog_tables()"
+    },
+    {
+      "label": "get_table_columns()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L735",
+      "id": "doris_mt_pro_app_get_table_columns",
+      "community": 8,
+      "norm_label": "get_table_columns()"
+    },
+    {
+      "label": "get_internal_databases()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L777",
+      "id": "doris_mt_pro_app_get_internal_databases",
+      "community": 16,
+      "norm_label": "get_internal_databases()"
+    },
+    {
+      "label": "_col_name()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L787",
+      "id": "doris_mt_pro_app_col_name",
+      "community": 8,
+      "norm_label": "_col_name()"
+    },
+    {
+      "label": "map_doris_type()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L790",
+      "id": "doris_mt_pro_app_map_doris_type",
+      "community": 8,
+      "norm_label": "map_doris_type()"
+    },
+    {
+      "label": "generate_create_ddl()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L831",
+      "id": "doris_mt_pro_app_generate_create_ddl",
+      "community": 8,
+      "norm_label": "generate_create_ddl()"
+    },
+    {
+      "label": "generate_create_job_sql()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L856",
+      "id": "doris_mt_pro_app_generate_create_job_sql",
+      "community": 1,
+      "norm_label": "generate_create_job_sql()"
+    },
+    {
+      "label": "index()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L870",
+      "id": "doris_mt_pro_app_index",
+      "community": 1,
+      "norm_label": "index()"
+    },
+    {
+      "label": "api_ping()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L874",
+      "id": "doris_mt_pro_app_api_ping",
+      "community": 1,
+      "norm_label": "api_ping()"
+    },
+    {
+      "label": "api_metrics()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L878",
+      "id": "doris_mt_pro_app_api_metrics",
+      "community": 4,
+      "norm_label": "api_metrics()"
+    },
+    {
+      "label": "api_test_connection()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L890",
+      "id": "doris_mt_pro_app_api_test_connection",
+      "community": 3,
+      "norm_label": "api_test_connection()"
+    },
+    {
+      "label": "api_mv_history()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L901",
+      "id": "doris_mt_pro_app_api_mv_history",
+      "community": 1,
+      "norm_label": "api_mv_history()"
+    },
+    {
+      "label": "execute_ddl()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L909",
+      "id": "doris_mt_pro_app_execute_ddl",
+      "community": 3,
+      "norm_label": "execute_ddl()"
+    },
+    {
+      "label": "api_create_mv()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L921",
+      "id": "doris_mt_pro_app_api_create_mv",
+      "community": 3,
+      "norm_label": "api_create_mv()"
+    },
+    {
+      "label": "api_alter_mv()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L943",
+      "id": "doris_mt_pro_app_api_alter_mv",
+      "community": 3,
+      "norm_label": "api_alter_mv()"
+    },
+    {
+      "label": "api_drop_mv()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L962",
+      "id": "doris_mt_pro_app_api_drop_mv",
+      "community": 3,
+      "norm_label": "api_drop_mv()"
+    },
+    {
+      "label": "api_refresh_mv()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L973",
+      "id": "doris_mt_pro_app_api_refresh_mv",
+      "community": 3,
+      "norm_label": "api_refresh_mv()"
+    },
+    {
+      "label": "api_toggle_mv()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L985",
+      "id": "doris_mt_pro_app_api_toggle_mv",
+      "community": 3,
+      "norm_label": "api_toggle_mv()"
+    },
+    {
+      "label": "api_tables()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L999",
+      "id": "doris_mt_pro_app_api_tables",
+      "community": 11,
+      "norm_label": "api_tables()"
+    },
+    {
+      "label": "api_table_detail()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1004",
+      "id": "doris_mt_pro_app_api_table_detail",
+      "community": 14,
+      "norm_label": "api_table_detail()"
+    },
+    {
+      "label": "api_config()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1012",
+      "id": "doris_mt_pro_app_api_config",
+      "community": 3,
+      "norm_label": "api_config()"
+    },
+    {
+      "label": "api_alert_config()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1038",
+      "id": "doris_mt_pro_app_api_alert_config",
+      "community": 3,
+      "norm_label": "api_alert_config()"
+    },
+    {
+      "label": "api_alert_test()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1050",
+      "id": "doris_mt_pro_app_api_alert_test",
+      "community": 3,
+      "norm_label": "api_alert_test()"
+    },
+    {
+      "label": "api_alert_issues()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1059",
+      "id": "doris_mt_pro_app_api_alert_issues",
+      "community": 1,
+      "norm_label": "api_alert_issues()"
+    },
+    {
+      "label": "api_jobs()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1064",
+      "id": "doris_mt_pro_app_api_jobs",
+      "community": 1,
+      "norm_label": "api_jobs()"
+    },
+    {
+      "label": "api_jobs_pause()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1091",
+      "id": "doris_mt_pro_app_api_jobs_pause",
+      "community": 7,
+      "norm_label": "api_jobs_pause()"
+    },
+    {
+      "label": "api_jobs_resume()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1107",
+      "id": "doris_mt_pro_app_api_jobs_resume",
+      "community": 7,
+      "norm_label": "api_jobs_resume()"
+    },
+    {
+      "label": "api_jobs_drop()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1123",
+      "id": "doris_mt_pro_app_api_jobs_drop",
+      "community": 7,
+      "norm_label": "api_jobs_drop()"
+    },
+    {
+      "label": "api_jobs_catalogs()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1139",
+      "id": "doris_mt_pro_app_api_jobs_catalogs",
+      "community": 1,
+      "norm_label": "api_jobs_catalogs()"
+    },
+    {
+      "label": "api_jobs_databases()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1146",
+      "id": "doris_mt_pro_app_api_jobs_databases",
+      "community": 1,
+      "norm_label": "api_jobs_databases()"
+    },
+    {
+      "label": "api_jobs_tables()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1156",
+      "id": "doris_mt_pro_app_api_jobs_tables",
+      "community": 1,
+      "norm_label": "api_jobs_tables()"
+    },
+    {
+      "label": "api_jobs_columns()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1167",
+      "id": "doris_mt_pro_app_api_jobs_columns",
+      "community": 8,
+      "norm_label": "api_jobs_columns()"
+    },
+    {
+      "label": "api_jobs_internal_dbs()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1179",
+      "id": "doris_mt_pro_app_api_jobs_internal_dbs",
+      "community": 16,
+      "norm_label": "api_jobs_internal_dbs()"
+    },
+    {
+      "label": "api_jobs_preview()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1186",
+      "id": "doris_mt_pro_app_api_jobs_preview",
+      "community": 8,
+      "norm_label": "api_jobs_preview()"
+    },
+    {
+      "label": "api_jobs_execute_ddl()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1200",
+      "id": "doris_mt_pro_app_api_jobs_execute_ddl",
+      "community": 4,
+      "norm_label": "api_jobs_execute_ddl()"
+    },
+    {
+      "label": "api_jobs_create()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1212",
+      "id": "doris_mt_pro_app_api_jobs_create",
+      "community": 1,
+      "norm_label": "api_jobs_create()"
+    },
+    {
+      "label": "api_jobs_execute()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1239",
+      "id": "doris_mt_pro_app_api_jobs_execute",
+      "community": 1,
+      "norm_label": "api_jobs_execute()"
+    },
+    {
+      "label": "_parse_catalog_props()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1249",
+      "id": "doris_mt_pro_app_parse_catalog_props",
+      "community": 10,
+      "norm_label": "_parse_catalog_props()"
+    },
+    {
+      "label": "api_catalogs()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1259",
+      "id": "doris_mt_pro_app_api_catalogs",
+      "community": 10,
+      "norm_label": "api_catalogs()"
+    },
+    {
+      "label": "api_catalog_test()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1283",
+      "id": "doris_mt_pro_app_api_catalog_test",
+      "community": 1,
+      "norm_label": "api_catalog_test()"
+    },
+    {
+      "label": "api_catalog_create()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1367",
+      "id": "doris_mt_pro_app_api_catalog_create",
+      "community": 1,
+      "norm_label": "api_catalog_create()"
+    },
+    {
+      "label": "api_catalog_alter()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1384",
+      "id": "doris_mt_pro_app_api_catalog_alter",
+      "community": 1,
+      "norm_label": "api_catalog_alter()"
+    },
+    {
+      "label": "api_catalog_drop()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "L1398",
+      "id": "doris_mt_pro_app_api_catalog_drop",
+      "community": 1,
+      "norm_label": "api_catalog_drop()"
+    },
+    {
+      "label": "Discover all user tables across databases.",
+      "file_type": "rationale",
+      "source_file": "app.py",
+      "source_location": "L541",
+      "id": "doris_mt_pro_app_rationale_541",
+      "community": 11,
+      "norm_label": "discover all user tables across databases."
+    },
+    {
+      "label": "Get DDL + columns for a specific table.",
+      "file_type": "rationale",
+      "source_file": "app.py",
+      "source_location": "L571",
+      "id": "doris_mt_pro_app_rationale_571",
+      "community": 14,
+      "norm_label": "get ddl + columns for a specific table."
+    },
+    {
+      "label": "Extract key-value properties from a CREATE CATALOG statement.",
+      "file_type": "rationale",
+      "source_file": "app.py",
+      "source_location": "L1250",
+      "id": "doris_mt_pro_app_rationale_1250",
+      "community": 10,
+      "norm_label": "extract key-value properties from a create catalog statement."
+    },
+    {
+      "label": "config.json",
+      "file_type": "code",
+      "source_file": "config.json",
+      "source_location": "L1",
+      "id": "config_json",
+      "community": 5,
+      "norm_label": "config.json"
+    },
+    {
+      "label": "cluster",
+      "file_type": "code",
+      "source_file": "config.json",
+      "source_location": "L2",
+      "id": "doris_mt_pro_config_cluster",
+      "community": 5,
+      "norm_label": "cluster"
+    },
+    {
+      "label": "host",
+      "file_type": "code",
+      "source_file": "config.json",
+      "source_location": "L3",
+      "id": "doris_mt_pro_config_cluster_host",
+      "community": 5,
+      "norm_label": "host"
+    },
+    {
+      "label": "port",
+      "file_type": "code",
+      "source_file": "config.json",
+      "source_location": "L4",
+      "id": "doris_mt_pro_config_cluster_port",
+      "community": 5,
+      "norm_label": "port"
+    },
+    {
+      "label": "user",
+      "file_type": "code",
+      "source_file": "config.json",
+      "source_location": "L5",
+      "id": "doris_mt_pro_config_cluster_user",
+      "community": 5,
+      "norm_label": "user"
+    },
+    {
+      "label": "password",
+      "file_type": "code",
+      "source_file": "config.json",
+      "source_location": "L6",
+      "id": "doris_mt_pro_config_cluster_password",
+      "community": 5,
+      "norm_label": "password"
+    },
+    {
+      "label": "fe_http_port",
+      "file_type": "code",
+      "source_file": "config.json",
+      "source_location": "L7",
+      "id": "doris_mt_pro_config_cluster_fe_http_port",
+      "community": 5,
+      "norm_label": "fe_http_port"
+    },
+    {
+      "label": "be_http_port",
+      "file_type": "code",
+      "source_file": "config.json",
+      "source_location": "L8",
+      "id": "doris_mt_pro_config_cluster_be_http_port",
+      "community": 5,
+      "norm_label": "be_http_port"
+    },
+    {
+      "label": "connect_timeout",
+      "file_type": "code",
+      "source_file": "config.json",
+      "source_location": "L9",
+      "id": "doris_mt_pro_config_cluster_connect_timeout",
+      "community": 5,
+      "norm_label": "connect_timeout"
+    },
+    {
+      "label": "refresh_interval_seconds",
+      "file_type": "code",
+      "source_file": "config.json",
+      "source_location": "L11",
+      "id": "doris_mt_pro_config_refresh_interval_seconds",
+      "community": 5,
+      "norm_label": "refresh_interval_seconds"
+    },
+    {
+      "label": "opencode.json",
+      "file_type": "code",
+      "source_file": "opencode.json",
+      "source_location": "L1",
+      "id": "opencode_json",
+      "community": 15,
+      "norm_label": "opencode.json"
+    },
+    {
+      "label": "$schema",
+      "file_type": "code",
+      "source_file": "opencode.json",
+      "source_location": "L2",
+      "id": "doris_mt_pro_opencode_schema",
+      "community": 15,
+      "norm_label": "$schema"
+    },
+    {
+      "label": "plugin",
+      "file_type": "code",
+      "source_file": "opencode.json",
+      "source_location": "L3",
+      "id": "doris_mt_pro_opencode_plugin",
+      "community": 15,
+      "norm_label": "plugin"
+    },
+    {
+      "label": "scheduler_service.py",
+      "file_type": "code",
+      "source_file": "scheduler_service.py",
+      "source_location": "L1",
+      "id": "scheduler_service_py",
+      "community": 2,
+      "norm_label": "scheduler_service.py"
+    },
+    {
+      "label": "SchedulerService",
+      "file_type": "code",
+      "source_file": "scheduler_service.py",
+      "source_location": "L7",
+      "id": "doris_mt_pro_scheduler_service_schedulerservice",
+      "community": 2,
+      "norm_label": "schedulerservice"
+    },
+    {
+      "label": ".__init__()",
+      "file_type": "code",
+      "source_file": "scheduler_service.py",
+      "source_location": "L8",
+      "id": "doris_mt_pro_scheduler_service_schedulerservice_init",
+      "community": 2,
+      "norm_label": ".__init__()"
+    },
+    {
+      "label": "._ensure_data_dir()",
+      "file_type": "code",
+      "source_file": "scheduler_service.py",
+      "source_location": "L16",
+      "id": "doris_mt_pro_scheduler_service_schedulerservice_ensure_data_dir",
+      "community": 2,
+      "norm_label": "._ensure_data_dir()"
+    },
+    {
+      "label": "._load()",
+      "file_type": "code",
+      "source_file": "scheduler_service.py",
+      "source_location": "L20",
+      "id": "doris_mt_pro_scheduler_service_schedulerservice_load",
+      "community": 2,
+      "norm_label": "._load()"
+    },
+    {
+      "label": "._save()",
+      "file_type": "code",
+      "source_file": "scheduler_service.py",
+      "source_location": "L33",
+      "id": "doris_mt_pro_scheduler_service_schedulerservice_save",
+      "community": 2,
+      "norm_label": "._save()"
+    },
+    {
+      "label": ".add_job()",
+      "file_type": "code",
+      "source_file": "scheduler_service.py",
+      "source_location": "L38",
+      "id": "doris_mt_pro_scheduler_service_schedulerservice_add_job",
+      "community": 2,
+      "norm_label": ".add_job()"
+    },
+    {
+      "label": ".get_job()",
+      "file_type": "code",
+      "source_file": "scheduler_service.py",
+      "source_location": "L61",
+      "id": "doris_mt_pro_scheduler_service_schedulerservice_get_job",
+      "community": 2,
+      "norm_label": ".get_job()"
+    },
+    {
+      "label": ".list_jobs()",
+      "file_type": "code",
+      "source_file": "scheduler_service.py",
+      "source_location": "L68",
+      "id": "doris_mt_pro_scheduler_service_schedulerservice_list_jobs",
+      "community": 2,
+      "norm_label": ".list_jobs()"
+    },
+    {
+      "label": ".pause_job()",
+      "file_type": "code",
+      "source_file": "scheduler_service.py",
+      "source_location": "L72",
+      "id": "doris_mt_pro_scheduler_service_schedulerservice_pause_job",
+      "community": 2,
+      "norm_label": ".pause_job()"
+    },
+    {
+      "label": ".resume_job()",
+      "file_type": "code",
+      "source_file": "scheduler_service.py",
+      "source_location": "L81",
+      "id": "doris_mt_pro_scheduler_service_schedulerservice_resume_job",
+      "community": 2,
+      "norm_label": ".resume_job()"
+    },
+    {
+      "label": ".drop_job()",
+      "file_type": "code",
+      "source_file": "scheduler_service.py",
+      "source_location": "L90",
+      "id": "doris_mt_pro_scheduler_service_schedulerservice_drop_job",
+      "community": 2,
+      "norm_label": ".drop_job()"
+    },
+    {
+      "label": "._resolve_sql()",
+      "file_type": "code",
+      "source_file": "scheduler_service.py",
+      "source_location": "L99",
+      "id": "doris_mt_pro_scheduler_service_schedulerservice_resolve_sql",
+      "community": 2,
+      "norm_label": "._resolve_sql()"
+    },
+    {
+      "label": "._run_job()",
+      "file_type": "code",
+      "source_file": "scheduler_service.py",
+      "source_location": "L105",
+      "id": "doris_mt_pro_scheduler_service_schedulerservice_run_job",
+      "community": 2,
+      "norm_label": "._run_job()"
+    },
+    {
+      "label": ".execute_now()",
+      "file_type": "code",
+      "source_file": "scheduler_service.py",
+      "source_location": "L137",
+      "id": "doris_mt_pro_scheduler_service_schedulerservice_execute_now",
+      "community": 2,
+      "norm_label": ".execute_now()"
+    },
+    {
+      "label": ".tick()",
+      "file_type": "code",
+      "source_file": "scheduler_service.py",
+      "source_location": "L143",
+      "id": "doris_mt_pro_scheduler_service_schedulerservice_tick",
+      "community": 2,
+      "norm_label": ".tick()"
+    },
+    {
+      "label": "._loop()",
+      "file_type": "code",
+      "source_file": "scheduler_service.py",
+      "source_location": "L157",
+      "id": "doris_mt_pro_scheduler_service_schedulerservice_loop",
+      "community": 2,
+      "norm_label": "._loop()"
+    },
+    {
+      "label": ".start()",
+      "file_type": "code",
+      "source_file": "scheduler_service.py",
+      "source_location": "L165",
+      "id": "doris_mt_pro_scheduler_service_schedulerservice_start",
+      "community": 2,
+      "norm_label": ".start()"
+    },
+    {
+      "label": ".stop()",
+      "file_type": "code",
+      "source_file": "scheduler_service.py",
+      "source_location": "L172",
+      "id": "doris_mt_pro_scheduler_service_schedulerservice_stop",
+      "community": 2,
+      "norm_label": ".stop()"
+    },
+    {
+      "label": "start.sh",
+      "file_type": "code",
+      "source_file": "start.sh",
+      "source_location": "L1",
+      "id": "start_sh",
+      "community": 18,
+      "norm_label": "start.sh"
+    },
+    {
+      "label": "settings.local.json",
+      "file_type": "code",
+      "source_file": ".claude/settings.local.json",
+      "source_location": "L1",
+      "id": "claude_settings_local_json",
+      "community": 12,
+      "norm_label": "settings.local.json"
+    },
+    {
+      "label": "permissions",
+      "file_type": "code",
+      "source_file": ".claude/settings.local.json",
+      "source_location": "L2",
+      "id": "claude_settings_local_permissions",
+      "community": 12,
+      "norm_label": "permissions"
+    },
+    {
+      "label": "allow",
+      "file_type": "code",
+      "source_file": ".claude/settings.local.json",
+      "source_location": "L3",
+      "id": "claude_settings_local_permissions_allow",
+      "community": 12,
+      "norm_label": "allow"
+    },
+    {
+      "label": "scheduler_jobs.json",
+      "file_type": "code",
+      "source_file": "data/scheduler_jobs.json",
+      "source_location": "L1",
+      "id": "data_scheduler_jobs_json",
+      "community": 13,
+      "norm_label": "scheduler_jobs.json"
+    },
+    {
+      "label": "version",
+      "file_type": "code",
+      "source_file": "data/scheduler_jobs.json",
+      "source_location": "L2",
+      "id": "data_scheduler_jobs_version",
+      "community": 13,
+      "norm_label": "version"
+    },
+    {
+      "label": "jobs",
+      "file_type": "code",
+      "source_file": "data/scheduler_jobs.json",
+      "source_location": "L3",
+      "id": "data_scheduler_jobs_jobs",
+      "community": 13,
+      "norm_label": "jobs"
+    },
+    {
+      "label": "gen_html.py",
+      "file_type": "code",
+      "source_file": "static/gen_html.py",
+      "source_location": "L1",
+      "id": "static_gen_html_py",
+      "community": 19,
+      "norm_label": "gen_html.py"
+    },
+    {
+      "label": "Flask Backend (app)",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_app",
+      "community": 0,
+      "norm_label": "flask backend (app)"
+    },
+    {
+      "label": "collect_metrics() orchestrator",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_collect_metrics",
+      "community": 0,
+      "norm_label": "collect_metrics() orchestrator"
+    },
+    {
+      "label": "Alert System",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_alert_system",
+      "community": 0,
+      "norm_label": "alert system"
+    },
+    {
+      "label": "Cache Layer (CACHE/MV_CACHE/DB_CACHE)",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_cache_layer",
+      "community": 0,
+      "norm_label": "cache layer (cache/mv_cache/db_cache)"
+    },
+    {
+      "label": "MV Discovery & Management",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_mv_discovery",
+      "community": 0,
+      "norm_label": "mv discovery & management"
+    },
+    {
+      "label": "Job Management (get_jobs, pause/resume/drop)",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_job_management",
+      "community": 0,
+      "norm_label": "job management (get_jobs, pause/resume/drop)"
+    },
+    {
+      "label": "Catalog Management",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_catalog_management",
+      "community": 0,
+      "norm_label": "catalog management"
+    },
+    {
+      "label": "Config Management (load_config/save)",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_config_management",
+      "community": 5,
+      "norm_label": "config management (load_config/save)"
+    },
+    {
+      "label": "map_doris_type()",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_type_mapping",
+      "community": 0,
+      "norm_label": "map_doris_type()"
+    },
+    {
+      "label": "DDL Generation (generate_create_ddl)",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_ddl_generation",
+      "community": 0,
+      "norm_label": "ddl generation (generate_create_ddl)"
+    },
+    {
+      "label": "EnhancedEncoder (JSON datetime)",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_enhanced_encoder",
+      "community": 0,
+      "norm_label": "enhancedencoder (json datetime)"
+    },
+    {
+      "label": "SchedulerService class",
+      "file_type": "code",
+      "source_file": "scheduler_service.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "scheduler_service_scheduler_service",
+      "community": 0,
+      "norm_label": "schedulerservice class"
+    },
+    {
+      "label": "scheduler_jobs.json (persisted jobs)",
+      "file_type": "code",
+      "source_file": "data/scheduler_jobs.json",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "data_scheduler_jobs",
+      "community": 0,
+      "norm_label": "scheduler_jobs.json (persisted jobs)"
+    },
+    {
+      "label": "dashboard.html Frontend SPA",
+      "file_type": "code",
+      "source_file": "static/dashboard.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "static_dashboard",
+      "community": 0,
+      "norm_label": "dashboard.html frontend spa"
+    },
+    {
+      "label": "vis.js Dependency Graph",
+      "file_type": "code",
+      "source_file": "static/dashboard.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "static_dashboard_dependency_graph",
+      "community": 0,
+      "norm_label": "vis.js dependency graph"
+    },
+    {
+      "label": "3-Step Job Creation Wizard",
+      "file_type": "code",
+      "source_file": "static/dashboard.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "static_dashboard_job_wizard",
+      "community": 0,
+      "norm_label": "3-step job creation wizard"
+    },
+    {
+      "label": "gen_html.py (unfinished)",
+      "file_type": "code",
+      "source_file": "static/gen_html.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "static_gen_html",
+      "community": 0,
+      "norm_label": "gen_html.py (unfinished)"
+    },
+    {
+      "label": "FSD.md - Functional Specification",
+      "file_type": "document",
+      "source_file": "FSD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "fsd",
+      "community": 0,
+      "norm_label": "fsd.md - functional specification"
+    },
+    {
+      "label": "README.md",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme",
+      "community": 0,
+      "norm_label": "readme.md"
+    },
+    {
+      "label": "Single-Process Deployment",
+      "file_type": "rationale",
+      "source_file": "FSD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "fsd_single_process_deployment",
+      "community": 0,
+      "norm_label": "single-process deployment"
+    },
+    {
+      "label": "No Frontend Framework",
+      "file_type": "rationale",
+      "source_file": "FSD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "fsd_no_frontend_framework",
+      "community": 0,
+      "norm_label": "no frontend framework"
+    },
+    {
+      "label": "Threaded Concurrent Collection",
+      "file_type": "rationale",
+      "source_file": "FSD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "fsd_threaded_concurrent_collection",
+      "community": 0,
+      "norm_label": "threaded concurrent collection"
+    },
+    {
+      "label": "Alert Dedup (_alert_known set)",
+      "file_type": "rationale",
+      "source_file": "FSD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "fsd_alert_dedup",
+      "community": 0,
+      "norm_label": "alert dedup (_alert_known set)"
+    },
+    {
+      "label": "Data Collection Layer (conceptual)",
+      "file_type": "concept",
+      "source_file": "FSD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "fsd_data_collection_layer",
+      "community": 0,
+      "norm_label": "data collection layer (conceptual)"
+    },
+    {
+      "label": "MV Discovery Strategy",
+      "file_type": "concept",
+      "source_file": "FSD.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "fsd_mv_discovery_strategy",
+      "community": 0,
+      "norm_label": "mv discovery strategy"
+    },
+    {
+      "label": "Browser SPA (dashboard.html + vis.js)",
+      "file_type": "concept",
+      "source_file": "architecture.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "doris_mt_pro_architecture_browser_spa",
+      "community": 6,
+      "norm_label": "browser spa (dashboard.html + vis.js)"
+    },
+    {
+      "label": "Flask Backend (app.py)",
+      "file_type": "concept",
+      "source_file": "architecture.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "doris_mt_pro_architecture_flask_backend",
+      "community": 6,
+      "norm_label": "flask backend (app.py)"
+    },
+    {
+      "label": "Data Collection Module",
+      "file_type": "concept",
+      "source_file": "architecture.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "doris_mt_pro_architecture_data_collection",
+      "community": 6,
+      "norm_label": "data collection module"
+    },
+    {
+      "label": "Cache Layer",
+      "file_type": "concept",
+      "source_file": "architecture.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "doris_mt_pro_architecture_cache_layer",
+      "community": 6,
+      "norm_label": "cache layer"
+    },
+    {
+      "label": "Alert Engine",
+      "file_type": "concept",
+      "source_file": "architecture.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "doris_mt_pro_architecture_alert_engine",
+      "community": 6,
+      "norm_label": "alert engine"
+    },
+    {
+      "label": "Config Management",
+      "file_type": "concept",
+      "source_file": "architecture.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "doris_mt_pro_architecture_config_management",
+      "community": 6,
+      "norm_label": "config management"
+    },
+    {
+      "label": "MySQL Protocol (FE/BE port 9030)",
+      "file_type": "concept",
+      "source_file": "architecture.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "doris_mt_pro_architecture_mysql_protocol",
+      "community": 6,
+      "norm_label": "mysql protocol (fe/be port 9030)"
+    },
+    {
+      "label": "HTTP GET /metrics (FE 8030 / BE 8040)",
+      "file_type": "concept",
+      "source_file": "architecture.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "doris_mt_pro_architecture_http_metrics",
+      "community": 6,
+      "norm_label": "http get /metrics (fe 8030 / be 8040)"
+    },
+    {
+      "label": "SMTP Email",
+      "file_type": "concept",
+      "source_file": "architecture.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "doris_mt_pro_architecture_smtp_email",
+      "community": 6,
+      "norm_label": "smtp email"
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_enhancedencoder",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L26",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_load_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L30",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_get_fe_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L53",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_load_alert_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L58",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_save_alert_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L64",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_send_email",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L86",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_check_alerts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L116",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_build_alert_body",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L129",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_alert_checker_loop",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L155",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_start_alert_checker",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L163",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_get_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L171",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L183",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_fetch_url",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L190",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_parse_capacity",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L205",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_get_fe_status",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L223",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_get_be_status",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L251",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_get_cluster_stats",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L270",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_get_tablet_health",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L282",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_get_fe_metrics_all",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L312",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_get_be_metrics_all",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L375",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_get_queries",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L397",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_parse_mv_ddl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L439",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_discover_mvs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L457",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_fetch_mv_ddls",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L472",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_get_mv_latest_tasks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L491",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_get_mv_today_counts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L499",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_get_mv_row_sizes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L510",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_build_mv_dep_map",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L526",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_fetch_mv_history",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L540",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_get_all_tables",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L570",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_get_table_detail",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L593",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_collect_metrics",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L654",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_get_jobs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L682",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_exec_job_cmd",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L697",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_pause_job",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L700",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_resume_job",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L703",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_drop_job",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L708",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_get_catalogs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L716",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_get_catalog_databases",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L723",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_get_catalog_tables",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L735",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_get_table_columns",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L777",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_get_internal_databases",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L787",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_col_name",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L790",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_map_doris_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L831",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_generate_create_ddl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L856",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_generate_create_job_sql",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L870",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_index",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L874",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_ping",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L878",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_metrics",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L890",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_test_connection",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L901",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_mv_history",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L909",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_execute_ddl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L921",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_create_mv",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L943",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_alter_mv",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L962",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_drop_mv",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L973",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_refresh_mv",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L985",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_toggle_mv",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L999",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_tables",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1004",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_table_detail",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1012",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1038",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_alert_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1050",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_alert_test",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1059",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_alert_issues",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1064",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_jobs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1091",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_jobs_pause",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1107",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_jobs_resume",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1123",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_jobs_drop",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1139",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_jobs_catalogs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1146",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_jobs_databases",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1156",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_jobs_tables",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1167",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_jobs_columns",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1179",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_jobs_internal_dbs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1186",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_jobs_preview",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1200",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_jobs_execute_ddl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1212",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_jobs_create",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1239",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_jobs_execute",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1249",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_parse_catalog_props",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1259",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_catalogs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1283",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_catalog_test",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1367",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_catalog_create",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1384",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_catalog_alter",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1398",
+      "weight": 1.0,
+      "source": "app_py",
+      "target": "doris_mt_pro_app_api_catalog_drop",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_enhancedencoder",
+      "target": "doris_mt_pro_app_enhancedencoder_default",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "uses",
+      "confidence": "INFERRED",
+      "source_file": "app.py",
+      "source_location": "L8",
+      "weight": 0.8,
+      "source": "doris_mt_pro_app_enhancedencoder",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_get_fe_config",
+      "target": "doris_mt_pro_app_load_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L54",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_load_alert_config",
+      "target": "doris_mt_pro_app_load_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L59",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_save_alert_config",
+      "target": "doris_mt_pro_app_load_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1014",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_config",
+      "target": "doris_mt_pro_app_load_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L164",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_get_db",
+      "target": "doris_mt_pro_app_get_fe_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L892",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_test_connection",
+      "target": "doris_mt_pro_app_get_fe_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L65",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_send_email",
+      "target": "doris_mt_pro_app_load_alert_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L132",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_alert_checker_loop",
+      "target": "doris_mt_pro_app_load_alert_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1040",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_alert_config",
+      "target": "doris_mt_pro_app_load_alert_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1046",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_alert_config",
+      "target": "doris_mt_pro_app_save_alert_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L150",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_alert_checker_loop",
+      "target": "doris_mt_pro_app_send_email",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1053",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_alert_test",
+      "target": "doris_mt_pro_app_send_email",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L137",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_alert_checker_loop",
+      "target": "doris_mt_pro_app_check_alerts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L147",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_alert_checker_loop",
+      "target": "doris_mt_pro_app_build_alert_body",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L135",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_alert_checker_loop",
+      "target": "doris_mt_pro_app_collect_metrics",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L136",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_alert_checker_loop",
+      "target": "doris_mt_pro_app_get_tablet_health",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L172",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_query",
+      "target": "doris_mt_pro_app_get_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L910",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_execute_ddl",
+      "target": "doris_mt_pro_app_get_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L928",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_create_mv",
+      "target": "doris_mt_pro_app_get_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L950",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_alter_mv",
+      "target": "doris_mt_pro_app_get_db",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L206",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_get_fe_status",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L224",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_get_be_status",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L252",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_get_cluster_stats",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L271",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_get_tablet_health",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L283",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_get_fe_metrics_all",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L313",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_get_be_metrics_all",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L377",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_get_queries",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L441",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_discover_mvs",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L461",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_fetch_mv_ddls",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L474",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_get_mv_latest_tasks",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L494",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_get_mv_today_counts",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L503",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_get_mv_row_sizes",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L528",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_fetch_mv_history",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L543",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_get_all_tables",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L575",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_get_table_detail",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L614",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_collect_metrics",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L662",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_get_jobs",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L691",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_exec_job_cmd",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L710",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_get_catalogs",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L718",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_get_catalog_databases",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L725",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_get_catalog_tables",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L738",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_get_table_columns",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L779",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_get_internal_databases",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1206",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_jobs_execute_ddl",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1261",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_catalogs",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1378",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_catalog_create",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1392",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_catalog_alter",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1400",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_catalog_drop",
+      "target": "doris_mt_pro_app_query",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L288",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_get_fe_metrics_all",
+      "target": "doris_mt_pro_app_fetch_url",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L318",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_get_be_metrics_all",
+      "target": "doris_mt_pro_app_fetch_url",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L227",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_get_be_status",
+      "target": "doris_mt_pro_app_parse_capacity",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L594",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_collect_metrics",
+      "target": "doris_mt_pro_app_get_fe_status",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L595",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_collect_metrics",
+      "target": "doris_mt_pro_app_get_be_status",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L596",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_collect_metrics",
+      "target": "doris_mt_pro_app_get_cluster_stats",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L597",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_collect_metrics",
+      "target": "doris_mt_pro_app_get_tablet_health",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L598",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_collect_metrics",
+      "target": "doris_mt_pro_app_get_fe_metrics_all",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L599",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_collect_metrics",
+      "target": "doris_mt_pro_app_get_be_metrics_all",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L600",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_collect_metrics",
+      "target": "doris_mt_pro_app_get_queries",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L466",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_fetch_mv_ddls",
+      "target": "doris_mt_pro_app_parse_mv_ddl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L447",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_discover_mvs",
+      "target": "doris_mt_pro_app_fetch_mv_ddls",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L622",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_collect_metrics",
+      "target": "doris_mt_pro_app_discover_mvs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L624",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_collect_metrics",
+      "target": "doris_mt_pro_app_get_mv_latest_tasks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L625",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_collect_metrics",
+      "target": "doris_mt_pro_app_get_mv_today_counts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L626",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_collect_metrics",
+      "target": "doris_mt_pro_app_get_mv_row_sizes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L906",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_mv_history",
+      "target": "doris_mt_pro_app_fetch_mv_history",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L647",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_collect_metrics",
+      "target": "doris_mt_pro_app_get_all_tables",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1000",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_tables",
+      "target": "doris_mt_pro_app_get_all_tables",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L541",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_rationale_541",
+      "target": "doris_mt_pro_app_get_all_tables",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1009",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_table_detail",
+      "target": "doris_mt_pro_app_get_table_detail",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L571",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_rationale_571",
+      "target": "doris_mt_pro_app_get_table_detail",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L883",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_metrics",
+      "target": "doris_mt_pro_app_collect_metrics",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1066",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_jobs",
+      "target": "doris_mt_pro_app_get_jobs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L698",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_pause_job",
+      "target": "doris_mt_pro_app_exec_job_cmd",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L701",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_resume_job",
+      "target": "doris_mt_pro_app_exec_job_cmd",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L704",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_drop_job",
+      "target": "doris_mt_pro_app_exec_job_cmd",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1098",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_jobs_pause",
+      "target": "doris_mt_pro_app_pause_job",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1114",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_jobs_resume",
+      "target": "doris_mt_pro_app_resume_job",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1130",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_jobs_drop",
+      "target": "doris_mt_pro_app_drop_job",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1140",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_jobs_catalogs",
+      "target": "doris_mt_pro_app_get_catalogs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1150",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_jobs_databases",
+      "target": "doris_mt_pro_app_get_catalog_databases",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1161",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_jobs_tables",
+      "target": "doris_mt_pro_app_get_catalog_tables",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L749",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_get_table_columns",
+      "target": "doris_mt_pro_app_map_doris_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1173",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_jobs_columns",
+      "target": "doris_mt_pro_app_get_table_columns",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1180",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_jobs_internal_dbs",
+      "target": "doris_mt_pro_app_get_internal_databases",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L836",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_generate_create_ddl",
+      "target": "doris_mt_pro_app_col_name",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L836",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_generate_create_ddl",
+      "target": "doris_mt_pro_app_map_doris_type",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1196",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_jobs_preview",
+      "target": "doris_mt_pro_app_generate_create_ddl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L967",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_drop_mv",
+      "target": "doris_mt_pro_app_execute_ddl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L979",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_refresh_mv",
+      "target": "doris_mt_pro_app_execute_ddl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L993",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_toggle_mv",
+      "target": "doris_mt_pro_app_execute_ddl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1274",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_api_catalogs",
+      "target": "doris_mt_pro_app_parse_catalog_props",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "app.py",
+      "source_location": "L1250",
+      "weight": 1.0,
+      "source": "doris_mt_pro_app_rationale_1250",
+      "target": "doris_mt_pro_app_parse_catalog_props",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "config.json",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "config_json",
+      "target": "doris_mt_pro_config_cluster",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "config.json",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "config_json",
+      "target": "doris_mt_pro_config_refresh_interval_seconds",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "config.json",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "config_json",
+      "target": "app_config_management"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "config.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "doris_mt_pro_config_cluster",
+      "target": "doris_mt_pro_config_cluster_host",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "config.json",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "doris_mt_pro_config_cluster",
+      "target": "doris_mt_pro_config_cluster_port",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "config.json",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "doris_mt_pro_config_cluster",
+      "target": "doris_mt_pro_config_cluster_user",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "config.json",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "doris_mt_pro_config_cluster",
+      "target": "doris_mt_pro_config_cluster_password",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "config.json",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "doris_mt_pro_config_cluster",
+      "target": "doris_mt_pro_config_cluster_fe_http_port",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "config.json",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "doris_mt_pro_config_cluster",
+      "target": "doris_mt_pro_config_cluster_be_http_port",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "config.json",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "doris_mt_pro_config_cluster",
+      "target": "doris_mt_pro_config_cluster_connect_timeout",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "opencode.json",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "opencode_json",
+      "target": "doris_mt_pro_opencode_schema",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "opencode.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "opencode_json",
+      "target": "doris_mt_pro_opencode_plugin",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "scheduler_service_py",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_init",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_ensure_data_dir",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L20",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_load",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L33",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_save",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_add_job",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L61",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_get_job",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L68",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_list_jobs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L72",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_pause_job",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L81",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_resume_job",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L90",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_drop_job",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L99",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_resolve_sql",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L105",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_run_job",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L137",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_execute_now",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L143",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_tick",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L157",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_loop",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L165",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_start",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L172",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_stop",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice_init",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_load",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L21",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice_load",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_ensure_data_dir",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L34",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice_save",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_ensure_data_dir",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L58",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice_add_job",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_save",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L77",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice_pause_job",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_save",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L86",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice_resume_job",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_save",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L95",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice_drop_job",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_save",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L131",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice_run_job",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_save",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L138",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice_execute_now",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_get_job",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L106",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice_run_job",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_resolve_sql",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L141",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice_execute_now",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_run_job",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L151",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice_tick",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_run_job",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scheduler_service.py",
+      "source_location": "L160",
+      "weight": 1.0,
+      "source": "doris_mt_pro_scheduler_service_schedulerservice_loop",
+      "target": "doris_mt_pro_scheduler_service_schedulerservice_tick",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/settings.local.json",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "claude_settings_local_json",
+      "target": "claude_settings_local_permissions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "claude_settings_local_permissions",
+      "target": "claude_settings_local_permissions_allow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "data/scheduler_jobs.json",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "data_scheduler_jobs_json",
+      "target": "data_scheduler_jobs_version",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "data/scheduler_jobs.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "data_scheduler_jobs_json",
+      "target": "data_scheduler_jobs_jobs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "app_app",
+      "target": "app_collect_metrics"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "app_app",
+      "target": "app_alert_system"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "app_app",
+      "target": "app_config_management"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "app_app",
+      "target": "scheduler_service_scheduler_service"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "app_app",
+      "target": "app_catalog_management"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "app_app",
+      "target": "app_job_management"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "app_app",
+      "target": "app_ddl_generation"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "app_app",
+      "target": "app_mv_discovery"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "app_app",
+      "target": "app_type_mapping"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "static/dashboard.html",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "static_dashboard",
+      "target": "app_app"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "app_app",
+      "target": "app_enhanced_encoder"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "FSD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "fsd",
+      "target": "app_app"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "readme",
+      "target": "app_app"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "FSD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "fsd_single_process_deployment",
+      "target": "app_app"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "app_collect_metrics",
+      "target": "app_mv_discovery"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "app_collect_metrics",
+      "target": "app_cache_layer"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "app_alert_system",
+      "target": "app_collect_metrics"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "FSD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "fsd_threaded_concurrent_collection",
+      "target": "app_collect_metrics"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "FSD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "fsd_data_collection_layer",
+      "target": "app_collect_metrics"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "FSD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "fsd_alert_dedup",
+      "target": "app_alert_system"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "static/dashboard.html",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "static_dashboard",
+      "target": "app_cache_layer"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "FSD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "fsd_mv_discovery_strategy",
+      "target": "app_mv_discovery"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "static/dashboard.html",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "static_dashboard",
+      "target": "app_mv_discovery"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "static/dashboard.html",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "static_dashboard_dependency_graph",
+      "target": "app_mv_discovery"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "static/dashboard.html",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "static_dashboard_job_wizard",
+      "target": "app_job_management"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "static/dashboard.html",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "static_dashboard_job_wizard",
+      "target": "app_catalog_management"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "static/dashboard.html",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "static_dashboard_job_wizard",
+      "target": "app_type_mapping"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "static/dashboard.html",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "static_dashboard_job_wizard",
+      "target": "app_ddl_generation"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scheduler_service.py",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "scheduler_service_scheduler_service",
+      "target": "data_scheduler_jobs"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "FSD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "fsd",
+      "target": "scheduler_service_scheduler_service"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "static/dashboard.html",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "static_dashboard_job_wizard",
+      "target": "scheduler_service_scheduler_service"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "FSD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "fsd",
+      "target": "static_dashboard"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "readme",
+      "target": "static_dashboard"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "FSD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "fsd_no_frontend_framework",
+      "target": "static_dashboard"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "static/gen_html.py",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "static_gen_html",
+      "target": "static_dashboard"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "FSD.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "fsd_single_process_deployment",
+      "target": "fsd_no_frontend_framework"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "architecture.png",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doris_mt_pro_architecture_browser_spa",
+      "target": "doris_mt_pro_architecture_flask_backend"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "architecture.png",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doris_mt_pro_architecture_flask_backend",
+      "target": "doris_mt_pro_architecture_data_collection"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "architecture.png",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doris_mt_pro_architecture_flask_backend",
+      "target": "doris_mt_pro_architecture_cache_layer"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "architecture.png",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doris_mt_pro_architecture_flask_backend",
+      "target": "doris_mt_pro_architecture_alert_engine"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "architecture.png",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doris_mt_pro_architecture_flask_backend",
+      "target": "doris_mt_pro_architecture_config_management"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "architecture.png",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doris_mt_pro_architecture_mysql_protocol",
+      "target": "doris_mt_pro_architecture_data_collection"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "architecture.png",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doris_mt_pro_architecture_http_metrics",
+      "target": "doris_mt_pro_architecture_data_collection"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "architecture.png",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "doris_mt_pro_architecture_alert_engine",
+      "target": "doris_mt_pro_architecture_smtp_email"
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "he_data_pipeline",
+      "label": "Data Pipeline: Doris \u2192 collect \u2192 cache \u2192 API \u2192 UI",
+      "nodes": [
+        "app_collect_metrics",
+        "app_cache_layer",
+        "app_app",
+        "static_dashboard"
+      ],
+      "relation": "form",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "app.py"
+    },
+    {
+      "id": "he_alert_system",
+      "label": "Alert System: detect \u2192 dedup \u2192 notify",
+      "nodes": [
+        "app_alert_system",
+        "fsd_alert_dedup",
+        "app_collect_metrics"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "app.py"
+    },
+    {
+      "id": "he_job_scheduling",
+      "label": "Job Scheduling: wizard \u2192 API \u2192 scheduler \u2192 persistence",
+      "nodes": [
+        "static_dashboard_job_wizard",
+        "app_job_management",
+        "scheduler_service_scheduler_service",
+        "data_scheduler_jobs"
+      ],
+      "relation": "implement",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "static/dashboard.html"
+    }
+  ],
+  "built_at_commit": "6abbb8e3ed76b41eeb67ed964ad0b2b5a86626e6"
+}

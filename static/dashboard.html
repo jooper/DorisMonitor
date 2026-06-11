@@ -106,7 +106,7 @@
 <div style="margin-top:14px;font-size:12px;font-weight:600;color:var(--text-secondary);border-bottom:1px solid var(--border-divider);padding-bottom:4px">Refresh</div>
 <div style="display:flex;gap:16px;margin-top:8px"><label style="font-size:12px;display:flex;align-items:center;gap:4px"><input type="radio" name="mv-refresh-type" value="COMPLETE" checked onchange="updateMvPreview()"> COMPLETE</label><span style="font-size:11px;color:var(--text-tertiary)">(全量刷新)</span><label style="font-size:12px;display:flex;align-items:center;gap:4px"><input type="radio" name="mv-refresh-type" value="AUTO" onchange="updateMvPreview()"> AUTO</label><span style="font-size:11px;color:var(--text-tertiary)">(增量刷新，仅刷新分区变更)</span></div>
 <div style="display:flex;gap:16px;margin-top:6px;align-items:center"><label style="font-size:12px;display:flex;align-items:center;gap:4px"><input type="radio" name="mv-schedule-mode" value="scheduled" checked onchange="toggleMvSchedule()"> Scheduled</label><span style="font-size:11px;color:var(--text-tertiary)">(按时间间隔自动刷新)</span><label style="font-size:12px;display:flex;align-items:center;gap:4px"><input type="radio" name="mv-schedule-mode" value="on_commit" onchange="toggleMvSchedule()"> On Commit</label><span style="font-size:11px;color:var(--text-tertiary)">(基表提交时自动刷新)</span><label style="font-size:12px;display:flex;align-items:center;gap:4px"><input type="radio" name="mv-schedule-mode" value="manual" onchange="toggleMvSchedule()"> Manual</label><span style="font-size:11px;color:var(--text-tertiary)">(仅手动刷新)</span></div>
-<div id="mv-schedule-options" style="display:flex;gap:8px;margin-top:6px;align-items:center;flex-wrap:wrap"><span style="font-size:12px;color:var(--text-secondary)">Every</span><input class="cfg-input" id="mv-editor-interval" value="20" style="width:60px" oninput="updateMvPreview()"><select class="cfg-input" id="mv-editor-interval-unit" style="width:90px" onchange="updateMvPreview()"><option value="MINUTE">MINUTE</option><option value="HOUR">HOUR</option><option value="DAY">DAY</option></select><span style="font-size:12px;color:var(--text-secondary)">Starts</span><input class="cfg-input" id="mv-editor-starts" value="2026-05-28 00:00:00" style="width:160px" oninput="updateMvPreview()"></div>
+<div id="mv-schedule-options" style="display:flex;gap:8px;margin-top:6px;align-items:center;flex-wrap:wrap"><span style="font-size:12px;color:var(--text-secondary)">Every</span><input class="cfg-input" id="mv-editor-interval" value="20" style="width:60px" oninput="updateMvPreview()"><select class="cfg-input" id="mv-editor-interval-unit" style="width:90px" onchange="updateMvPreview()"><option value="MINUTE">MINUTE</option><option value="HOUR">HOUR</option><option value="DAY">DAY</option></select><span style="font-size:12px;color:var(--text-secondary)">Starts</span><input class="cfg-input" id="mv-editor-starts" style="width:160px" oninput="updateMvPreview()"></div>
 <div style="margin-top:14px;font-size:12px;font-weight:600;color:var(--text-secondary);border-bottom:1px solid var(--border-divider);padding-bottom:4px">Distribution</div>
 <div style="display:flex;gap:12px;margin-top:8px;align-items:center;flex-wrap:wrap"><label style="font-size:12px;display:flex;align-items:center;gap:4px"><input type="radio" name="mv-dist-type" value="RANDOM" checked onchange="toggleMvDistCol()"> RANDOM</label><label style="font-size:12px;display:flex;align-items:center;gap:4px"><input type="radio" name="mv-dist-type" value="HASH" onchange="toggleMvDistCol()"> HASH(</label><input class="cfg-input" id="mv-editor-dist-col" disabled style="width:120px" placeholder="col_name" oninput="updateMvPreview()"><span style="font-size:12px">)</span><span style="font-size:12px;color:var(--text-secondary);margin-left:4px">Buckets</span><input class="cfg-input" id="mv-editor-buckets" value="1" style="width:60px" oninput="updateMvPreview()"></div>
 <div style="margin-top:14px;font-size:12px;font-weight:600;color:var(--text-secondary);border-bottom:1px solid var(--border-divider);padding-bottom:4px">Definition (SELECT query)</div>
@@ -495,6 +495,10 @@ function openMvEditor(db,name){
   dbSel.innerHTML=dbKeys.map(function(d){return '<option value="'+escHtml(d)+'"'+(d===db?' selected':'')+'>'+escHtml(d)+'</option>'}).join('');
   document.getElementById('mv-editor-name').value=name||'';
   overlay.style.display='flex';
+  // Set Starts default = now + 30 minutes
+  var _sn=new Date();_sn.setMinutes(_sn.getMinutes()+30);
+  var _pn=function(n){return n<10?'0'+n:''+n};
+  document.getElementById('mv-editor-starts').value=_sn.getFullYear()+'-'+_pn(_sn.getMonth()+1)+'-'+_pn(_sn.getDate())+' '+_pn(_sn.getHours())+':'+_pn(_sn.getMinutes())+':00';
   loadCodeMirror(function(){
     var initEditor=function(txt){
       if(window.CodeMirror){
@@ -603,13 +607,24 @@ function saveMvEditor(){
   fetch('/api/materialized-view',{method:method,headers:{'Content-Type':'application/json'},body:JSON.stringify({database:db,sql:sql})})
     .then(function(r){return r.json()}).then(function(d){
       if(!d.error){
-        st.textContent='✓ '+d.message;st.style.color='var(--success)';
-        closeMvEditor();
+        st.textContent='✓ '+d.message+'，可关闭窗口';st.style.color='var(--success)';
         if(newName){
           document.getElementById('mv-db-filter').value=db;
           document.getElementById('mv-search-input').value=newName;
         }
-        loadMetrics().then(function(){if(newName)filterMvTable()});
+        loadMetrics().then(function(){
+          if(newName)filterMvTable();
+          // AUTO mode → trigger COMPLETE refresh to populate data
+          var _rtEl=document.querySelector('input[name="mv-refresh-type"]:checked');
+          if(!isEdit&&_rtEl&&_rtEl.value==='AUTO'&&newName){
+            st.textContent='✓ 创建成功，正在执行全量刷新…';st.style.color='var(--success)';
+            fetch('/api/materialized-view/refresh',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({database:db,name:newName,mode:'COMPLETE'})})
+              .then(function(r){return r.json()}).then(function(d2){
+                if(!d2.error) st.textContent='✓ 创建成功，全量刷新已触发';
+                else st.textContent='✓ 创建成功（刷新失败：'+d2.error+'）';
+              }).catch(function(){st.textContent='✓ 创建成功（刷新请求失败）'});
+          }
+        });
       }else{
         st.textContent='✗ '+(d.error||'Failed');st.style.color='var(--error)';
       }
