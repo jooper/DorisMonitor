@@ -4,3 +4,8 @@ __pycache__/
 *.iml
 data/scheduler_jobs.json
 config.json
+app_stdout.log
+app_stderr.log
+data/
+graphify-out/cache/
+graphify-out/.graphify_semantic_new.json

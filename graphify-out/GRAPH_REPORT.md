@@ -1,131 +1,139 @@
-# Graph Report - .  (2026-06-10)
+# Graph Report - .  (2026-06-11)
 
 ## Corpus Check
-- Corpus is ~19,073 words - fits in a single context window. You may not need a graph.
+- Corpus is ~19,638 words - fits in a single context window. You may not need a graph.
 
 ## Summary
-- 161 nodes · 267 edges · 20 communities (14 shown, 6 thin omitted)
-- Extraction: 91% EXTRACTED · 9% INFERRED · 0% AMBIGUOUS · INFERRED: 24 edges (avg confidence: 0.84)
+- 152 nodes · 254 edges · 22 communities (15 shown, 7 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 5 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
-- [[_COMMUNITY_Alert & Monitoring System|Alert & Monitoring System]]
-- [[_COMMUNITY_Flask API Routes|Flask API Routes]]
-- [[_COMMUNITY_Job Scheduler Service|Job Scheduler Service]]
-- [[_COMMUNITY_MV Management API|MV Management API]]
-- [[_COMMUNITY_Metrics Collection Pipeline|Metrics Collection Pipeline]]
-- [[_COMMUNITY_Cluster Configuration|Cluster Configuration]]
-- [[_COMMUNITY_System Architecture Overview|System Architecture Overview]]
-- [[_COMMUNITY_Job Lifecycle Management|Job Lifecycle Management]]
-- [[_COMMUNITY_DDL Generation|DDL Generation]]
-- [[_COMMUNITY_MV Discovery|MV Discovery]]
-- [[_COMMUNITY_Catalog Connection|Catalog Connection]]
-- [[_COMMUNITY_Table Discovery|Table Discovery]]
-- [[_COMMUNITY_Permission Settings|Permission Settings]]
-- [[_COMMUNITY_Jobs Persistence|Jobs Persistence]]
-- [[_COMMUNITY_Table Detail|Table Detail]]
-- [[_COMMUNITY_Plugin Config|Plugin Config]]
-- [[_COMMUNITY_Internal Database Queries|Internal Database Queries]]
-- [[_COMMUNITY_BE Status Parsing|BE Status Parsing]]
+- [[_COMMUNITY_Community 0|Community 0]]
+- [[_COMMUNITY_Community 1|Community 1]]
+- [[_COMMUNITY_Community 2|Community 2]]
+- [[_COMMUNITY_Community 3|Community 3]]
+- [[_COMMUNITY_Community 4|Community 4]]
+- [[_COMMUNITY_Community 5|Community 5]]
+- [[_COMMUNITY_Community 6|Community 6]]
+- [[_COMMUNITY_Community 7|Community 7]]
+- [[_COMMUNITY_Community 8|Community 8]]
+- [[_COMMUNITY_Community 9|Community 9]]
+- [[_COMMUNITY_Community 10|Community 10]]
+- [[_COMMUNITY_Community 11|Community 11]]
+- [[_COMMUNITY_Community 12|Community 12]]
+- [[_COMMUNITY_Community 13|Community 13]]
+- [[_COMMUNITY_Community 14|Community 14]]
+- [[_COMMUNITY_Community 15|Community 15]]
+- [[_COMMUNITY_Community 16|Community 16]]
+- [[_COMMUNITY_Community 17|Community 17]]
+- [[_COMMUNITY_Community 18|Community 18]]
+- [[_COMMUNITY_Community 21|Community 21]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `query()` - 30 edges
 2. `SchedulerService` - 19 edges
 3. `collect_metrics()` - 16 edges
-4. `Flask Backend (app)` - 14 edges
+4. `Flask Backend (app.py)` - 15 edges
 5. `cluster` - 8 edges
 6. `alert_checker_loop()` - 7 edges
-7. `dashboard.html Frontend SPA` - 7 edges
-8. `get_db()` - 6 edges
-9. `collect_metrics() orchestrator` - 6 edges
-10. `load_config()` - 5 edges
+7. `get_db()` - 6 edges
+8. `load_config()` - 5 edges
+9. `load_alert_config()` - 5 edges
+10. `get_all_tables()` - 5 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Single-Process Deployment` --rationale_for--> `Flask Backend (app)`  [INFERRED]
+- `Flask Backend (app.py)` --conceptually_related_to--> `System Architecture Diagram (architecture.png)`  [AMBIGUOUS]
+  app.py → architecture.png
+- `README.md - Project Overview` --references--> `Flask Backend (app.py)`  [INFERRED]
+  README.md → app.py
+- `Flask Backend (app.py)` --references--> `Dashboard SPA (dashboard.html)`  [EXTRACTED]
+  app.py → static/dashboard.html
+- `Flask Backend (app.py)` --implements--> `MV Dependency Graph (vis.js)`  [EXTRACTED]
+  app.py → static/dashboard.html
+- `Single-Process Deployment Decision` --rationale_for--> `Flask Backend (app.py)`  [EXTRACTED]
   FSD.md → app.py
-- `Threaded Concurrent Collection` --rationale_for--> `collect_metrics() orchestrator`  [INFERRED]
-  FSD.md → app.py
-- `dashboard.html Frontend SPA` --conceptually_related_to--> `Cache Layer (CACHE/MV_CACHE/DB_CACHE)`  [INFERRED]
-  static/dashboard.html → app.py
-- `vis.js Dependency Graph` --conceptually_related_to--> `MV Discovery & Management`  [INFERRED]
-  static/dashboard.html → app.py
-- `3-Step Job Creation Wizard` --conceptually_related_to--> `Job Management (get_jobs, pause/resume/drop)`  [INFERRED]
-  static/dashboard.html → app.py
 
 ## Hyperedges (group relationships)
-- **Data Pipeline: Doris → collect → cache → API → UI** — app_collect_metrics, app_cache_layer, app_app, static_dashboard [INFERRED 0.95]
-- **Alert System: detect → dedup → notify** — app_alert_system, fsd_alert_dedup, app_collect_metrics [INFERRED 0.95]
-- **Job Scheduling: wizard → API → scheduler → persistence** — static_dashboard_job_wizard, app_job_management, scheduler_service_scheduler_service, data_scheduler_jobs [INFERRED 0.95]
+- **Metrics Collection and Display Pipeline** — doris_mt_pro_metrics_pipeline, doris_mt_pro_cache_layer, doris_mt_pro_config_main, doris_mt_pro_app_backend, static_dashboard_main [INFERRED 0.95]
+- **Alert Detection and Notification Pipeline** — doris_mt_pro_alert_engine, doris_mt_pro_metrics_pipeline, doris_mt_pro_config_main, doris_mt_pro_app_backend [INFERRED 0.95]
+- **Dual Job Scheduling Systems** — doris_mt_pro_job_management, doris_mt_pro_internal_scheduler, doris_mt_pro_scheduler_service_main, doris_mt_pro_app_backend [INFERRED 0.85]
 
-## Communities (20 total, 6 thin omitted)
+## Communities (22 total, 7 thin omitted)
 
-### Community 0 - "Alert & Monitoring System"
-Cohesion: 0.13
-Nodes (23): Alert System, Flask Backend (app), Cache Layer (CACHE/MV_CACHE/DB_CACHE), Catalog Management, collect_metrics() orchestrator, DDL Generation (generate_create_ddl), EnhancedEncoder (JSON datetime), Job Management (get_jobs, pause/resume/drop) (+15 more)
+### Community 0 - "Community 0"
+Cohesion: 0.15
+Nodes (22): api_catalog_alter(), api_catalog_drop(), api_jobs_execute_ddl(), api_metrics(), api_tables(), collect_metrics(), discover_mvs(), _fetch_mv_ddls() (+14 more)
 
-### Community 1 - "Flask API Routes"
-Cohesion: 0.11
-Nodes (13): api_catalog_alter(), api_catalog_create(), api_catalog_drop(), api_jobs(), api_jobs_catalogs(), api_jobs_databases(), api_jobs_tables(), api_mv_history() (+5 more)
-
-### Community 3 - "MV Management API"
+### Community 2 - "Community 2"
 Cohesion: 0.12
-Nodes (19): alert_checker_loop(), api_alert_config(), api_alert_test(), api_alter_mv(), api_config(), api_create_mv(), api_drop_mv(), api_refresh_mv() (+11 more)
+Nodes (9): api_catalog_create(), api_jobs_catalogs(), api_jobs_databases(), api_jobs_internal_dbs(), get_catalog_databases(), get_catalogs(), get_internal_databases(), parse_capacity() (+1 more)
 
-### Community 4 - "Metrics Collection Pipeline"
-Cohesion: 0.25
-Nodes (14): api_jobs_execute_ddl(), api_metrics(), collect_metrics(), fetch_url(), get_be_metrics_all(), get_cluster_stats(), get_fe_metrics_all(), get_fe_status() (+6 more)
+### Community 3 - "Community 3"
+Cohesion: 0.14
+Nodes (19): Scheduled Jobs Data (scheduler_jobs.json), Alert Engine (SMTP Email), Flask Backend (app.py), System Architecture Diagram (architecture.png), Cache Layer (CACHE/MV_CACHE/DB_CACHE), Catalog Browser (External Data Sources), Cluster Configuration (config.json), FSD.md - Functional Specification (+11 more)
 
-### Community 5 - "Cluster Configuration"
-Cohesion: 0.18
-Nodes (10): Config Management (load_config/save), cluster, be_http_port, connect_timeout, fe_http_port, host, password, port (+2 more)
+### Community 4 - "Community 4"
+Cohesion: 0.20
+Nodes (9): cluster, be_http_port, connect_timeout, fe_http_port, host, password, port, user (+1 more)
 
-### Community 6 - "System Architecture Overview"
-Cohesion: 0.22
-Nodes (9): Alert Engine, Browser SPA (dashboard.html + vis.js), Cache Layer, Config Management, Data Collection Module, Flask Backend (app.py), HTTP GET /metrics (FE 8030 / BE 8040), MySQL Protocol (FE/BE port 9030) (+1 more)
+### Community 5 - "Community 5"
+Cohesion: 0.24
+Nodes (10): alert_checker_loop(), api_alert_config(), api_alert_test(), api_config(), build_alert_body(), check_alerts(), load_alert_config(), load_config() (+2 more)
 
-### Community 7 - "Job Lifecycle Management"
+### Community 6 - "Community 6"
 Cohesion: 0.29
 Nodes (7): api_jobs_drop(), api_jobs_pause(), api_jobs_resume(), drop_job(), _exec_job_cmd(), pause_job(), resume_job()
 
-### Community 8 - "DDL Generation"
+### Community 7 - "Community 7"
 Cohesion: 0.33
 Nodes (6): api_jobs_columns(), api_jobs_preview(), _col_name(), generate_create_ddl(), get_table_columns(), map_doris_type()
 
-### Community 9 - "MV Discovery"
-Cohesion: 0.67
-Nodes (3): discover_mvs(), _fetch_mv_ddls(), parse_mv_ddl()
+### Community 8 - "Community 8"
+Cohesion: 0.40
+Nodes (5): api_alter_mv(), api_create_mv(), api_test_connection(), get_db(), get_fe_config()
 
-### Community 10 - "Catalog Connection"
+### Community 9 - "Community 9"
+Cohesion: 0.50
+Nodes (4): api_drop_mv(), api_refresh_mv(), api_toggle_mv(), execute_ddl()
+
+### Community 10 - "Community 10"
+Cohesion: 0.50
+Nodes (4): api_get_mv_meta(), api_set_mv_meta(), _load_mv_meta(), _save_mv_meta()
+
+### Community 11 - "Community 11"
+Cohesion: 0.50
+Nodes (3): instructions, plugin, $schema
+
+### Community 14 - "Community 14"
 Cohesion: 0.67
 Nodes (3): api_catalogs(), _parse_catalog_props(), Extract key-value properties from a CREATE CATALOG statement.
 
-### Community 11 - "Table Discovery"
-Cohesion: 0.67
-Nodes (3): api_tables(), get_all_tables(), Discover all user tables across databases.
-
-### Community 14 - "Table Detail"
+### Community 15 - "Community 15"
 Cohesion: 0.67
 Nodes (3): api_table_detail(), get_table_detail(), Get DDL + columns for a specific table.
 
+## Ambiguous Edges - Review These
+- `Flask Backend (app.py)` → `System Architecture Diagram (architecture.png)`  [AMBIGUOUS]
+  app.py · relation: conceptually_related_to
+
 ## Knowledge Gaps
-- **25 isolated node(s):** `host`, `port`, `user`, `password`, `fe_http_port` (+20 more)
+- **21 isolated node(s):** `host`, `port`, `user`, `password`, `fe_http_port` (+16 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **7 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `EnhancedEncoder` connect `Job Scheduler Service` to `Flask API Routes`?**
-  _High betweenness centrality (0.135) - this node is a cross-community bridge._
-- **Why does `Flask Backend (app)` connect `Alert & Monitoring System` to `Cluster Configuration`?**
-  _High betweenness centrality (0.033) - this node is a cross-community bridge._
-- **Are the 2 inferred relationships involving `Flask Backend (app)` (e.g. with `dashboard.html Frontend SPA` and `Single-Process Deployment`) actually correct?**
-  _`Flask Backend (app)` has 2 INFERRED edges - model-reasoned connections that need verification._
+- **What is the exact relationship between `Flask Backend (app.py)` and `System Architecture Diagram (architecture.png)`?**
+  _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
+- **Why does `EnhancedEncoder` connect `Community 1` to `Community 2`?**
+  _High betweenness centrality (0.159) - this node is a cross-community bridge._
+- **Why does `query()` connect `Community 0` to `Community 2`, `Community 6`, `Community 7`, `Community 8`, `Community 14`, `Community 15`, `Community 16`, `Community 17`, `Community 18`?**
+  _High betweenness centrality (0.019) - this node is a cross-community bridge._
 - **What connects `Discover all user tables across databases.`, `Get DDL + columns for a specific table.`, `Extract key-value properties from a CREATE CATALOG statement.` to the rest of the system?**
-  _30 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `Alert & Monitoring System` be split into smaller, more focused modules?**
-  _Cohesion score 0.12681159420289856 - nodes in this community are weakly interconnected._
-- **Should `Flask API Routes` be split into smaller, more focused modules?**
-  _Cohesion score 0.1067193675889328 - nodes in this community are weakly interconnected._
-- **Should `MV Management API` be split into smaller, more focused modules?**
-  _Cohesion score 0.11695906432748537 - nodes in this community are weakly interconnected._
+  _24 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `Community 2` be split into smaller, more focused modules?**
+  _Cohesion score 0.12280701754385964 - nodes in this community are weakly interconnected._
+- **Should `Community 3` be split into smaller, more focused modules?**
+  _Cohesion score 0.14035087719298245 - nodes in this community are weakly interconnected._
