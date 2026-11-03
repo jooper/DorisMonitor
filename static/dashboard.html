@@ -1403,7 +1403,7 @@ function _createGraphEngine(cv){
   var ctx=cv.getContext('2d');
   var nodes=[],edges=[],nodeMap={},W=0,H=0,dpr=Math.min(window.devicePixelRatio||1,2);
   var view={scale:1,ox:0,oy:0},hoverN=null,dragging=null,panning=false,downPos=null,moved=false;
-  var mouse={x:-1e4,y:-1e4},fitUntil=0,frameCnt=0,_slept=false,_sleepCnt=0,gcx=0,gcy=0;
+  var mouse={x:-1e4,y:-1e4},frameCnt=0,_slept=false,_sleepCnt=0,gcx=0,gcy=0,fTarget=null,_userView=false,_needSettle=false,_pk={iters:0,ke:0};
   function resize(){
     var host=cv.parentElement;
     var w=host.clientWidth,h=host.clientHeight;
@@ -1413,14 +1413,31 @@ function _createGraphEngine(cv){
     ctx.setTransform(dpr,0,0,dpr,0,0);
   }
   window.addEventListener('resize',function(){setTimeout(function(){resize();fitView()},60)});
+  function presettle(maxIters){
+    var pke=1e9,pi;
+    for(pi=0;pi<maxIters;pi++){
+      tick(5);
+      if(pi%25===24){
+        pke=0;
+        for(var q=0;q<nodes.length;q++)pke+=nodes[q].vx*nodes[q].vx+nodes[q].vy*nodes[q].vy;
+        if(pke<0.5)break;
+      }
+    }
+    _pk={iters:pi+1,ke:+pke.toFixed(2)};
+  }
   function setData(ns,es){
-    nodes=ns;edges=es;nodeMap={};
-    edges.forEach(function(e){e.ph=Math.random()});
-    nodes.forEach(function(n){nodeMap[n.id]=n;n.vx=0;n.vy=0;n.fx=0;n.fy=0;n.pin=false});
+    // 纯刷新检测: 相同节点集+相同边集(如指标 30s 自动刷新)时, 完整保留布局/视图/用户缩放
+    var old={};nodes.forEach(function(n){old[n.id]=n});
+    var oldEK={};edges.forEach(function(e){oldEK[e.a+'>'+e.b]=1});
+    var pureRefresh=ns.length===nodes.length&&es.length===edges.length&&
+      ns.every(function(n){return old[n.id]})&&
+      es.every(function(e){return oldEK[e.a+'>'+e.b]});
+    nodeMap={};
+    ns.forEach(function(n){nodeMap[n.id]=n;n.vx=0;n.vy=0;n.fx=0;n.fy=0;n.pin=false});
     // layer layout
     var layerMap={};
     var outEdges={},inEdges={};
-    edges.forEach(function(e){
+    es.forEach(function(e){
       (outEdges[e.a]=outEdges[e.a]||[]).push(e.b);
       (inEdges[e.b]=inEdges[e.b]||[]).push(e.a);
     });
@@ -1432,39 +1449,51 @@ function _createGraphEngine(cv){
       (inEdges[id]||[]).forEach(function(s){mx=Math.max(mx,layer(s)+1)});
       layerMap[id]=mx;return mx;
     }
-    var maxL=0;
-    nodes.forEach(function(n){n.layer=layer(n.id);maxL=Math.max(maxL,n.layer)});
     var perL={};
-    nodes.forEach(function(n){(perL[n.layer]=perL[n.layer]||[]).push(n)});
+    ns.forEach(function(n){n.layer=layer(n.id);(perL[n.layer]=perL[n.layer]||[]).push(n)});
+    // 位置分配: 旧节点复用已收敛位置; 新节点按层均匀网格分布(避免初始拥挤导致长时间外扩)
+    var initH=H>200?H:700;
     Object.keys(perL).forEach(function(k){
-      var arr=perL[k];
-      arr.forEach(function(n,i){
-        n.x=140+ +k*(210+Math.random()*60);
-        n.y=H? (i+0.5)/arr.length*H*0.9+H*0.05 : (i+0.5)*80;
-        n.x+=(Math.random()-.5)*70;
-        n.y+=(Math.random()-.5)*40;
+      var arr=perL[k].filter(function(n){return !old[n.id]});
+      if(!arr.length)return;
+      var n=arr.length,sp=84;
+      var perCol=Math.max(5,Math.floor(initH/sp));
+      var cols=Math.max(1,Math.ceil(n/perCol));
+      var rows=Math.ceil(n/cols);
+      var lx=140+(+k)*(250+Math.random()*40);
+      arr.forEach(function(nd,i){
+        var c=Math.floor(i/rows),r=i%rows;
+        nd.x=lx+(c-(cols-1)/2)*150+(Math.random()-.5)*24;
+        nd.y=initH/2+(r-(rows-1)/2)*sp+(Math.random()-.5)*24;
       });
     });
+    ns.forEach(function(n){if(old[n.id]){n.x=old[n.id].x;n.y=old[n.id].y}});
+    nodes=ns;edges=es;
+    edges.forEach(function(e){e.ph=Math.random()});
     resize();
+    if(pureRefresh){
+      // 结构未变: 不重排、不 fit、不打扰用户视角
+      _sleepCnt=0;
+      return;
+    }
     // 固定重力中心(布局质心, 不随视图缩放漂移)
     if(nodes.length){
       var sx=0,sy=0;
       nodes.forEach(function(n){sx+=n.x;sy+=n.y});
       gcx=sx/nodes.length;gcy=sy/nodes.length;
     }
+    _userView=false;fTarget=null;
     if(W>2&&H>2&&nodes.length){
-      // 预收敛: 同步跑完物理迭代, 渲染前布局已稳定, 消除初次抖动
-      var iters=nodes.length>250?120:180;
-      for(var pi=0;pi<iters;pi++)tick();
+      // 预收敛: 低速度上限迭代至动能收敛, 避免节点飞出后长时间回弹
+      presettle(nodes.length>250?500:1400);
       _slept=false;_sleepCnt=0;
-      fitView();
-      fitUntil=0;
+      fitView(true);
     } else {
+      _needSettle=true;
       _slept=false;_sleepCnt=0;
-      fitUntil=performance.now()+2500;
     }
   }
-  function fitView(){
+  function fitView(snap){
     if(!nodes.length||!W)return;
     var minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;
     nodes.forEach(function(n){
@@ -1475,19 +1504,21 @@ function _createGraphEngine(cv){
     var pad=60;
     var s=Math.min((W-pad*2)/Math.max(maxX-minX,1),(H-pad*2)/Math.max(maxY-minY,1),1.2);
     s=Math.max(s,0.75);
-    view.scale=s;
-    view.ox=W/2-(minX+maxX)/2*s;
-    view.oy=H/2-(minY+maxY)/2*s;
+    var ox=W/2-(minX+maxX)/2*s,oy=H/2-(minY+maxY)/2*s;
+    if(snap){view.scale=s;view.ox=ox;view.oy=oy;fTarget=null}
+    else fTarget={s:s,ox:ox,oy:oy};
   }
   function zoomBy(k){
+    _userView=true;fTarget=null;
     var cx=W/2,cy=H/2;
     var w=s2w(cx,cy);
     view.scale=Math.min(3.2,Math.max(0.15,view.scale*k));
     view.ox=cx-w.x*view.scale;
     view.oy=cy-w.y*view.scale;
   }
-  function tick(){
+  function tick(vcap){
     var n=nodes.length,i,j,a,b,dx,dy,d2,d;
+    vcap=vcap||14;
     // repulsion
     for(i=0;i<n;i++){a=nodes[i];a.fx=0;a.fy=0}
     var REP=3200;
@@ -1512,13 +1543,13 @@ function _createGraphEngine(cv){
       a.fx+=fx;a.fy+=fy;b.fx-=fx;b.fy-=fy;
     });
     // gravity + integrate
-    var G=0.004,DAMP=0.85;
+    var G=0.01,DAMP=0.85;
     nodes.forEach(function(nd){
       if(nd.pin){nd.vx=0;nd.vy=0;return}
       nd.fx+=(gcx-nd.x)*G;nd.fy+=(gcy-nd.y)*G;
       nd.vx=(nd.vx+nd.fx)*DAMP;nd.vy=(nd.vy+nd.fy)*DAMP;
       var vm=Math.sqrt(nd.vx*nd.vx+nd.vy*nd.vy);
-      if(vm>14){nd.vx*=14/vm;nd.vy*=14/vm}
+      if(vm>vcap){nd.vx*=vcap/vm;nd.vy*=vcap/vm}
       nd.x+=nd.vx;nd.y+=nd.vy;
     });
   }
@@ -1539,6 +1570,7 @@ function _createGraphEngine(cv){
     downPos={x:sx,y:sy};moved=false;
     if(n){dragging=n;n.pin=true;_slept=false;_sleepCnt=0}
     else{panning=true}
+    if(dragging||panning){_userView=true;fTarget=null}
     cv.style.cursor=n?'grabbing':'grabbing';
   });
   cv.addEventListener('mousemove',function(e){
@@ -1572,6 +1604,7 @@ function _createGraphEngine(cv){
   cv.addEventListener('mouseleave',function(){mouse.x=-1e4;mouse.y=-1e4;if(dragging){dragging.pin=false;dragging=null}panning=false;downPos=null;hoverN=null});
   cv.addEventListener('wheel',function(e){
     e.preventDefault();
+    _userView=true;fTarget=null;
     var b=cv.getBoundingClientRect();
     var sx=e.clientX-b.left,sy=e.clientY-b.top;
     var w=s2w(sx,sy);
@@ -1580,7 +1613,7 @@ function _createGraphEngine(cv){
     view.ox=sx-w.x*view.scale;
     view.oy=sy-w.y*view.scale;
   },{passive:false});
-  cv.addEventListener('dblclick',function(){fitView()});
+  cv.addEventListener('dblclick',function(){_userView=false;fitView()});
   function edgeGeom(a,b){
     var mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
     var dx=b.x-a.x,dy=b.y-a.y,len=Math.sqrt(dx*dx+dy*dy)||1;
@@ -1594,16 +1627,38 @@ function _createGraphEngine(cv){
     var host=cv.parentElement;
     if(host.clientWidth>0&&(host.clientWidth!==W||host.clientHeight!==H)){resize()}
     if(W<2||H<2){requestAnimationFrame(frame);return}
+    // 画布由隐藏转可见后补做预收敛, 避免在线性演化中漂移
+    if(_needSettle&&nodes.length){
+      _needSettle=false;
+      presettle(nodes.length>250?500:1400);
+      _slept=false;_sleepCnt=0;
+      fitView(true);
+    }
     if(nodes.length&&!_slept){
       tick();
-      // 动能检测: 稳定后休眠物理模拟(消除残余抖动 + 省CPU)
+      // 动能检测: 稳定后清零速度并休眠(彻底静止, 消除微抖动)
       var ke=0;
       for(var ki=0;ki<nodes.length;ki++){ke+=nodes[ki].vx*nodes[ki].vx+nodes[ki].vy*nodes[ki].vy}
-      if(ke<1){_sleepCnt++;if(_sleepCnt>12)_slept=true}
-      else _sleepCnt=0;
+      var keLimit=Math.max(4,nodes.length*0.08);
+      if(ke<keLimit){
+        _sleepCnt++;
+        if(_sleepCnt>30){
+          _slept=true;
+          for(var zi=0;zi<nodes.length;zi++){nodes[zi].vx=0;nodes[zi].vy=0}
+          if(!_userView&&!fTarget)fitView();
+        }
+      } else _sleepCnt=0;
     }
     frameCnt++;
-    if(now<fitUntil&&nodes.length&&frameCnt%6===0)fitView();
+    // 收敛期视图跟随: 物理运行中且用户未接管时, 布局演化视图同步对焦
+    if(nodes.length&&!_slept&&!dragging&&!panning&&!_userView&&frameCnt%8===0)fitView();
+    // 平滑过渡到目标视图(避免视口跳变)
+    if(fTarget&&!dragging&&!panning){
+      view.scale+=(fTarget.s-view.scale)*0.18;
+      view.ox+=(fTarget.ox-view.ox)*0.18;
+      view.oy+=(fTarget.oy-view.oy)*0.18;
+      if(Math.abs(fTarget.s-view.scale)<0.002&&Math.abs(fTarget.ox-view.ox)<0.8&&Math.abs(fTarget.oy-view.oy)<0.8){view.scale=fTarget.s;view.ox=fTarget.ox;view.oy=fTarget.oy;fTarget=null}
+    }
     // hover
     hoverN=null;
     if(mouse.x>-9999){
@@ -1703,7 +1758,16 @@ function _createGraphEngine(cv){
   }
   edges.forEach(function(e){e.ph=Math.random()});
   requestAnimationFrame(frame);
-  return {setData:setData,fit:fitView,zoomBy:zoomBy};
+  function fitNow(){_userView=false;fitView(true)}
+  function stats(){
+    var ke=0;
+    for(var i=0;i<nodes.length;i++)ke+=nodes[i].vx*nodes[i].vx+nodes[i].vy*nodes[i].vy;
+    return {n:nodes.length,slept:_slept,ke:+ke.toFixed(3),scale:+view.scale.toFixed(3),
+      ox:+view.ox.toFixed(1),oy:+view.oy.toFixed(1),userView:_userView,
+      presettle:_pk,needSettle:_needSettle,
+      target:fTarget?{s:+fTarget.s.toFixed(3),ox:+fTarget.ox.toFixed(1),oy:+fTarget.oy.toFixed(1)}:null};
+  }
+  return {setData:setData,fit:fitNow,zoomBy:zoomBy,stats:stats};
 }
 var _graphFullscreen=false,_graphAllMvs=[];
 function toggleGraphFullscreen(){
@@ -2491,7 +2555,7 @@ function doLogin(e){
   fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})})
     .then(function(r){return r.status===401?Promise.reject(new Error('用户名或密码错误')):r.json()})
     .then(function(d){
-      if(d.ok){hideLogin();loadMetrics()}
+      if(d.ok){hideLogin();startRefresh(si);loadMetrics()}
       else{err.textContent=d.error||'登录失败';err.style.display='block'}
     })
     .catch(function(ex){err.textContent=ex.message||'连接失败，请重试';err.style.display='block'})
