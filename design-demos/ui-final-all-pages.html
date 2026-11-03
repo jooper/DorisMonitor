@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>方案一 · 全页面效果图</title>
+<style>
+:root{--green:#11A679;--gb:#1FCD93;--g-bg:rgba(17,166,121,.08);--tx:#1A1D21;--tx2:#5F6672;--tx3:#9AA1AC;--bg:#F7F8FA;--card:#FFF;--border:#E8EAEF;--ok:#16A34A;--warn:#D97706;--err:#DC2626;--blue:#2563EB}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","SF Pro Text",sans-serif;font-size:13px;color:var(--tx);background:var(--bg)}
+.layout{display:flex;height:100%;flex-direction:column}
+.topbar{height:48px;background:#FFF;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px;flex-shrink:0}
+.topbar .logo{display:flex;align-items:center;gap:9px}
+.topbar .logo img{height:22px;width:auto;display:block}
+.topbar .logo b{font-size:14px;font-weight:700;letter-spacing:-.01em}
+.topbar .sep{width:1px;height:20px;background:var(--border)}
+.topbar .crumb{font-size:12px;color:var(--tx2)}
+.topbar .crumb b{color:var(--tx);font-weight:600}
+.topbar .right{margin-left:auto;display:flex;align-items:center;gap:14px}
+.status-dot{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--tx2)}
+.status-dot i{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(22,163,74,.15)}
+.avatar{width:28px;height:28px;border-radius:50%;background:var(--green);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.logout{font-size:12px;color:var(--tx3);cursor:pointer;padding:4px 8px;border-radius:6px}
+.logout:hover{color:var(--err);background:rgba(220,38,38,.06)}
+.body{display:flex;flex:1;overflow:hidden}
+.side{width:210px;background:#FFF;border-right:1px solid var(--border);display:flex;flex-direction:column;padding:14px 12px;flex-shrink:0}
+.side-label{font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--tx3);padding:4px 10px 10px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;font-size:13px;color:var(--tx2);cursor:pointer}
+.nav a svg{width:16px;height:16px;flex-shrink:0;opacity:.7}
+.nav a:hover{background:var(--bg);color:var(--tx)}
+.nav a.on{background:var(--g-bg);color:var(--green);font-weight:600}
+.nav a.on svg{opacity:1}
+.nav .badge{margin-left:auto;font-size:10px;font-weight:700;background:var(--green);color:#fff;border-radius:9px;padding:1px 7px}
+.side-foot{margin-top:auto;padding:10px;font-size:10px;color:var(--tx3);line-height:1.7}
+.main{flex:1;overflow-y:auto;padding:24px 28px}
+.page{display:none}
+.page.on{display:block}
+.page-head{display:flex;align-items:baseline;gap:12px;margin-bottom:18px}
+.page-head h1{font-size:22px;font-weight:700;letter-spacing:-.02em}
+.page-head p{font-size:13px;color:var(--tx3)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+.kpis.c6{grid-template-columns:repeat(6,1fr)}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:15px 17px}
+.kpi .lab{font-size:11px;font-weight:600;color:var(--tx2);margin-bottom:8px}
+.kpi .val{font-size:26px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1}
+.kpi .val small{font-size:12px;color:var(--tx3);font-weight:500}
+.kpi .sub{font-size:11px;color:var(--tx3);margin-top:7px}
+.kpi .sub b{color:var(--ok)}
+.kpi.hl{border-color:rgba(17,166,121,.35);background:linear-gradient(180deg,rgba(31,205,147,.05),transparent 60%)}
+.kpi.warn .val{color:var(--warn)}
+.kpi.err .val{color:var(--err)}
+.grid{display:grid;gap:14px;margin-bottom:14px}
+.g2{grid-template-columns:1.6fr 1fr}
+.g2r{grid-template-columns:1fr 1.6fr}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.panel-h{display:flex;align-items:center;padding:13px 17px;border-bottom:1px solid var(--border);gap:8px}
+.panel-h b{font-size:13px;font-weight:600}
+.panel-h .cnt{font-size:11px;color:var(--tx3)}
+.panel-h .acts{margin-left:auto;display:flex;gap:8px;font-size:11px;color:var(--tx3)}
+.panel-h .acts span{cursor:pointer;padding:3px 8px;border-radius:6px}
+.panel-h .acts span:hover{background:var(--bg);color:var(--tx)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:8px 16px;font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--tx3);text-transform:uppercase;background:#FAFBFC;border-bottom:1px solid var(--border)}
+td{padding:9px 16px;border-bottom:1px solid var(--border);color:var(--tx2)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#FAFBFC}
+td b{color:var(--tx);font-weight:600}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px}
+.pill.ok{background:rgba(22,163,74,.09);color:var(--ok)}
+.pill.warn{background:rgba(217,119,6,.09);color:var(--warn)}
+.pill.err{background:rgba(220,38,38,.08);color:var(--err)}
+.pill.info{background:rgba(37,99,235,.08);color:var(--blue)}
+.pill.gray{background:var(--bg);color:var(--tx3)}
+.pill i{width:6px;height:6px;border-radius:50%;background:currentColor}
+.bar{height:5px;background:var(--bg);border-radius:3px;overflow:hidden;width:90px}
+.bar i{display:block;height:100%;border-radius:3px;background:var(--green)}
+.bar i.w{background:var(--warn)}
+/* 筛选栏 */
+.filter{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.sel{height:32px;border:1px solid var(--border);border-radius:8px;background:#FFF;font-size:12px;color:var(--tx2);padding:0 10px;min-width:130px;outline:none}
+.inp{height:32px;border:1px solid var(--border);border-radius:8px;background:#FFF;font-size:12px;color:var(--tx);padding:0 12px;outline:none;flex:1;max-width:260px}
+.inp:focus,.sel:focus{border-color:var(--green);box-shadow:0 0 0 3px var(--g-bg)}
+.btn{height:32px;padding:0 16px;border-radius:8px;border:none;font-size:12px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn.pri{background:var(--green);color:#fff}
+.btn.pri:hover{background:#0D8A65}
+.btn.ghost{background:#FFF;border:1px solid var(--border);color:var(--tx2)}
+.btn.ghost:hover{border-color:var(--green);color:var(--green)}
+.btn.sm{height:26px;padding:0 10px;font-size:11px}
+.batch{display:flex;gap:8px;align-items:center;background:var(--g-bg);border:1px solid rgba(17,166,121,.25);border-radius:9px;padding:6px 12px;margin-bottom:12px;font-size:12px;color:var(--green);font-weight:600}
+.batch .sp{flex:1}
+.batch button{height:24px;padding:0 10px;border-radius:6px;border:none;font-size:11px;font-weight:600;cursor:pointer}
+.pager{display:flex;justify-content:center;gap:6px;padding:14px}
+.pager span{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--tx2);cursor:pointer;border:1px solid var(--border);background:#FFF}
+.pager span.on{background:var(--green);color:#fff;border-color:var(--green)}
+/* 图谱 */
+.graph-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;height:640px;position:relative;overflow:hidden}
+.legend{position:absolute;top:14px;left:16px;display:flex;gap:16px;font-size:11px;color:var(--tx2);background:rgba(255,255,255,.92);padding:8px 14px;border-radius:9px;border:1px solid var(--border);z-index:2}
+.legend i{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:-1px}
+/* Catalog */
+.type-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:7px}
+.type-tag.hms{background:rgba(217,119,6,.09);color:#B45309}
+.type-tag.jdbc{background:rgba(37,99,235,.08);color:var(--blue)}
+.type-tag.es{background:rgba(175,82,222,.08);color:#9333EA}
+.props{font-family:'SF Mono',Consolas,monospace;font-size:10.5px;color:var(--tx3);max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* 表单 */
+.form{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.f-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.f-row label{width:120px;font-size:12px;font-weight:600;color:var(--tx2);text-align:right;flex-shrink:0}
+.f-row .ctl{flex:1}
+.f-inp{height:34px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;outline:none;width:100%;color:var(--tx)}
+.f-inp:focus{border-color:var(--green);box-shadow:0 0 0 3px var(--g-bg)}
+.switch{width:40px;height:22px;border-radius:12px;background:var(--green);position:relative;cursor:pointer}
+.switch::after{content:'';position:absolute;right:2px;top:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
+.switch.off{background:#D1D5DB}
+.switch.off::after{right:auto;left:2px}
+.h3{font-size:14px;font-weight:650;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.h3::before{content:'';width:3px;height:14px;background:var(--green);border-radius:2px}
+/* viz */
+.viz{display:flex;align-items:flex-end;gap:5px;height:100px;padding:16px}
+.viz .col{flex:1;background:linear-gradient(180deg,var(--gb),var(--green));border-radius:4px 4px 0 0;opacity:.85}
+.donut-wrap{display:flex;align-items:center;gap:20px;padding:18px}
+.donut{width:120px;height:120px;border-radius:50%;background:conic-gradient(var(--green) 0 65%,#F59E0B 65% 85%,#EF4444 85% 92%,var(--border) 92% 100%);position:relative;flex-shrink:0}
+.donut::after{content:'';position:absolute;inset:20px;background:var(--card);border-radius:50%}
+.donut-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1}
+.donut-c b{font-size:20px;font-weight:700}
+.donut-c span{font-size:10px;color:var(--tx3)}
+.dl{display:flex;flex-direction:column;gap:8px;font-size:12px;color:var(--tx2)}
+.dl div{display:flex;align-items:center;gap:8px}
+.dl i{width:9px;height:9px;border-radius:3px}
+.dl b{color:var(--tx);margin-left:auto;font-variant-numeric:tabular-nums}
+.mono{font-family:'SF Mono',Consolas,monospace;font-size:11px}
+.sql{font-family:'SF Mono',Consolas,monospace;font-size:10.5px;color:var(--tx3);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.act{display:flex;gap:4px}
+.act button{width:24px;height:24px;border:1px solid var(--border);border-radius:6px;background:#FFF;cursor:pointer;font-size:11px;color:var(--tx3)}
+.act button:hover{border-color:var(--green);color:var(--green)}
+.act button.del:hover{border-color:var(--err);color:var(--err)}
+</style>
+</head>
+<body>
+<div class="layout">
+<div class="topbar">
+  <div class="logo"><img src="../static/doris-logo-green.png" alt=""><b>Apache Doris 作业平台</b></div>
+  <div class="sep"></div>
+  <div class="crumb" id="crumb"><b>集群监控</b> / 概览</div>
+  <div class="right"><div class="status-dot"><i></i>集群健康 · 30s 前同步</div><div class="avatar">A</div><span class="logout">退出</span></div>
+</div>
+<div class="body">
+<nav class="side">
+  <div class="side-label">监控</div>
+  <div class="nav" id="nav">
+    <a data-p="p1" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="6" r="2.6"/><circle cx="5" cy="18" r="2.6"/><circle cx="19" cy="18" r="2.6"/><path d="M10.5 8.5 7.5 15.5M13.5 8.5 16.5 15.5M8 18h8"/></svg>集群概览</a>
+    <a data-p="p2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/></svg>物化视图<span class="badge">152</span></a>
+    <a data-p="p3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="6" r="2"/><circle cx="12" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><path d="M5 8v3M12 8v3M19 8v3M3 14h4M10 14h4M17 14h4M5 11v6h14v-6"/></svg>关系图谱</a>
+    <a data-p="p4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M10 4v16"/></svg>数据表</a>
+  </div>
+  <div class="side-label" style="margin-top:18px">管理</div>
+  <div class="nav">
+    <a data-p="p5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>作业调度</a>
+    <a data-p="p6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></svg>Catalog</a>
+    <a data-p="p7"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>设置</a>
+  </div>
+  <div class="side-foot">v2.0 · Doris 3.1.1<br>FE×3 · BE×4</div>
+</nav>
+<main class="main">
+
+<!-- ═══ P1 集群概览 ═══ -->
+<div class="page on" id="p1">
+  <div class="page-head"><h1>集群概览</h1><p>实时监控 FE / BE 节点与查询负载</p></div>
+  <div class="kpis">
+    <div class="kpi"><div class="lab">FE 节点存活</div><div class="val" style="color:var(--green)">3<small> / 3</small></div><div class="sub"><b>●</b> 全部在线 · Leader: fe-01</div></div>
+    <div class="kpi"><div class="lab">BE 节点存活</div><div class="val" style="color:var(--green)">4<small> / 4</small></div><div class="sub">Tablet 1,284 · 副本正常</div></div>
+    <div class="kpi hl"><div class="lab">物化视图</div><div class="val">152</div><div class="sub"><b>149 OK</b> · 2 Failed · 1 Running</div></div>
+    <div class="kpi"><div class="lab">活跃查询</div><div class="val">7</div><div class="sub">平均 1.2s · 最长 34s</div></div>
+  </div>
+  <div class="grid g2">
+    <div class="panel"><div class="panel-h"><b>Frontend 节点</b><span class="cnt">3 / 3 在线</span><div class="acts"><span>⟳ 刷新</span></div></div>
+      <table><thead><tr><th>节点</th><th>角色</th><th>心跳</th><th>Journal Lag</th><th>查询</th><th>状态</th></tr></thead><tbody>
+      <tr><td><b>fe-01</b> · 10.11.2.101</td><td>Leader</td><td>2s</td><td><div class="bar"><i style="width:8%"></i></div></td><td>1,204</td><td><span class="pill ok"><i></i>在线</span></td></tr>
+      <tr><td><b>fe-02</b> · 10.11.2.102</td><td>Follower</td><td>3s</td><td><div class="bar"><i style="width:22%"></i></div></td><td>980</td><td><span class="pill ok"><i></i>在线</span></td></tr>
+      <tr><td><b>fe-03</b> · 10.11.2.103</td><td>Observer</td><td>5s</td><td><div class="bar"><i style="width:15%"></i></div></td><td>445</td><td><span class="pill ok"><i></i>在线</span></td></tr>
+      </tbody></table></div>
+    <div class="panel"><div class="panel-h"><b>物化视图健康度</b><span class="cnt">近 7 日</span></div>
+      <div class="donut-wrap"><div class="donut"><div class="donut-c"><b>98%</b><span>成功率</span></div></div>
+      <div class="dl"><div><i style="background:var(--green)"></i>成功<b>149</b></div><div><i style="background:#F59E0B"></i>运行中<b>1</b></div><div><i style="background:#EF4444"></i>失败<b>2</b></div><div><i style="background:var(--border)"></i>已暂停<b>0</b></div></div></div></div>
+  </div>
+  <div class="grid g2r">
+    <div class="panel"><div class="panel-h"><b>查询吞吐</b><span class="cnt">近 12 小时 · 次/分</span></div>
+      <div class="viz"><div class="col" style="height:35%"></div><div class="col" style="height:52%"></div><div class="col" style="height:44%"></div><div class="col" style="height:68%"></div><div class="col" style="height:82%"></div><div class="col" style="height:95%"></div><div class="col" style="height:78%"></div><div class="col" style="height:60%"></div><div class="col" style="height:48%"></div><div class="col" style="height:38%"></div><div class="col" style="height:30%"></div><div class="col" style="height:26%"></div></div></div>
+    <div class="panel"><div class="panel-h"><b>Backend 节点</b><span class="cnt">4 / 4 在线</span></div>
+      <table><thead><tr><th>节点</th><th>Tablet</th><th>磁盘用量</th><th>使用率</th><th>状态</th></tr></thead><tbody>
+      <tr><td><b>be-01</b> · :9060</td><td>324</td><td><div class="bar" style="width:100px"><i style="width:62%"></i></div></td><td>6.2T / 10T</td><td><span class="pill ok"><i></i>在线</span></td></tr>
+      <tr><td><b>be-02</b> · :9060</td><td>341</td><td><div class="bar" style="width:100px"><i class="w" style="width:84%"></i></div></td><td>8.4T / 10T</td><td><span class="pill warn"><i></i>84%</span></td></tr>
+      <tr><td><b>be-03</b> · :9060</td><td>312</td><td><div class="bar" style="width:100px"><i style="width:58%"></i></div></td><td>5.8T / 10T</td><td><span class="pill ok"><i></i>在线</span></td></tr>
+      <tr><td><b>be-04</b> · :9060</td><td>307</td><td><div class="bar" style="width:100px"><i style="width:55%"></i></div></td><td>5.5T / 10T</td><td><span class="pill ok"><i></i>在线</span></td></tr>
+      </tbody></table></div>
+  </div>
+  <div class="panel"><div class="panel-h"><b>活跃查询</b><span class="cnt">7 条执行中</span><div class="acts"><span>全部终止</span></div></div>
+    <table><thead><tr><th>查询 ID</th><th>用户</th><th>数据库</th><th>运行时长</th><th>扫描行数</th><th>SQL 摘要</th><th></th></tr></thead><tbody>
+    <tr><td class="mono">q7f3a2…</td><td><b>admin</b></td><td>warehouse</td><td><span class="pill warn"><i></i>34s</span></td><td>12.4M</td><td class="sql">SELECT * FROM dws_order_detail_df WHERE dt…</td><td style="color:var(--err);cursor:pointer">终止</td></tr>
+    <tr><td class="mono">q2b8c1…</td><td><b>etl_svc</b></td><td>warehouse</td><td>8s</td><td>3.1M</td><td class="sql">INSERT INTO dim_customer_df SELECT …</td><td style="color:var(--err);cursor:pointer">终止</td></tr>
+    <tr><td class="mono">q9e4d7…</td><td><b>admin</b></td><td>ods</td><td>3s</td><td>856K</td><td class="sql">SELECT COUNT(*) FROM ods_order_all_df GROUP…</td><td style="color:var(--err);cursor:pointer">终止</td></tr>
+    </tbody></table></div>
+</div>
+
+<!-- ═══ P2 物化视图 ═══ -->
+<div class="page" id="p2">
+  <div class="page-head"><h1>物化视图</h1><p>物化视图生命周期管理与刷新监控</p></div>
+  <div class="kpis">
+    <div class="kpi hl"><div class="lab">MV 总数</div><div class="val">152</div><div class="sub">分布 6 个数据库</div></div>
+    <div class="kpi"><div class="lab">刷新成功</div><div class="val" style="color:var(--ok)">149</div><div class="sub"><b>98%</b> 成功率</div></div>
+    <div class="kpi err"><div class="lab">刷新失败</div><div class="val">2</div><div class="sub">dim_supplier_mv_df · dws_qty_df</div></div>
+    <div class="kpi warn"><div class="lab">运行中</div><div class="val">1</div><div class="sub">dwd_order_df · 已跑 45s</div></div>
+  </div>
+  <div class="filter">
+    <select class="sel"><option>全部数据库</option><option>warehouse</option><option>ods</option></select>
+    <select class="sel"><option>全部刷新类型</option><option>COMPLETE</option><option>AUTO</option></select>
+    <select class="sel"><option>全部状态</option><option>SUCCESS</option><option>FAILED</option></select>
+    <input class="inp" placeholder="搜索名称 / 中文名 / 标签…">
+    <button class="btn pri">＋ 新建 MV</button>
+    <button class="btn ghost">⟳ 刷新列表</button>
+  </div>
+  <div class="batch">已选 3 项<span class="sp"></span><button style="background:var(--green);color:#fff">⟳ 批量刷新</button><button style="background:var(--warn);color:#fff">⏸ 批量暂停</button><button style="background:var(--tx2);color:#fff">▶ 批量启用</button><button style="background:var(--err);color:#fff">✕ 批量删除</button></div>
+  <div class="panel">
+    <div class="panel-h"><b>MV 列表</b><span class="cnt">152 条 · 第 1-10 条</span><div class="acts"><span>按状态排序</span></div></div>
+    <table><thead><tr><th style="width:30px"><input type="checkbox"></th><th>名称 / 中文名</th><th>数据库</th><th>状态</th><th>类型</th><th>间隔</th><th>依赖</th><th>行数</th><th>大小</th><th>耗时</th><th>上次刷新</th><th></th></tr></thead><tbody>
+    <tr><td><input type="checkbox" checked></td><td><b>dwd_admin_factory_order_mv_df</b><br><span style="font-size:10px;color:var(--tx3)">工厂订单明细</span></td><td>warehouse</td><td><span class="pill ok"><i></i>OK</span></td><td><span class="pill gray">COMPLETE</span></td><td>20 分钟</td><td>3</td><td style="text-align:right">4.2M</td><td style="text-align:right">1.2G</td><td>18s</td><td style="font-size:11px;color:var(--tx3)">14:32:08</td><td><div class="act"><button>✎</button><button>⟳</button><button class="del">✕</button></div></td></tr>
+    <tr><td><input type="checkbox" checked></td><td><b>dim_oa_employee_mv_df</b><br><span style="font-size:10px;color:var(--tx3)">OA 员工维表</span></td><td>warehouse</td><td><span class="pill ok"><i></i>OK</span></td><td><span class="pill gray">AUTO</span></td><td>ON COMMIT</td><td>1</td><td style="text-align:right">8,412</td><td style="text-align:right">12M</td><td>2s</td><td style="font-size:11px;color:var(--tx3)">14:30:01</td><td><div class="act"><button>✎</button><button>⟳</button><button class="del">✕</button></div></td></tr>
+    <tr><td><input type="checkbox" checked></td><td><b>dim_supplier_mv_df</b><br><span style="font-size:10px;color:var(--tx3)">供应商维表</span></td><td>warehouse</td><td><span class="pill err"><i></i>Failed</span></td><td><span class="pill gray">COMPLETE</span></td><td>1 小时</td><td>2</td><td style="text-align:right">—</td><td style="text-align:right">—</td><td>—</td><td style="font-size:11px;color:var(--err)">13:00 失败</td><td><div class="act"><button>✎</button><button>⟳</button><button class="del">✕</button></div></td></tr>
+    <tr><td><input type="checkbox"></td><td><b>dws_order_qty_df_mv</b><br><span style="font-size:10px;color:var(--tx3)">订单量汇总</span></td><td>warehouse</td><td><span class="pill warn"><i></i>Running</span></td><td><span class="pill gray">COMPLETE</span></td><td>15 分钟</td><td>5</td><td style="text-align:right">…</td><td style="text-align:right">…</td><td>45s</td><td style="font-size:11px;color:var(--tx3)">进行中</td><td><div class="act"><button>✎</button><button>⟳</button><button class="del">✕</button></div></td></tr>
+    <tr><td><input type="checkbox"></td><td><b>dim_assts_type_mv_df</b><br><span style="font-size:10px;color:var(--tx3)">资产类型维表</span></td><td>warehouse</td><td><span class="pill ok"><i></i>OK</span></td><td><span class="pill gray">AUTO</span></td><td>20 分钟</td><td>1</td><td style="text-align:right">426</td><td style="text-align:right">2.1M</td><td>1s</td><td style="font-size:11px;color:var(--tx3)">14:20:00</td><td><div class="act"><button>✎</button><button>⟳</button><button class="del">✕</button></div></td></tr>
+    </tbody></table>
+    <div class="pager"><span>‹</span><span class="on">1</span><span>2</span><span>3</span><span>…</span><span>16</span><span>›</span></div>
+  </div>
+</div>
+
+<!-- ═══ P3 关系图谱 ═══ -->
+<div class="page" id="p3">
+  <div class="page-head"><h1>关系图谱</h1><p>物化视图依赖关系与上下游血缘</p></div>
+  <div class="kpis">
+    <div class="kpi hl"><div class="lab">物化视图节点</div><div class="val">152</div><div class="sub">含 MV-on-MV 依赖 38 条</div></div>
+    <div class="kpi"><div class="lab">基表节点</div><div class="val">214</div><div class="sub">覆盖 5 个外部 Catalog</div></div>
+    <div class="kpi"><div class="lab">依赖边</div><div class="val">347</div><div class="sub">上游 312 · 下游 35</div></div>
+    <div class="kpi"><div class="lab">孤立 MV</div><div class="val">4</div><div class="sub">无依赖声明 · 建议补充</div></div>
+  </div>
+  <div class="filter">
+    <select class="sel"><option>全部数据库</option><option>warehouse</option></select>
+    <input class="inp" placeholder="搜索 MV 名称…" style="max-width:220px">
+    <button class="btn ghost">⛶ 全屏</button>
+    <button class="btn ghost">导出 PNG</button>
+  </div>
+  <div class="graph-wrap">
+    <div class="legend"><span><i style="background:#11A679"></i>物化视图</span><span><i style="background:#3B82F6"></i>基表</span><span><i style="background:#9AA1AC"></i>数据库</span></div>
+    <canvas id="graph-canvas" style="width:100%;height:100%;display:block"></canvas>
+  </div>
+</div>
+
+<!-- ═══ P4 数据表 ═══ -->
+<div class="page" id="p4">
+  <div class="page-head"><h1>数据表</h1><p>浏览全部数据库中的表结构</p></div>
+  <div class="kpis">
+    <div class="kpi"><div class="lab">数据库</div><div class="val">6</div><div class="sub">含 1 个内部库</div></div>
+    <div class="kpi hl"><div class="lab">数据表总数</div><div class="val">366</div><div class="sub">Doris 内部表</div></div>
+    <div class="kpi"><div class="lab">总存储</div><div class="val">412<small> GB</small></div><div class="sub">含副本</div></div>
+    <div class="kpi"><div class="lab">总行数</div><div class="val">1.8<small> B</small></div><div class="sub">全库合计</div></div>
+  </div>
+  <div class="filter">
+    <select class="sel"><option>全部数据库</option><option>warehouse</option><option>ods</option></select>
+    <input class="inp" placeholder="搜索表名…">
+    <button class="btn ghost">⟳ 刷新</button>
+  </div>
+  <div class="panel">
+    <div class="panel-h"><b>表列表</b><span class="cnt">366 条 · 第 1-10 条</span></div>
+    <table><thead><tr><th>表名</th><th>数据库</th><th>行数</th><th>大小</th><th>创建时间</th><th>备注</th><th>下游 MV</th><th></th></tr></thead><tbody>
+    <tr><td><b>dwd_admin_factory_order_df</b></td><td>warehouse</td><td style="text-align:right">4.2M</td><td style="text-align:right">1.2 GB</td><td>2026-05-12</td><td style="font-size:11px;color:var(--tx3)">工厂订单明细</td><td><span class="pill info">3 个</span></td><td><div class="act"><button>👁</button></div></td></tr>
+    <tr><td><b>dim_oa_employee_df</b></td><td>warehouse</td><td style="text-align:right">8,412</td><td style="text-align:right">12 MB</td><td>2026-04-02</td><td style="font-size:11px;color:var(--tx3)">OA 员工维表</td><td><span class="pill info">5 个</span></td><td><div class="act"><button>👁</button></div></td></tr>
+    <tr><td><b>ods_order_all_df</b></td><td>ods</td><td style="text-align:right">89.1M</td><td style="text-align:right">23.4 GB</td><td>2026-03-15</td><td style="font-size:11px;color:var(--tx3)">订单全量 ODS</td><td><span class="pill info">2 个</span></td><td><div class="act"><button>👁</button></div></td></tr>
+    <tr><td><b>ecology.workflow_requestbase</b></td><td>oa_catalog</td><td style="text-align:right">1.2M</td><td style="text-align:right">480 MB</td><td>2025-12-01</td><td style="font-size:11px;color:var(--tx3)">外部 Catalog 表</td><td><span class="pill info">12 个</span></td><td><div class="act"><button>👁</button></div></td></tr>
+    </tbody></table>
+    <div class="pager"><span>‹</span><span class="on">1</span><span>2</span><span>…</span><span>37</span><span>›</span></div>
+  </div>
+</div>
+
+<!-- ═══ P5 作业调度 ═══ -->
+<div class="page" id="p5">
+  <div class="page-head"><h1>作业调度</h1><p>定时作业全生命周期管理</p></div>
+  <div class="kpis">
+    <div class="kpi hl"><div class="lab">作业总数</div><div class="val">48</div><div class="sub">Doris Job 39 · 调度器 9</div></div>
+    <div class="kpi"><div class="lab">运行中</div><div class="val" style="color:var(--ok)">41</div><div class="sub">正常调度</div></div>
+    <div class="kpi warn"><div class="lab">已暂停</div><div class="val">7</div><div class="sub">手动暂停</div></div>
+    <div class="kpi err"><div class="lab">近期失败</div><div class="val">3</div><div class="sub">24 小时内</div></div>
+  </div>
+  <div class="filter">
+    <select class="sel"><option>全部状态</option><option>运行中</option><option>已暂停</option></select>
+    <input class="inp" placeholder="搜索作业名称…">
+    <button class="btn pri">＋ 创建作业</button>
+  </div>
+  <div class="panel">
+    <div class="panel-h"><b>作业列表</b><span class="cnt">48 条</span></div>
+    <table><thead><tr><th>作业名称</th><th>类型</th><th>调度</th><th>目标库.表</th><th>上次执行</th><th>结果</th><th>次数</th><th>状态</th><th></th></tr></thead><tbody>
+    <tr><td><b>sync_ods_order_all</b></td><td><span class="pill gray">INSERT</span></td><td>每 10 分钟</td><td class="mono">ods.ods_order_all_df</td><td>14:30:12</td><td><span class="pill ok"><i></i>成功 · 8s</span></td><td>1,284</td><td><span class="pill ok"><i></i>运行中</span></td><td><div class="act"><button title="立即执行">▶</button><button title="暂停">⏸</button><button class="del" title="删除">✕</button></div></td></tr>
+    <tr><td><b>sync_dim_customer_hourly</b></td><td><span class="pill gray">INSERT</span></td><td>每 1 小时</td><td class="mono">warehouse.dim_customer_df</td><td>14:00:03</td><td><span class="pill ok"><i></i>成功 · 2s</span></td><td>432</td><td><span class="pill ok"><i></i>运行中</span></td><td><div class="act"><button>▶</button><button>⏸</button><button class="del">✕</button></div></td></tr>
+    <tr><td><b>refresh_dws_qty_nightly</b></td><td><span class="pill info">SCHEDULER</span></td><td>每天 02:00</td><td class="mono">warehouse.dws_qty_df</td><td>02:00:00</td><td><span class="pill err"><i></i>失败 · 连接超时</span></td><td>186</td><td><span class="pill warn"><i></i>已暂停</span></td><td><div class="act"><button>▶</button><button title="恢复">▶</button><button class="del">✕</button></div></td></tr>
+    </tbody></table>
+  </div>
+</div>
+
+<!-- ═══ P6 Catalog ═══ -->
+<div class="page" id="p6">
+  <div class="page-head"><h1>Catalog 管理</h1><p>外部数据源 Catalog 配置</p></div>
+  <div class="kpis">
+    <div class="kpi hl"><div class="lab">Catalog 总数</div><div class="val">5</div><div class="div sub">2 个连通异常</div></div>
+    <div class="kpi"><div class="lab">HMS</div><div class="val">1</div><div class="sub">Hive Metastore</div></div>
+    <div class="kpi"><div class="lab">JDBC</div><div class="val">2</div><div class="sub">MySQL · Oracle</div></div>
+    <div class="kpi"><div class="lab">ES</div><div class="val">1</div><div class="sub">Elasticsearch 7.x</div></div>
+  </div>
+  <div class="filter">
+    <input class="inp" placeholder="搜索 Catalog…" style="max-width:220px">
+    <button class="btn pri">＋ 创建 Catalog</button>
+    <button class="btn ghost">测试全部连接</button>
+  </div>
+  <div class="panel">
+    <div class="panel-h"><b>Catalog 列表</b><span class="cnt">5 个</span></div>
+    <table><thead><tr><th>名称</th><th>类型</th><th>关键属性</th><th>连通性</th><th>表数</th><th></th></tr></thead><tbody>
+    <tr><td><b>oa_catalog</b></td><td><span class="type-tag hms">HMS</span></td><td class="props">hive.metastore.uris=thrift://10.11.2.200:9083</td><td><span class="pill ok"><i></i>正常</span></td><td>214</td><td><div class="act"><button>✎</button><button title="测试">⚡</button><button class="del">✕</button></div></td></tr>
+    <tr><td><b>mysql_erp</b></td><td><span class="type-tag jdbc">JDBC</span></td><td class="props">jdbc.url=jdbc:mysql://10.11.2.88:3306/erp…</td><td><span class="pill ok"><i></i>正常</span></td><td>86</td><td><div class="act"><button>✎</button><button>⚡</button><button class="del">✕</button></div></td></tr>
+    <tr><td><b>es_logs</b></td><td><span class="type-tag es">ES</span></td><td class="props">hosts=http://10.11.2.66:9200</td><td><span class="pill warn"><i></i>超时</span></td><td>12</td><td><div class="act"><button>✎</button><button>⚡</button><button class="del">✕</button></div></td></tr>
+    </tbody></table>
+  </div>
+</div>
+
+<!-- ═══ P7 设置 ═══ -->
+<div class="page" id="p7">
+  <div class="page-head"><h1>设置</h1><p>集群连接与告警配置</p></div>
+  <div class="form">
+    <div class="panel">
+      <div class="panel-h"><b>集群连接</b><div class="acts"><span>测试连接</span></div></div>
+      <div style="padding:18px 20px 8px">
+        <div class="f-row"><label>主机地址</label><div class="ctl"><input class="f-inp" value="10.11.2.101"></div></div>
+        <div class="f-row"><label>MySQL 端口</label><div class="ctl"><input class="f-inp" value="9030"></div></div>
+        <div class="f-row"><label>用户名</label><div class="ctl"><input class="f-inp" value="admin"></div></div>
+        <div class="f-row"><label>密码</label><div class="ctl"><input class="f-inp" type="password" value="********"></div></div>
+        <div class="f-row"><label>FE HTTP 端口</label><div class="ctl"><input class="f-inp" value="8030"></div></div>
+        <div class="f-row"><label>刷新间隔</label><div class="ctl"><input class="f-inp" value="30"> <span style="font-size:11px;color:var(--tx3)">秒</span></div></div>
+        <div class="f-row" style="margin-bottom:18px"><label></label><div class="ctl" style="display:flex;gap:8px"><button class="btn pri">保存配置</button><button class="btn ghost">测试连接</button><span class="pill ok" style="align-self:center"><i></i>连接正常</span></div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-h"><b>邮件告警</b><div class="acts"><span>发送测试邮件</span></div></div>
+      <div style="padding:18px 20px 8px">
+        <div class="f-row"><label>启用告警</label><div class="ctl"><div class="switch"></div></div></div>
+        <div class="f-row"><label>SMTP 服务器</label><div class="ctl"><input class="f-inp" value="smtp.exmail.qq.com"></div></div>
+        <div class="f-row"><label>端口</label><div class="ctl"><input class="f-inp" value="465"></div></div>
+        <div class="f-row"><label>发件账号</label><div class="ctl"><input class="f-inp" value="alert@company.com"></div></div>
+        <div class="f-row"><label>授权码</label><div class="ctl"><input class="f-inp" type="password" value="********"></div></div>
+        <div class="f-row"><label>收件人</label><div class="ctl"><input class="f-inp" value="ops@company.com,dba@company.com"></div></div>
+        <div class="f-row" style="margin-bottom:18px"><label></label><div class="ctl" style="display:flex;gap:8px"><button class="btn pri">保存配置</button><button class="btn ghost">测试邮件</button></div></div>
+      </div>
+    </div>
+  </div>
+  <div style="height:16px"></div>
+  <div class="panel">
+    <div class="panel-h"><b>告警规则</b><span class="cnt">6 条内置规则</span></div>
+    <table><thead><tr><th>规则</th><th>阈值</th><th>当前值</th><th>状态</th></tr></thead><tbody>
+    <tr><td><b>FE 节点宕机</b></td><td>任一 FE 不可达</td><td>3 / 3 在线</td><td><span class="pill ok"><i></i>正常</span></td></tr>
+    <tr><td><b>BE 节点宕机</b></td><td>任一 BE 不可达</td><td>4 / 4 在线</td><td><span class="pill ok"><i></i>正常</span></td></tr>
+    <tr><td><b>BE 磁盘使用率</b></td><td>&gt; 85%</td><td>最高 84.2%</td><td><span class="pill warn"><i></i>接近阈值</span></td></tr>
+    <tr><td><b>MV 刷新失败</b></td><td>状态 = FAILED</td><td>2 个失败</td><td><span class="pill err"><i></i>已触发</span></td></tr>
+    </tbody></table>
+  </div>
+</div>
+
+</main>
+</div>
+</div>
+<script>
+var nav=document.getElementById('nav'),links=nav.querySelectorAll('a'),pages=document.querySelectorAll('.page'),crumb=document.getElementById('crumb');
+var crumbs={p1:'<b>集群监控</b> / 概览',p2:'<b>监控</b> / 物化视图',p3:'<b>监控</b> / 关系图谱',p4:'<b>监控</b> / 数据表',p5:'<b>管理</b> / 作业调度',p6:'<b>管理</b> / Catalog',p7:'<b>管理</b> / 设置'};
+document.querySelectorAll('.nav a[data-p]').forEach(function(a){
+  a.onclick=function(){
+    links.forEach(function(x){x.classList.remove('on')});
+    document.querySelectorAll('.nav a').forEach(function(x){x.classList.remove('on')});
+    a.classList.add('on');
+    pages.forEach(function(p){p.classList.remove('on')});
+    document.getElementById(a.dataset.p).classList.add('on');
+    crumb.innerHTML=crumbs[a.dataset.p];
+  };
+});
+
+/* ── 关系图谱 Canvas 引擎 ── */
+(function(){
+  var cv=document.getElementById('graph-canvas');
+  if(!cv)return;
+  var ctx=cv.getContext('2d'),W=0,H=0,dpr=Math.min(window.devicePixelRatio||1,2);
+
+  // 节点数据: nx,ny 归一化坐标; t: mv/table/db; r: 半径
+  var NODES=[
+    {id:'ods1',label:'ods_order_df',nx:.15,ny:.19,t:'table',r:9},
+    {id:'ods2',label:'ods_customer_df',nx:.15,ny:.47,t:'table',r:9},
+    {id:'ods3',label:'ods_product_df',nx:.15,ny:.69,t:'table',r:9},
+    {id:'dwd1',label:'dwd_order_mv_df',nx:.34,ny:.36,t:'mv',r:14,dep:3},
+    {id:'dim1',label:'dim_customer_mv',nx:.52,ny:.36,t:'mv',r:13,dep:1},
+    {id:'dws1',label:'dws_qty_mv',nx:.66,ny:.5,t:'mv',r:12,dep:1},
+    {id:'dws2',label:'dws_amt_mv',nx:.66,ny:.24,t:'mv',r:12,dep:1},
+    {id:'ec1',label:'ecology.workflow',nx:.4,ny:.88,t:'table',r:10},
+    {id:'ads1',label:'ads_board_mv',nx:.8,ny:.36,t:'mv',r:15,dep:2},
+    {id:'dim2',label:'dim_flow_mv',nx:.8,ny:.75,t:'mv',r:12,dep:1},
+    {id:'rpt1',label:'rpt_kpi_mv',nx:.93,ny:.55,t:'mv',r:14,dep:1}
+  ];
+  var EDGES=[
+    ['ods1','dwd1'],['ods2','dwd1'],['ods3','dwd1'],
+    ['dwd1','dim1'],['dim1','dws1'],['dim1','dws2'],
+    ['ec1','dim2'],['dws2','ads1'],['dws1','ads1'],
+    ['dim2','ads1'],['ads1','rpt1']
+  ];
+  // 边粒子相位
+  EDGES.forEach(function(e){e.ph=Math.random()});
+
+  var nodeMap={};NODES.forEach(function(n){nodeMap[n.id]=n;n.x=0;n.y=0;n.ph=Math.random()*6.28});
+
+  function resize(){
+    var host=cv.parentElement;
+    W=host.clientWidth;H=host.clientHeight;
+    cv.width=W*dpr;cv.height=H*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  resize();window.addEventListener('resize',function(){setTimeout(resize,50)});
+
+  var mouse={x:-1e4,y:-1e4},hoverN=null;
+  cv.addEventListener('mousemove',function(e){
+    var b=cv.getBoundingClientRect();
+    mouse.x=e.clientX-b.left;mouse.y=e.clientY-b.top;
+  });
+  cv.addEventListener('mouseleave',function(){mouse.x=-1e4;mouse.y=-1e4;hoverN=null});
+
+  function layout(t){
+    NODES.forEach(function(n){
+      var bx=n.nx*W,by=n.ny*H;
+      // 轻微漂浮
+      n.x=bx+Math.sin(t*.0006+n.ph)*4;
+      n.y=by+Math.cos(t*.0005+n.ph*1.3)*3.5;
+      n.s=1+Math.sin(t*.0012+n.ph)*.03;
+    });
+  }
+
+  function edgeGeom(a,b){
+    // 贝塞尔: 垂直偏移的中点控制
+    var mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
+    var dx=b.x-a.x,dy=b.y-a.y,len=Math.sqrt(dx*dx+dy*dy);
+    var cx=mx-dy/len*len*.12,cy=my+dx/len*len*.12;
+    return {cx:cx,cy:cy};
+  }
+
+  function qpt(a,c,b,t){
+    var u=1-t;
+    return {x:u*u*a.x+2*u*t*c.x+t*t*b.x, y:u*u*a.y+2*u*t*c.y+t*t*b.y};
+  }
+
+  var t0=performance.now();
+  function frame(now){
+    var t=now;
+    var host=cv.parentElement;
+    if(host.clientWidth>0 && (host.clientWidth!==W||host.clientHeight!==H)) resize();
+    if(W<2||H<2){requestAnimationFrame(frame);return}
+    layout(t);
+    // hover 检测
+    hoverN=null;
+    for(var i=0;i<NODES.length;i++){
+      var n=NODES[i];
+      var d=Math.sqrt((n.x-mouse.x)*(n.x-mouse.x)+(n.y-mouse.y)*(n.y-mouse.y));
+      if(d<n.r+14){hoverN=n;break}
+    }
+    // 背景渐变
+    var g=ctx.createRadialGradient(W*.45,H*.42,0,W*.45,H*.42,Math.max(W,H)*.7);
+    g.addColorStop(0,'#FDFEFD');g.addColorStop(1,'#F0F5F2');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    // 网格
+    ctx.strokeStyle='rgba(17,166,121,.05)';ctx.lineWidth=1;
+    var gs=44;
+    for(var x=0;x<W;x+=gs){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
+    for(var y=0;y<H;y+=gs){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+    // 雷达环
+    ctx.strokeStyle='rgba(17,166,121,.055)';
+    for(var r=90;r<Math.max(W,H);r+=170){
+      ctx.beginPath();ctx.arc(W*.45,H*.42,r,0,6.28);ctx.stroke()
+    }
+
+    // 邻居集合
+    var nb={};
+    if(hoverN){nb[hoverN.id]=1;EDGES.forEach(function(e){if(e[0]===hoverN.id)nb[e[1]]=1;if(e[1]===hoverN.id)nb[e[0]]=1})}
+
+    // 边
+    EDGES.forEach(function(e){
+      var a=nodeMap[e[0]],b=nodeMap[e[1]];
+      var gm=edgeGeom(a,b);
+      var active=hoverN&&(e[0]===hoverN.id||e[1]===hoverN.id);
+      var dimmed=hoverN&&!active;
+      ctx.beginPath();
+      ctx.moveTo(a.x,a.y);
+      ctx.quadraticCurveTo(gm.cx,gm.cy,b.x,b.y);
+      ctx.strokeStyle=active?'rgba(17,166,121,.5)':(dimmed?'rgba(100,116,139,.06)':'rgba(100,116,139,.28)');
+      ctx.lineWidth=active?1.8:1.1;
+      ctx.stroke();
+      // 方向粒子
+      var pt=qpt(a,gm,b,e.ph+now*.00022%1);
+      var dim2=dimmed?.3:1;
+      ctx.save();
+      ctx.globalAlpha=dim2;
+      ctx.beginPath();
+      ctx.arc(pt.x,pt.y,active?2.6:1.8,0,6.28);
+      ctx.fillStyle=active?'#0D9668':'#94A3B8';
+      if(active){ctx.shadowColor='rgba(17,166,121,.45)';ctx.shadowBlur=8}
+      ctx.fill();
+      ctx.restore();
+    });
+
+    // 节点
+    NODES.forEach(function(n){
+      var isMV=n.t==='mv';
+      var active=hoverN&&(n.id===hoverN.id||nb[n.id]);
+      var dimmed=hoverN&&!active;
+      ctx.save();
+      ctx.globalAlpha=dimmed?.25:1;
+      var R=n.r*n.s*(active?1.18:1);
+      // 光晕
+      var glow=isMV?'17,166,121':'59,130,246';
+      var gr=ctx.createRadialGradient(n.x,n.y,R*.4,n.x,n.y,R*3.2);
+      gr.addColorStop(0,'rgba('+glow+','+(active?.26:.15)+')');
+      gr.addColorStop(1,'rgba('+glow+',0)');
+      ctx.fillStyle=gr;
+      ctx.beginPath();ctx.arc(n.x,n.y,R*3.2,0,6.28);ctx.fill();
+      // 主体
+      ctx.beginPath();ctx.arc(n.x,n.y,R,0,6.28);
+      var fill=isMV?(active?'#0C8A60':'#11A679'):(active?'#2563EB':'#3B82F6');
+      ctx.fillStyle=fill;
+      ctx.shadowColor='rgba('+glow+',.5)';
+      ctx.shadowBlur=active?20:(isMV?12:7);
+      ctx.fill();
+      ctx.shadowBlur=0;
+      // 内核高光
+      ctx.beginPath();ctx.arc(n.x-R*.28,n.y-R*.28,R*.32,0,6.28);
+      ctx.fillStyle='rgba(255,255,255,.55)';
+      ctx.fill();
+      // 依赖角标
+      if(n.dep){
+        var bx=n.x+R*.82,by=n.y-R*.82;
+        ctx.beginPath();ctx.arc(bx,by,7.5,0,6.28);
+        ctx.fillStyle=active?'#E9F7F1':'#FFFFFF';
+        ctx.strokeStyle=active?'#0C8A60':'rgba(17,166,121,.55)';
+        ctx.lineWidth=1.2;ctx.fill();ctx.stroke();
+        ctx.fillStyle=active?'#0C8A60':'#2E9C7B';
+        ctx.font='700 8.5px -apple-system,sans-serif';
+        ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillText(n.dep,bx,by+.5);
+      }
+      // 标签
+      ctx.font=(active?'600 ':'400 ')+'10.5px -apple-system,"PingFang SC",sans-serif';
+      ctx.textAlign='center';
+      ctx.fillStyle=active?'#0B6B4D':(isMV?'#17805F':'#7C8894');
+      ctx.fillText(n.label,n.x,n.y+R+16);
+      ctx.restore();
+    });
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

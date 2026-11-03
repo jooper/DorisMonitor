@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>方向B · 监控指挥中心</title>
+<style>
+:root{--g:#1FCD93;--g2:#11A679;--tx:#E8F0ED;--tx2:#8FA8A0;--tx3:#5A736C;--bg:#0B1A16;--bg2:#0E211C;--card:#10261F;--line:rgba(31,205,147,.14);--ok:#34D399;--warn:#FBBF24;--err:#F87171}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;font-size:13px;color:var(--tx);background:var(--bg)}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 50% at 30% 20%,rgba(31,205,147,.06),transparent),radial-gradient(ellipse 40% 40% at 85% 80%,rgba(31,205,147,.04),transparent);pointer-events:none}
+.layout{display:flex;flex-direction:column;height:100%;position:relative}
+/* ── 顶栏 ── */
+.topbar{height:52px;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;gap:16px;flex-shrink:0;background:rgba(11,26,22,.85);backdrop-filter:blur(12px)}
+.topbar .logo{display:flex;align-items:center;gap:10px}
+.topbar .logo img{height:24px;width:auto;display:block;filter:brightness(1.2)}
+.topbar .logo b{font-size:14px;font-weight:700;letter-spacing:.01em}
+.topbar .live{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--g);border:1px solid var(--line);padding:4px 12px;border-radius:20px;background:rgba(31,205,147,.06)}
+.topbar .live i{width:7px;height:7px;border-radius:50%;background:var(--g);animation:blink 1.6s infinite}
+@keyframes blink{50%{opacity:.3}}
+.topbar .clock{margin-left:auto;font-size:12px;color:var(--tx2);font-variant-numeric:tabular-nums}
+.topbar .op{font-size:12px;color:var(--tx3);cursor:pointer;padding:5px 10px;border-radius:8px}
+.topbar .op:hover{color:var(--err);background:rgba(248,113,113,.08)}
+/* ── 布局 ── */
+.body{display:flex;flex:1;overflow:hidden}
+.side{width:200px;border-right:1px solid var(--line);padding:18px 14px;display:flex;flex-direction:column;flex-shrink:0}
+.side-label{font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--tx3);padding:0 12px 12px}
+.nav{display:flex;flex-direction:column;gap:3px}
+.nav a{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:9px;font-size:13px;color:var(--tx2);cursor:pointer;transition:all .15s;border:1px solid transparent}
+.nav a svg{width:17px;height:17px;opacity:.75}
+.nav a:hover{color:var(--tx);background:rgba(31,205,147,.05)}
+.nav a.on{color:var(--g);background:rgba(31,205,147,.1);border-color:var(--line);font-weight:600}
+.nav a.on svg{opacity:1}
+.nav .num{margin-left:auto;font-size:10px;font-weight:700;color:var(--g);background:rgba(31,205,147,.14);border-radius:8px;padding:2px 8px}
+.side-foot{margin-top:auto;padding:12px;font-size:10px;color:var(--tx3);line-height:1.8}
+/* ── 内容 ── */
+.main{flex:1;overflow-y:auto;padding:22px 26px}
+.page-head{display:flex;align-items:baseline;gap:12px;margin-bottom:18px}
+.page-head h1{font-size:21px;font-weight:700;letter-spacing:-.01em}
+.page-head p{font-size:12px;color:var(--tx3)}
+.page-head .right{margin-left:auto;display:flex;gap:10px}
+.chip-btn{font-size:12px;color:var(--tx2);border:1px solid var(--line);padding:6px 14px;border-radius:8px;cursor:pointer;background:transparent}
+.chip-btn:hover{color:var(--g);border-color:rgba(31,205,147,.3)}
+/* ── 数字面板 ── */
+.dash{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:16px}
+.tile{background:linear-gradient(160deg,var(--card),rgba(16,38,31,.6));border:1px solid var(--line);border-radius:13px;padding:17px 19px;position:relative;overflow:hidden}
+.tile::after{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--g),transparent);opacity:.7}
+.tile .lab{font-size:11px;font-weight:600;color:var(--tx2);letter-spacing:.05em;margin-bottom:9px}
+.tile .val{font-size:30px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1;color:var(--tx)}
+.tile .val small{font-size:13px;color:var(--tx3);font-weight:500}
+.tile .trend{font-size:11px;margin-top:9px;color:var(--tx3);display:flex;gap:5px;align-items:center}
+.tile .trend b{color:var(--ok);font-weight:600}
+.tile.alert .val{color:var(--warn)}
+.tile.alert::after{background:linear-gradient(180deg,var(--warn),transparent)}
+/* ── 面板 ── */
+.row{display:grid;grid-template-columns:1.55fr 1fr;gap:13px;margin-bottom:13px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:13px;overflow:hidden}
+.panel-h{display:flex;align-items:center;padding:13px 17px;border-bottom:1px solid var(--line)}
+.panel-h b{font-size:12.5px;font-weight:600;letter-spacing:.02em}
+.panel-h .cnt{margin-left:9px;font-size:10px;color:var(--tx3)}
+.panel-h .acts{margin-left:auto;font-size:11px;color:var(--tx3)}
+.panel-h .acts span{cursor:pointer;padding:3px 9px;border-radius:6px}
+.panel-h .acts span:hover{color:var(--g);background:rgba(31,205,147,.07)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:8px 17px;font-size:9.5px;font-weight:700;letter-spacing:.1em;color:var(--tx3);text-transform:uppercase;background:rgba(11,26,22,.5);border-bottom:1px solid var(--line)}
+td{padding:10px 17px;border-bottom:1px solid rgba(31,205,147,.07);color:var(--tx2)}
+tr:last-child td{border-bottom:none}
+td b{color:var(--tx);font-weight:600}
+.st{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:2.5px 10px;border-radius:20px}
+.st.ok{background:rgba(52,211,153,.12);color:var(--ok)}
+.st.warn{background:rgba(251,191,36,.1);color:var(--warn)}
+.st.err{background:rgba(248,113,113,.1);color:var(--err)}
+.st i{width:6px;height:6px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor}
+.bar{height:4px;background:rgba(31,205,147,.1);border-radius:2px;overflow:hidden;width:95px}
+.bar i{display:block;height:100%;border-radius:2px;background:linear-gradient(90deg,var(--g2),var(--g))}
+.bar i.w{background:linear-gradient(90deg,#B45309,var(--warn))}
+/* 波形图 */
+.wave{display:flex;align-items:flex-end;gap:4px;height:105px;padding:16px 17px 6px}
+.wave .c{flex:1;border-radius:3px 3px 0 0;background:linear-gradient(180deg,var(--g),rgba(31,205,147,.25));opacity:.8;transition:opacity .15s}
+.wave .c:hover{opacity:1;box-shadow:0 0 12px rgba(31,205,147,.35)}
+.wave-x{display:flex;padding:0 17px 12px;gap:4px}
+.wave-x span{flex:1;text-align:center;font-size:8.5px;color:var(--tx3)}
+/* 环形 */
+.ring-wrap{display:flex;align-items:center;justify-content:center;gap:22px;padding:22px}
+.ring{width:125px;height:125px;border-radius:50%;background:conic-gradient(var(--g) 0 98%,rgba(251,191,36,.7) 98% 99%,rgba(248,113,113,.7) 99% 100%);position:relative}
+.ring::after{content:'';position:absolute;inset:20px;background:var(--card);border-radius:50%}
+.ring-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1}
+.ring-c b{font-size:24px;font-weight:700;color:var(--tx)}
+.ring-c span{font-size:9.5px;color:var(--tx3);margin-top:2px}
+.ring-l{display:flex;flex-direction:column;gap:10px;font-size:12px;color:var(--tx2)}
+.ring-l div{display:flex;align-items:center;gap:9px}
+.ring-l i{width:9px;height:9px;border-radius:3px}
+.ring-l b{color:var(--tx);margin-left:auto;padding-left:18px;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div class="layout">
+<div class="topbar">
+  <div class="logo"><img src="../static/doris-logo-green.png" alt=""><b>Apache Doris 作业平台</b></div>
+  <div class="live"><i></i>LIVE · 集群正常</div>
+  <div class="clock">14:32:08</div>
+  <span class="op">退出</span>
+</div>
+<div class="body">
+<nav class="side">
+  <div class="side-label">监控</div>
+  <div class="nav">
+    <a class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="6" r="2.6"/><circle cx="5" cy="18" r="2.6"/><circle cx="19" cy="18" r="2.6"/><path d="M10.5 8.5 7.5 15.5M13.5 8.5 16.5 15.5M8 18h8"/></svg>集群总览</a>
+    <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/></svg>物化视图<span class="num">152</span></a>
+    <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="6" r="2"/><circle cx="12" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><path d="M5 8v3M12 8v3M19 8v3M3 14h4M10 14h4M17 14h4M5 11v6h14v-6"/></svg>关系图谱</a>
+    <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M10 4v16"/></svg>数据表</a>
+  </div>
+  <div class="side-label" style="margin-top:16px">管理</div>
+  <div class="nav">
+    <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>作业调度</a>
+    <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></svg>Catalog</a>
+    <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>设置</a>
+  </div>
+  <div class="side-foot">Doris 3.1.1-rc01<br>FE×3 · BE×4</div>
+</nav>
+<main class="main">
+  <div class="page-head"><h1>集群总览</h1><p>REAL-TIME MONITORING</p><div class="right"><span class="chip-btn">导出报告</span><span class="chip-btn">⟳ 30s 自动刷新</span></div></div>
+  <div class="dash">
+    <div class="tile"><div class="lab">FE 存活</div><div class="val">3<small> / 3</small></div><div class="trend"><b>●</b>Leader fe-01 · 心跳正常</div></div>
+    <div class="tile"><div class="lab">BE 存活</div><div class="val">4<small> / 4</small></div><div class="trend"><b>●</b>Tablet 1,284 · 副本健康</div></div>
+    <div class="tile"><div class="lab">物化视图</div><div class="val">152</div><div class="trend"><b>149 OK</b>· 2 失败 · 1 运行</div></div>
+    <div class="tile alert"><div class="lab">BE 磁盘告警</div><div class="val">1<small> 台 &gt;85%</small></div><div class="trend">be-02 · 84.2% 接近阈值</div></div>
+  </div>
+  <div class="row">
+    <div class="panel">
+      <div class="panel-h"><b>FRONTEND 节点</b><span class="cnt">3 / 3 ONLINE</span><div class="acts"><span>⟳</span></div></div>
+      <table><thead><tr><th>节点</th><th>角色</th><th>心跳</th><th>Journal Lag</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td><b>fe-01</b> 10.11.2.101</td><td>Leader</td><td>2s</td><td><div class="bar"><i style="width:8%"></i></div></td><td><span class="st ok"><i></i>ONLINE</span></td></tr>
+        <tr><td><b>fe-02</b> 10.11.2.102</td><td>Follower</td><td>3s</td><td><div class="bar"><i style="width:22%"></i></div></td><td><span class="st ok"><i></i>ONLINE</span></td></tr>
+        <tr><td><b>fe-03</b> 10.11.2.103</td><td>Observer</td><td>5s</td><td><div class="bar"><i style="width:15%"></i></div></td><td><span class="st ok"><i></i>ONLINE</span></td></tr>
+      </tbody></table>
+    </div>
+    <div class="panel">
+      <div class="panel-h"><b>查询吞吐 QPM</b><span class="cnt">12H</span></div>
+      <div class="wave">
+        <div class="c" style="height:38%"></div><div class="c" style="height:55%"></div><div class="c" style="height:46%"></div>
+        <div class="c" style="height:70%"></div><div class="c" style="height:84%"></div><div class="c" style="height:96%"></div>
+        <div class="c" style="height:80%"></div><div class="c" style="height:62%"></div><div class="c" style="height:50%"></div>
+        <div class="c" style="height:40%"></div><div class="c" style="height:32%"></div><div class="c" style="height:27%"></div>
+      </div>
+      <div class="wave-x"><span>02h</span><span>04h</span><span>06h</span><span>08h</span><span>10h</span><span>12h</span><span>14h</span><span>16h</span><span>18h</span><span>20h</span><span>22h</span><span>00h</span></div>
+    </div>
+  </div>
+  <div class="row" style="grid-template-columns:1fr 1.55fr">
+    <div class="panel">
+      <div class="panel-h"><b>MV 健康度</b></div>
+      <div class="ring-wrap">
+        <div class="ring"><div class="ring-c"><b>98%</b><span>成功率</span></div></div>
+        <div class="ring-l">
+          <div><i style="background:var(--g)"></i>成功<b>149</b></div>
+          <div><i style="background:#FBBF24"></i>运行中<b>1</b></div>
+          <div><i style="background:#F87171"></i>失败<b>2</b></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-h"><b>BACKEND 节点</b><span class="cnt">4 / 4 ONLINE</span></div>
+      <table><thead><tr><th>节点</th><th>Tablet</th><th>磁盘</th><th>使用率</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td><b>be-01</b> :9060</td><td>324</td><td><div class="bar" style="width:115px"><i style="width:62%"></i></div></td><td>6.2 / 10T</td><td><span class="st ok"><i></i>ONLINE</span></td></tr>
+        <tr><td><b>be-02</b> :9060</td><td>341</td><td><div class="bar" style="width:115px"><i class="w" style="width:84%"></i></div></td><td>8.4 / 10T</td><td><span class="st warn"><i></i>84%</span></td></tr>
+        <tr><td><b>be-03</b> :9060</td><td>312</td><td><div class="bar" style="width:115px"><i style="width:58%"></i></div></td><td>5.8 / 10T</td><td><span class="st ok"><i></i>ONLINE</span></td></tr>
+        <tr><td><b>be-04</b> :9060</td><td>307</td><td><div class="bar" style="width:115px"><i style="width:55%"></i></div></td><td>5.5 / 10T</td><td><span class="st ok"><i></i>ONLINE</span></td></tr>
+      </tbody></table>
+    </div>
+  </div>
+</main>
+</div>
+</div>
+</body>
+</html>
