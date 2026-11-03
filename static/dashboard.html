@@ -257,6 +257,34 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","SF Pro Text","H
 .cj-step.active{display:block}
 
 /* ─── Graph ─── */
+.g2{display:grid;grid-template-columns:1.6fr 1fr;gap:14px;margin-bottom:14px}
+.g2r{display:grid;grid-template-columns:1fr 1.6fr;gap:14px;margin-bottom:14px}
+.donut-wrap{display:flex;align-items:center;justify-content:center;gap:24px;padding:22px}
+.donut{width:130px;height:130px;border-radius:50%;position:relative;flex-shrink:0;box-shadow:0 4px 16px rgba(17,166,121,.15)}
+.donut::after{content:'';position:absolute;inset:20px;background:#FFF;border-radius:50%;box-shadow:inset 0 2px 8px rgba(0,0,0,.04)}
+.donut-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1}
+.donut-c b{font-size:22px;font-weight:700;letter-spacing:-.02em}
+.donut-c span{font-size:10px;color:var(--text-tertiary);margin-top:2px}
+.donut-l{display:flex;flex-direction:column;gap:9px;font-size:12px;color:var(--text-secondary)}
+.donut-l div{display:flex;align-items:center;gap:9px}
+.donut-l i{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+.donut-l b{color:var(--text-primary);margin-left:auto;padding-left:16px;font-variant-numeric:tabular-nums}
+.viz{display:flex;align-items:flex-end;gap:6px;height:120px;padding:18px 18px 4px}
+.viz .col{flex:1;background:linear-gradient(180deg,var(--gb),var(--green));border-radius:4px 4px 0 0;opacity:.85;position:relative;transition:opacity .15s;min-width:6px}
+.viz .col:hover{opacity:1}
+.viz .col em{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-style:normal;font-size:9px;color:var(--text-tertiary);white-space:nowrap}
+.viz-x{display:flex;padding:0 18px 12px;gap:6px}
+.viz-x span{flex:1;text-align:center;font-size:9px;color:var(--text-tertiary);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.type-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:7px}
+.type-tag.hms{background:rgba(217,119,6,.09);color:#B45309}
+.type-tag.jdbc{background:var(--blue-bg);color:var(--blue)}
+.type-tag.es{background:rgba(147,58,222,.08);color:#7E22CE}
+.type-tag.iceberg{background:rgba(14,116,144,.08);color:#0E7490}
+.type-tag.paimon{background:rgba(52,199,89,.09);color:#1D8A4A}
+.type-tag.mc{background:rgba(217,119,6,.08);color:#92400E}
+.type-tag.unknown{background:var(--bg-secondary);color:var(--text-tertiary)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+@media(max-width:1100px){.form-grid{grid-template-columns:1fr}}
 .graph-fullscreen-btn{font-size:12px;cursor:pointer;color:var(--text-tertiary);padding:6px 12px;border-radius:8px;transition:all .15s;line-height:1;display:inline-flex;align-items:center;gap:5px;border:1px solid var(--border-color);background:#FFF;font-family:inherit}
 .graph-fullscreen-btn:hover{color:var(--accent);border-color:var(--green)}
 .graph-fullscreen{position:fixed!important;top:0!important;left:0!important;right:0!important;bottom:0!important;z-index:1500;background:var(--bg-secondary);padding:16px 20px!important}
@@ -371,7 +399,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","SF Pro Text","H
 </nav>
 
 <main class="content">
-<div id="tab-cluster" class="tab-content active"><div class="page-header"><h1>集群概览</h1><p>实时监控 FE / BE 节点与查询负载</p></div><div class="page-body"><div class="metrics-grid" id="summary"></div><div id="errors"></div><div class="page-section"><div class="section-label">Frontend 节点 <span id="feBadge" style="color:var(--text-tertiary);font-weight:400">0/0</span></div><div id="fe-table"></div></div><div class="page-section"><div class="section-label">Backend 节点 <span id="beBadge" style="color:var(--text-tertiary);font-weight:400">0/0</span></div><div id="be-table"></div></div><div class="page-section"><div class="section-label">统计明细</div><div class="metrics-grid" id="statistics"></div></div><div class="page-section"><div class="section-label">Frontend 资源</div><div id="fe-metrics"></div></div><div class="page-section"><div class="section-label">Backend 资源</div><div id="be-metrics"></div></div><div class="page-section"><div class="section-label">活跃查询</div><div id="queries"></div></div></div></div>
+<div id="tab-cluster" class="tab-content active"><div class="page-header"><h1>集群概览</h1><p>实时监控 FE / BE 节点与查询负载</p></div><div class="page-body"><div class="metrics-grid" id="summary"></div><div id="errors"></div><div class="g2"><div class="page-section"><div class="section-label">Frontend 节点 <span id="feBadge" style="color:var(--text-tertiary);font-weight:400">0/0</span></div><div id="fe-table"></div></div><div class="page-section"><div class="section-label">物化视图健康度 <span style="color:var(--text-tertiary);font-weight:400;font-size:11px;margin-left:8px">实时</span></div><div class="donut-wrap" id="mv-donut"></div></div></div><div class="g2r"><div class="page-section"><div class="section-label">查询吞吐 <span style="color:var(--text-tertiary);font-weight:400;font-size:11px;margin-left:8px">FE 节点累计查询数</span></div><div id="query-viz"></div></div><div class="page-section"><div class="section-label">Backend 节点 <span id="beBadge" style="color:var(--text-tertiary);font-weight:400">0/0</span></div><div id="be-table"></div></div></div><div class="page-section"><div class="section-label">统计明细</div><div class="metrics-grid" id="statistics"></div></div><div class="page-section"><div class="section-label">Frontend 资源</div><div id="fe-metrics"></div></div><div class="page-section"><div class="section-label">Backend 资源</div><div id="be-metrics"></div></div><div class="page-section"><div class="section-label">活跃查询</div><div id="queries"></div></div></div></div>
 
 <div id="tab-mv" class="tab-content"><div class="page-header"><h1>物化视图</h1><p>物化视图生命周期管理与刷新监控</p></div><div class="page-body"><div class="metrics-grid" id="mv-summary"></div><div class="page-section"><div class="filter-bar"><select id="mv-db-filter" onchange="filterMvTable()"><option value="">全部数据库</option></select><select id="mv-type-filter" onchange="filterMvTable()"><option value="">全部刷新类型</option></select><select id="mv-status-filter" onchange="filterMvTable()"><option value="">全部状态</option><option value="SUCCESS">SUCCESS</option><option value="FAILED">FAILED</option><option value="RUNNING">RUNNING</option><option value="PAUSED">PAUSED</option></select>  <div class="mv-search-wrap" id="mv-search-wrap" onclick="document.getElementById('mv-search-input').focus()"><div id="mv-search-tags"></div><input id="mv-search-input" type="text" placeholder="搜索..." onkeydown="onMvSearchKeydown(event)" oninput="filterMvTable()"></div><button class="cfg-btn primary" onclick="openMvEditor()" style="font-size:12px;padding:6px 12px">＋ 新建 MV</button><span class="graph-fullscreen-btn" onclick="loadMetrics()" style="margin-left:0">↻</span></div><div id="mv-batch-bar" style="display:flex;align-items:center;gap:8px;margin:8px 0;min-height:32px"><span id="mv-sel-count" style="font-size:12px;color:var(--text-secondary)">选中 0 条</span></div><div id="mv-table"></div><div id="mv-pagination" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px"></div></div></div></div>
 
@@ -381,12 +409,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","SF Pro Text","H
 
 <div id="tab-jobs" class="tab-content"><div class="page-header"><h1>作业调度</h1><p>定时作业全生命周期管理</p></div><div class="page-body"><div class="metrics-grid" id="jobs-summary"></div><div class="page-section"><div class="section-toolbar"><button class="cfg-btn primary" onclick="openCreateJobModal()">＋ 创建作业</button><div class="filter-bar"><select id="jobs-status-filter" onchange="filterJobsTable()"><option value="">全部状态</option></select><input id="jobs-search" type="text" placeholder="搜索作业名称..." oninput="filterJobsTable()"></div></div><div id="jobs-table"><div class="empty-state"><p>切换到此标签页加载数据</p></div></div></div></div></div>
 
-<div id="tab-catalog" class="tab-content"><div class="page-header"><h1>Catalog 管理</h1><p>外部数据源 Catalog 配置</p></div><div class="page-body"><div class="page-section"><div class="section-toolbar"><button class="cfg-btn primary" onclick="openCatalogModal()">＋ 创建 Catalog</button><div class="filter-bar" style="margin-left:auto"><input id="catalog-search" type="text" placeholder="搜索 Catalog..." oninput="filterCatalogTable()"></div></div><div id="catalog-table"><div class="empty-state"><p>切换到此标签页加载数据</p></div></div></div></div></div>
+<div id="tab-catalog" class="tab-content"><div class="page-header"><h1>Catalog 管理</h1><p>外部数据源 Catalog 配置</p></div><div class="page-body"><div class="metrics-grid" id="catalog-summary"></div><div class="page-section"><div class="section-toolbar"><button class="cfg-btn primary" onclick="openCatalogModal()">＋ 创建 Catalog</button><div class="filter-bar" style="margin-left:auto"><input id="catalog-search" type="text" placeholder="搜索 Catalog..." oninput="filterCatalogTable()"></div></div><div id="catalog-table"><div class="empty-state"><p>切换到此标签页加载数据</p></div></div></div></div></div>
 
-<div id="tab-config" class="tab-content"><div class="page-header"><h1>设置</h1><p>集群连接与告警配置</p></div><div class="page-body"><div class="page-section"><div class="section-label">集群连接</div><div class="cfg-form" style="padding:18px 20px"><div class="cfg-row"><label class="cfg-label">主机地址</label><input class="cfg-input" id="cfg-host"></div><div class="cfg-row"><label class="cfg-label">MySQL 端口</label><input class="cfg-input" id="cfg-port" type="number"></div><div class="cfg-row"><label class="cfg-label">用户名</label><input class="cfg-input" id="cfg-user"></div><div class="cfg-row"><label class="cfg-label">密码</label><input class="cfg-input" id="cfg-password" type="password"></div><div class="cfg-row"><label class="cfg-label">FE HTTP 端口</label><input class="cfg-input" id="cfg-fe-http" type="number"></div><div class="cfg-row"><label class="cfg-label">BE HTTP 端口</label><input class="cfg-input" id="cfg-be-http" type="number"></div><div class="cfg-row"><label class="cfg-label">连接超时</label><input class="cfg-input" id="cfg-timeout" type="number"></div><div class="cfg-row"><label class="cfg-label">刷新间隔</label><input class="cfg-input" id="cfg-interval" type="number" min="5"></div><div style="display:flex;gap:8px;align-items:center;margin-top:12px;padding-left:142px"><button class="cfg-btn primary" onclick="saveConfig()">保存</button><button class="cfg-btn success" onclick="testConnection()">测试连接</button><span class="cfg-status" id="cfg-status"></span></div></div></div><div class="page-section"><div class="section-label">邮件告警</div><div class="cfg-form" style="padding:18px 20px"><div class="cfg-row"><label class="cfg-label">启用告警</label><label class="apple-checkbox"><input type="checkbox" id="alert-enabled"> 异常时发送邮件</label></div><div class="cfg-row"><label class="cfg-label">SMTP 服务器</label><input class="cfg-input" id="alert-smtp-host" placeholder="smtp.example.com"></div><div class="cfg-row"><label class="cfg-label">SMTP 端口</label><input class="cfg-input" id="alert-smtp-port" type="number" placeholder="587"></div><div class="cfg-row"><label class="cfg-label">发件账号</label><input class="cfg-input" id="alert-user"></div><div class="cfg-row"><label class="cfg-label">授权码</label><input class="cfg-input" id="alert-pass" type="password"></div><div class="cfg-row"><label class="cfg-label">发件地址</label><input class="cfg-input" id="alert-from" placeholder="alert@example.com"></div><div class="cfg-row"><label class="cfg-label">收件人</label><input class="cfg-input" id="alert-to" placeholder="admin@example.com，多个用英文逗号分隔"></div><div style="display:flex;gap:8px;align-items:center;margin-top:12px;padding-left:142px"><button class="cfg-btn primary" onclick="saveAlertConfig()">保存</button><button class="cfg-btn success" onclick="testAlert()">发送测试邮件</button><span class="cfg-status" id="alert-status"></span></div></div></div></div></div>
+<div id="tab-config" class="tab-content"><div class="page-header"><h1>设置</h1><p>集群连接与告警配置</p></div><div class="page-body"><div class="form-grid"><div class="page-section"><div class="section-label">集群连接</div><div class="cfg-form" style="padding:18px 20px"><div class="cfg-row"><label class="cfg-label">主机地址</label><input class="cfg-input" id="cfg-host"></div><div class="cfg-row"><label class="cfg-label">MySQL 端口</label><input class="cfg-input" id="cfg-port" type="number"></div><div class="cfg-row"><label class="cfg-label">用户名</label><input class="cfg-input" id="cfg-user"></div><div class="cfg-row"><label class="cfg-label">密码</label><input class="cfg-input" id="cfg-password" type="password"></div><div class="cfg-row"><label class="cfg-label">FE HTTP 端口</label><input class="cfg-input" id="cfg-fe-http" type="number"></div><div class="cfg-row"><label class="cfg-label">BE HTTP 端口</label><input class="cfg-input" id="cfg-be-http" type="number"></div><div class="cfg-row"><label class="cfg-label">连接超时</label><input class="cfg-input" id="cfg-timeout" type="number"></div><div class="cfg-row"><label class="cfg-label">刷新间隔</label><input class="cfg-input" id="cfg-interval" type="number" min="5"></div><div style="display:flex;gap:8px;align-items:center;margin-top:12px;padding-left:142px"><button class="cfg-btn primary" onclick="saveConfig()">保存</button><button class="cfg-btn success" onclick="testConnection()">测试连接</button><span class="cfg-status" id="cfg-status"></span></div></div></div><div class="page-section"><div class="section-label">邮件告警</div><div class="cfg-form" style="padding:18px 20px"><div class="cfg-row"><label class="cfg-label">启用告警</label><label class="apple-checkbox"><input type="checkbox" id="alert-enabled"> 异常时发送邮件</label></div><div class="cfg-row"><label class="cfg-label">SMTP 服务器</label><input class="cfg-input" id="alert-smtp-host" placeholder="smtp.example.com"></div><div class="cfg-row"><label class="cfg-label">SMTP 端口</label><input class="cfg-input" id="alert-smtp-port" type="number" placeholder="587"></div><div class="cfg-row"><label class="cfg-label">发件账号</label><input class="cfg-input" id="alert-user"></div><div class="cfg-row"><label class="cfg-label">授权码</label><input class="cfg-input" id="alert-pass" type="password"></div><div class="cfg-row"><label class="cfg-label">发件地址</label><input class="cfg-input" id="alert-from" placeholder="alert@example.com"></div><div class="cfg-row"><label class="cfg-label">收件人</label><input class="cfg-input" id="alert-to" placeholder="admin@example.com，多个用英文逗号分隔"></div><div style="display:flex;gap:8px;align-items:center;margin-top:12px;padding-left:142px"><button class="cfg-btn primary" onclick="saveAlertConfig()">保存</button><button class="cfg-btn success" onclick="testAlert()">发送测试邮件</button><span class="cfg-status" id="alert-status"></span></div></div></div></div><div class="page-section"><div class="section-label">告警规则 <span style="color:var(--text-tertiary);font-weight:400;font-size:11px;margin-left:8px">6 条内置规则 · 实时状态</span></div><div id="alert-rules"></div></div></div></div>
 </main></div>
 
-<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-header"><h2 id="modal-title">Detail</h2><button class="modal-close" onclick="closeModal()">&times;</button></div><div class="modal-body" id="modal-body"></div></div></div>
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-header"><h2 id="modal-title">详情</h2><button class="modal-close" onclick="closeModal()">&times;</button></div><div class="modal-body" id="modal-body"></div></div></div>
 
 <div class="modal-overlay" id="create-job-overlay" onclick="if(event.target===this)closeCreateJobModal()"><div class="modal create-job-modal"><div class="modal-header"><h2>创建作业</h2><button class="modal-close" onclick="closeCreateJobModal()">&times;</button></div>
 <div class="modal-body" id="create-job-body">
@@ -456,8 +484,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","SF Pro Text","H
 <script>
 var _rt=null,_ld=null;
 function startRefresh(s){if(_rt)clearInterval(_rt);if(s>0)_rt=setInterval(loadMetrics,s*1000)}
-async function loadMetrics(){var d=document.getElementById("refreshDot"),i=document.getElementById("refreshInfo");d.className="loading";i.textContent="Loading...";try{var r=await fetch("/api/metrics");if(r.status===401){showLogin();return}var j=await r.json();if(j.error){i.textContent="Error: "+j.error;d.className="error";return}_ld=j;i.textContent=new Date().toLocaleTimeString();d.className="";renderPage(j);fetch('/api/materialized-view/meta').then(function(r2){return r2.json()}).then(function(m){_mvMeta=m||{};if(j.materialized_views)renderMvPage(j)})}catch(e){i.textContent="Request failed";d.className="error"}}
-function renderPage(d){document.getElementById("summary").innerHTML=renderSummary(d);document.getElementById("errors").innerHTML=renderErrors(d.errors||[]);document.getElementById("fe-table").innerHTML=renderFeTable(d.fe_status||[]);document.getElementById("be-table").innerHTML=renderBeTable(d.be_status||[]);var fl=d.fe_status||[],bl=d.be_status||[];document.getElementById("feBadge").textContent=fl.filter(function(n){return n.alive}).length+"/"+fl.length;document.getElementById("beBadge").textContent=bl.filter(function(n){return n.alive}).length+"/"+bl.length;document.getElementById("statistics").innerHTML=renderStats(d.statistic||{});document.getElementById("fe-metrics").innerHTML=renderFeMetrics(d.fe_metrics||{},d.fe_status||[]);document.getElementById("be-metrics").innerHTML=renderBeMetrics(d.be_metrics||{},d.be_status||[]);document.getElementById("queries").innerHTML=renderQueries(d.processlist||[]);var b=document.getElementById("queryBadge"),n=(d.processlist||[]).length;if(n>0){b.textContent=n;b.style.display=""}else b.style.display="none";var mt=document.getElementById("tab-mv");if(mt.classList.contains("active")&&d.materialized_views)renderMvPage(d);var gt=document.getElementById("tab-graph");if(gt.classList.contains("active")&&d.materialized_views&&d.materialized_views.length)renderMvGraph()}
+async function loadMetrics(){var d=document.getElementById("refreshDot"),i=document.getElementById("refreshInfo");d.className="loading";i.textContent="加载中...";try{var r=await fetch("/api/metrics");if(r.status===401){showLogin();return}var j=await r.json();if(j.error){i.textContent="Error: "+j.error;d.className="error";return}_ld=j;i.textContent=new Date().toLocaleTimeString();d.className="";renderPage(j);fetch('/api/materialized-view/meta').then(function(r2){return r2.json()}).then(function(m){_mvMeta=m||{};if(j.materialized_views)renderMvPage(j)})}catch(e){i.textContent="Request failed";d.className="error"}}
+function renderPage(d){document.getElementById("summary").innerHTML=renderSummary(d);document.getElementById("errors").innerHTML=renderErrors(d.errors||[]);document.getElementById("fe-table").innerHTML=renderFeTable(d.fe_status||[]);document.getElementById("be-table").innerHTML=renderBeTable(d.be_status||[]);var fl=d.fe_status||[],bl=d.be_status||[];document.getElementById("feBadge").textContent=fl.filter(function(n){return n.alive}).length+"/"+fl.length;document.getElementById("beBadge").textContent=bl.filter(function(n){return n.alive}).length+"/"+bl.length;document.getElementById("statistics").innerHTML=renderStats(d.statistic||{});document.getElementById("fe-metrics").innerHTML=renderFeMetrics(d.fe_metrics||{},d.fe_status||[]);document.getElementById("be-metrics").innerHTML=renderBeMetrics(d.be_metrics||{},d.be_status||[]);document.getElementById("queries").innerHTML=renderQueries(d.processlist||[]);var dn=document.getElementById("mv-donut");if(dn)dn.innerHTML=renderMvDonut(d.materialized_views||[]);var qv=document.getElementById("query-viz");if(qv)qv.innerHTML=renderQueryViz(d.fe_metrics||{},d.fe_status||[]);var ar=document.getElementById("alert-rules");if(ar)renderAlertRules(d);var b=document.getElementById("queryBadge"),n=(d.processlist||[]).length;if(n>0){b.textContent=n;b.style.display=""}else b.style.display="none";var mt=document.getElementById("tab-mv");if(mt.classList.contains("active")&&d.materialized_views)renderMvPage(d);var gt=document.getElementById("tab-graph");if(gt.classList.contains("active")&&d.materialized_views&&d.materialized_views.length)renderMvGraph()}
 
 var _crumbs={cluster:'<b>集群监控</b> / 概览',mv:'<b>监控</b> / 物化视图',graph:'<b>监控</b> / 关系图谱',tables:'<b>监控</b> / 数据表',jobs:'<b>管理</b> / 作业调度',catalog:'<b>管理</b> / Catalog',config:'<b>管理</b> / 设置'};
 document.querySelectorAll(".nav-item").forEach(function(b){
@@ -474,7 +502,7 @@ document.querySelectorAll(".nav-item").forEach(function(b){
     if(tab==="tables" && _ld && _ld.tables) renderTblPage(_ld);
     if(tab==="jobs") renderJobsPage();
     if(tab==="catalog") loadCatalogs();
-    if(tab==="config") loadConfig();
+    if(tab==="config") {loadConfig();if(_ld)renderAlertRules(_ld)}
   });
 });
 function toggleSidebar(){
@@ -530,6 +558,65 @@ function renderStats(st){
     '<div class="metric-card"><div class="l">分区</div><div class="v c">'+(st.partition_num||0)+'</div></div>'+
     '<div class="metric-card"><div class="l">Tablet</div><div class="v b">'+(st.tablet_num||0).toLocaleString()+'</div></div>'+
     '<div class="metric-card"><div class="l">副本</div><div class="v o">'+(st.replica_num||0).toLocaleString()+'</div></div>';
+}
+function renderMvDonut(mvs){
+  var total=mvs.length;
+  var ok=mvs.filter(function(m){return m.paused?false:(m.last_status==='SUCCESS'||!m.last_status)}).length;
+  var failed=mvs.filter(function(m){return m.last_status==='FAILED'}).length;
+  var running=mvs.filter(function(m){return m.last_status==='RUNNING'}).length;
+  var paused=mvs.filter(function(m){return m.paused}).length;
+  if(!total)return '<div class="donut-c"><b>-</b><span>暂无数据</span></div>';
+  var rate=Math.round(ok/total*100);
+  var deg=[];
+  var acc=0;
+  function seg(cnt,color){if(!cnt)return;var a=cnt/total*360;deg.push(color+' '+acc+'deg '+(acc+a)+'deg');acc+=a}
+  seg(ok,'#11A679');seg(running,'#F59E0B');seg(failed,'#EF4444');seg(paused,'#E8EAEF');
+  if(!deg.length)deg=['#E8EAEF 0deg 360deg'];
+  return '<div class="donut" style="background:conic-gradient('+deg.join(',')+')"><div class="donut-c"><b>'+rate+'%</b><span>成功率</span></div></div>'+
+    '<div class="donut-l">'+
+    '<div><i style="background:#11A679"></i>刷新成功<b>'+ok+'</b></div>'+
+    (running?'<div><i style="background:#F59E0B"></i>运行中<b>'+running+'</b></div>':'')+
+    '<div><i style="background:#EF4444"></i>刷新失败<b>'+failed+'</b></div>'+
+    (paused?'<div><i style="background:#E8EAEF"></i>已暂停<b>'+paused+'</b></div>':'')+
+    '</div>';
+}
+function renderQueryViz(m,status){
+  var feList=(status||[]).filter(function(n){return n.alive});
+  if(!feList.length)return '<div class="empty-state"><p>暂无 FE 查询数据</p></div>';
+  var vals=feList.map(function(n){
+    var o=(m||{})[n.host]||{};
+    return {label:n.name&&n.name.length>14?n.name.slice(0,12)+'…':(n.name||n.host),val:parseInt(o.query_total||0)};
+  });
+  var max=Math.max.apply(null,vals.map(function(v){return v.val}));
+  if(!max)max=1;
+  return '<div class="viz">'+vals.map(function(v){
+    var h=Math.max(v.val/max*100,3);
+    return '<div class="col" style="height:'+h+'%"><em>'+v.val.toLocaleString()+'</em></div>';
+  }).join('')+'</div><div class="viz-x">'+vals.map(function(v){return '<span>'+escHtml(v.label)+'</span>'}).join('')+'</div>';
+}
+function renderAlertRules(d){
+  var el=document.getElementById('alert-rules');
+  if(!el)return;
+  var fe=(d.fe_status||[]),be=(d.be_status||[]);
+  var feOk=fe.filter(function(n){return n.alive}).length,feT=fe.length;
+  var beOk=be.filter(function(n){return n.alive}).length,beT=be.length;
+  var maxDisk=0;be.forEach(function(n){if(n.alive)maxDisk=Math.max(maxDisk,n.used_pct||0)});
+  var mvFail=(d.materialized_views||[]).filter(function(m){return m.last_status==='FAILED'}).length;
+  var jvmMax=0;fe.forEach(function(n){var o=(d.fe_metrics||{})[n.host]||{};if(o.jvm_heap_used_mb&&o.jvm_heap_max_mb)jvmMax=Math.max(jvmMax,o.jvm_heap_used_mb/o.jvm_heap_max_mb*100)});
+  var th=(d.tablet_health||{}).unhealthy_tablets||0;
+  var hasData=feT>0||beT>0;
+  function row(name,threshold,current,triggered,warn){
+    var st=triggered?'<span class="pill err"><i></i>已触发</span>':(warn?'<span class="pill warn"><i></i>接近阈值</span>':'<span class="pill ok"><i></i>正常</span>');
+    return '<tr><td><b>'+name+'</b></td><td>'+threshold+'</td><td>'+current+'</td><td>'+st+'</td></tr>';
+  }
+  el.innerHTML='<div class="apple-table-wrap"><table class="apple-table"><thead><tr><th>规则</th><th>阈值</th><th>当前值</th><th>状态</th></tr></thead><tbody>'+
+    row('FE 节点宕机','任一 FE 不可达',hasData?(feOk+' / '+feT+' 在线'):'- (未加载)',hasData&&feOk<feT)+
+    row('BE 节点宕机','任一 BE 不可达',hasData?(beOk+' / '+beT+' 在线'):'- (未加载)',hasData&&beOk<beT)+
+    row('BE 磁盘使用率','> 85%',hasData?(maxDisk.toFixed(1)+'%（最高）'):'- (未加载)',hasData&&maxDisk>85,hasData&&maxDisk>75&&maxDisk<=85)+
+    row('MV 刷新失败','状态 = FAILED',mvFail+' 个失败',mvFail>0)+
+    row('不健康 Tablet','> 0',th+' 个',th>0)+
+    row('FE JVM 使用率','> 90%',jvmMax?(jvmMax.toFixed(1)+'%（最高）'):'-',jvmMax>90,jvmMax>80&&jvmMax<=90)+
+    '</tbody></table></div>';
 }
 function renderFeMetrics(m,status){
   return '<div class="res-grid">'+status.map(function(n){
@@ -632,11 +719,11 @@ function renderMvSummary(mvs){
 function populateMvFilters(mvs){
   var s=document.getElementById('mv-db-filter'),cv=s.value;
   var dbs=[...new Set(mvs.map(function(m){return m.database}))].sort();
-  s.innerHTML='<option value="">All Databases</option>'+dbs.map(function(d){return '<option value="'+d+'">'+d+'</option>'}).join('');
+  s.innerHTML='<option value="">全部数据库</option>'+dbs.map(function(d){return '<option value="'+d+'">'+d+'</option>'}).join('');
   if(dbs.indexOf(cv)>=0)s.value=cv;
   var ts=document.getElementById('mv-type-filter'),ct=ts.value;
   var tps=[...new Set(mvs.map(function(m){return m.refresh_type}).filter(Boolean))].sort();
-  ts.innerHTML='<option value="">All Refresh Types</option>'+tps.map(function(t){return '<option value="'+t+'">'+t+'</option>'}).join('');
+  ts.innerHTML='<option value="">全部刷新类型</option>'+tps.map(function(t){return '<option value="'+t+'">'+t+'</option>'}).join('');
   if(tps.indexOf(ct)>=0)ts.value=ct;
 }
 var _mvAllData=[],_mvPageSize=20,_mvPage=1,_mvSearchTags=[],_mvMeta={},_mvEditorProps=[],_mvEditorDdlComment='';
@@ -668,15 +755,15 @@ function renderMvPageForCurrent(){
   var start=(_mvPage-1)*_mvPageSize,page=fl.slice(start,start+_mvPageSize);
   var el=document.getElementById('mv-table');
   if(!page.length){el.innerHTML='<div class="empty-state"><p>未找到匹配的物化视图</p></div>';renderMvPagination(total,totalPages);return}
-  el.innerHTML='<div class="apple-table-wrap"><table class="apple-table"><thead><tr><th style="width:32px"><input type="checkbox" id="mv-select-all" onchange="toggleAllMvCbs(this)"></th><th>名称</th><th>中文名</th><th>数据库</th><th>状态</th><th>类型</th><th>间隔</th><th>依赖</th><th>今日刷新</th><th>行数</th><th>大小</th><th>耗时</th><th>上次刷新</th><th></th></tr></thead><tbody>'+
+  el.innerHTML='<div class="apple-table-wrap"><table class="apple-table"><thead><tr><th style="width:32px"><input type="checkbox" id="mv-select-all" onchange="toggleAllMvCbs(this)"></th><th>名称 / 中文名</th><th>数据库</th><th>状态</th><th>类型</th><th>间隔</th><th>依赖</th><th>今日刷新</th><th>行数</th><th>大小</th><th>耗时</th><th>上次刷新</th><th></th></tr></thead><tbody>'+
     page.map(function(mv){
-      var st=mv.paused?'<span class="sdot o"></span><span class="sl" style="color:var(--warning)">已暂停</span>':(mv.last_status==='SUCCESS'?'<span class="sdot g"></span><span class="sl g">OK</span>':(mv.last_status==='FAILED'?'<span class="sdot r"></span><span class="sl r">Failed</span>':(mv.last_status==='RUNNING'?'<span class="sdot o"></span><span class="sl" style="color:var(--warning)">Running</span>':'<span class="sdot" style="background:var(--text-tertiary)"></span><span style="color:var(--text-tertiary)">-</span>')));
+      var st=mv.paused?'<span class="sdot o"></span><span class="sl" style="color:var(--warning)">已暂停</span>':(mv.last_status==='SUCCESS'?'<span class="sdot g"></span><span class="sl g">成功</span>':(mv.last_status==='FAILED'?'<span class="sdot r"></span><span class="sl r">失败</span>':(mv.last_status==='RUNNING'?'<span class="sdot o"></span><span class="sl" style="color:var(--warning)">运行中</span>':'<span class="sdot" style="background:var(--text-tertiary)"></span><span style="color:var(--text-tertiary)">-</span>')));
       var dur=mv.last_duration_ms?(mv.last_duration_ms>=1000?(mv.last_duration_ms/1000).toFixed(1)+'s':mv.last_duration_ms+'ms'):'-';
       var sz=mv.data_size_mb>=1024?(mv.data_size_mb/1024).toFixed(1)+'GB':(mv.data_size_mb||0).toFixed(1)+'MB';
       var n=escHtml(mv.name),d=escHtml(mv.database);
       return '<tr data-mv="'+n+'" data-db="'+d+'" onclick="handleRowClick(this)" style="cursor:pointer">'+
         '<td style="width:32px;text-align:center" onclick="event.stopPropagation()"><input class="mv-row-cb" type="checkbox" data-db="'+d+'" data-name="'+n+'" onchange="updateMvBatchBar()"></td>'+
-        '<td class="m">'+n+'</td><td>'+(mv.chinese_name?escHtml(mv.chinese_name):'-')+'</td><td>'+d+'</td><td>'+st+'</td><td>'+(mv.refresh_type||'-')+'</td><td>'+(mv.refresh_interval||'-')+'</td>'+
+        '<td><b class="m" style="font-weight:600">'+n+'</b>'+(mv.chinese_name?'<br><span style="font-size:10px;color:var(--text-tertiary)">'+escHtml(mv.chinese_name)+'</span>':'')+'</td><td>'+d+'</td><td>'+st+'</td><td>'+(mv.refresh_type||'-')+'</td><td>'+(mv.refresh_interval||'-')+'</td>'+
         '<td>'+(mv.base_tables||[]).length+'</td><td>'+(mv.daily_refresh_count||0)+'</td>'+
         '<td style="text-align:right">'+(mv.row_count||0).toLocaleString()+'</td><td style="text-align:right">'+sz+'</td><td>'+dur+'</td>'+
         '<td style="font-size:11px;color:var(--text-secondary)">'+(mv.last_finish_time||'-')+'</td>'+
@@ -1165,7 +1252,7 @@ function deleteMv(db,name){
   }
 function showMvDetail(name,db){
   var body=document.getElementById('modal-body');
-  showModal(name,'<div style="text-align:center;padding:40px;color:var(--text-tertiary)">Loading...</div>');
+  showModal(name,'<div style="text-align:center;padding:40px;color:var(--text-tertiary)">加载中...</div>');
   fetch('/api/mv-history?db='+encodeURIComponent(db)+'&name='+encodeURIComponent(name))
     .then(function(r){return r.json()})
     .then(function(data){
@@ -1185,7 +1272,7 @@ function buildMvDetail(mv,hist,mvs){
 }
 function showTableDetail(db,name,fullPath){
   var body=document.getElementById('modal-body');
-  showModal(name,'<div style="text-align:center;padding:40px;color:var(--text-tertiary)">Loading...</div>');
+  showModal(name,'<div style="text-align:center;padding:40px;color:var(--text-tertiary)">加载中...</div>');
   var cat=fullPath?fullPath.split('.').slice(0,-2).join('.'):'';
   var url='/api/table-detail?db='+encodeURIComponent(db)+'&name='+encodeURIComponent(name);
   if(cat) url+='&catalog='+encodeURIComponent(cat);
@@ -1237,7 +1324,7 @@ function renderTblSummary(tbls){
 function populateTblFilters(tbls){
   var s=document.getElementById('tbl-db-filter'),cv=s.value;
   var dbs=[...new Set(tbls.map(function(t){return t.database}))].sort();
-  s.innerHTML='<option value="">All Databases</option>'+dbs.map(function(d){return '<option value="'+d+'">'+d+'</option>'}).join('');
+  s.innerHTML='<option value="">全部数据库</option>'+dbs.map(function(d){return '<option value="'+d+'">'+d+'</option>'}).join('');
   if(dbs.indexOf(cv)>=0)s.value=cv;
   renderTblTable(tbls);
 }
@@ -1247,8 +1334,14 @@ function renderTblTable(tbls){
   var fl=tbls.filter(function(t){return (!db||t.database===db)&&t.name.toLowerCase().indexOf(q)>=0});
   var target=document.getElementById('tbl-table');
   if(!fl.length){target.innerHTML='<div class="empty-state"><p>未找到匹配的数据表</p></div>';return}
-  target.innerHTML='<div class="apple-table-wrap"><table class="apple-table"><thead><tr><th>表名</th><th>数据库</th><th>引擎</th></tr></thead><tbody>'+
-    fl.map(function(t){return '<tr><td class="m">'+(t.name||'-')+'</td><td>'+t.database+'</td><td>'+(t.engine||'-')+'</td></tr>'}).join('')+'</tbody></table></div>';
+  var allMvs=_ld&&_ld.materialized_views||[];
+  target.innerHTML='<div class="apple-table-wrap"><table class="apple-table"><thead><tr><th>表名</th><th>数据库</th><th>行数</th><th>大小</th><th>创建时间</th><th>备注</th><th>下游 MV</th></tr></thead><tbody>'+
+    fl.map(function(t){
+      var tn=t.name||'-',tdb=t.database||'';
+      var dn=allMvs.filter(function(m){return(m.base_tables||[]).some(function(bt){return bt.split('.').pop()===tn})}).length;
+      var sz=(t.data_size_mb||0)>=1024?((t.data_size_mb||0)/1024).toFixed(1)+' GB':(t.data_size_mb||0).toFixed(1)+' MB';
+      return '<tr class="clickable" onclick="showTableDetail(\''+escHtml(tdb)+'\',\''+escHtml(tn)+'\',\'\')" style="cursor:pointer"><td class="m">'+escHtml(tn)+'</td><td>'+escHtml(tdb)+'</td><td style="text-align:right">'+((t.row_count||0)>=1e6?((t.row_count||0)/1e6).toFixed(1)+'M':(t.row_count||0).toLocaleString())+'</td><td style="text-align:right">'+sz+'</td><td style="font-size:11px;color:var(--text-tertiary)">'+(t.create_time||'-')+'</td><td style="font-size:11px;color:var(--text-tertiary);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+escHtml(t.comment||'-')+'</td><td>'+(dn?'<span class="pill info">'+dn+' 个</span>':'<span style="color:var(--text-tertiary)">-</span>')+'</td></tr>';
+    }).join('')+'</tbody></table></div>';
 }
 function filterTblTable(){
   var tbls=_ld&&_ld.tables||[];
@@ -1669,7 +1762,7 @@ function renderJobsPage(){
 function populateJobFilters(jobs){
   var s=document.getElementById('jobs-status-filter'),cv=s.value;
   var sts=[...new Set(jobs.map(function(j){return j.status}).filter(Boolean))];
-  s.innerHTML='<option value="">All Status</option>'+sts.map(function(st){return '<option value="'+st+'">'+st+'</option>'}).join('');
+  s.innerHTML='<option value="">全部状态</option>'+sts.map(function(st){return '<option value="'+st+'">'+st+'</option>'}).join('');
   if(sts.indexOf(cv)>=0)s.value=cv;
 }
 function filterJobsTable(){
@@ -1694,14 +1787,15 @@ function renderJobsTable(jobs){
   var h = '<div class="apple-table-wrap"><table class="apple-table"><thead><tr><th>ID</th><th>作业名称</th><th>状态</th><th>类型</th><th>调度</th><th>数据库</th><th>上次刷新</th><th>刷新次数</th><th></th></tr></thead><tbody>';
   jobs.forEach(function(j){
     var st='',cl='';
-    if(j.status==='RUNNING'){st='<span class="sdot g"></span><span class="sl g">Running</span>';cl='g'}
-    else if(j.status==='PAUSED'||j.status==='SUSPENDED'){st='<span class="sdot o"></span><span class="sl" style="color:var(--warning)">Paused</span>';cl='o'}
-    else if(j.status==='FINISHED'){st='<span class="sdot" style="background:var(--text-tertiary)"></span><span style="color:var(--text-tertiary)">Finished</span>'}
-    else if(j.status==='CANCELLED'||j.status==='STOPPED'){st='<span class="sdot r"></span><span class="sl r">Stopped</span>';cl='r'}
-    else if(j.status==='FAILED'){st='<span class="sdot r"></span><span class="sl r">Failed</span>';cl='r'}
+    if(j.status==='RUNNING'){st='<span class="sdot g"></span><span class="sl g">运行中</span>';cl='g'}
+    else if(j.status==='PAUSED'||j.status==='SUSPENDED'){st='<span class="sdot o"></span><span class="sl" style="color:var(--warning)">已暂停</span>';cl='o'}
+    else if(j.status==='FINISHED'){st='<span class="sdot" style="background:var(--text-tertiary)"></span><span style="color:var(--text-tertiary)">已完成</span>'}
+    else if(j.status==='CANCELLED'||j.status==='STOPPED'){st='<span class="sdot r"></span><span class="sl r">已停止</span>';cl='r'}
+    else if(j.status==='FAILED'){st='<span class="sdot r"></span><span class="sl r">失败</span>';cl='r'}
     else st='<span class="sdot" style="background:var(--text-tertiary)"></span><span style="color:var(--text-tertiary)">'+j.status+'</span>';
     var jsrc = j.source || 'doris';
     var typeLabel = j.mode ? (j.mode === 'incremental' ? '增量同步' : '全量覆盖') : (j.type||'-');
+    var typePill = jsrc==='scheduler' ? '<span class="pill info">'+typeLabel+'</span>' : '<span class="pill gray">'+typeLabel+'</span>';
     var lastRun = j.last_run || '-';
     var runCnt = j.run_count != null ? j.run_count : '-';
     var actionsHtml = '<td class="job-actions" onclick="event.stopPropagation()">';
@@ -1719,7 +1813,7 @@ function renderJobsTable(jobs){
     actionsHtml += '</td>';
     h += '<tr data-status="'+j.status+'">'+
       '<td>'+(jsrc==='scheduler'?j.id.slice(0,8):j.id)+'</td><td class="m">'+escHtml(j.name||'-')+'</td><td>'+st+'</td>'+
-      '<td style="font-size:11px">'+typeLabel+'</td><td style="font-size:11px">'+(j.schedule||'-')+'</td>'+
+      '<td style="font-size:11px">'+typePill+'</td><td style="font-size:11px">'+(j.schedule||'-')+'</td>'+
       '<td>'+(j.database||'-')+'</td><td style="font-size:11px;color:var(--text-secondary)">'+lastRun+'</td><td style="text-align:center">'+runCnt+'</td>'+
       actionsHtml+'</tr>';
   });
@@ -2160,28 +2254,50 @@ var _catalogEditing = null;
 
 function loadCatalogs(){
   var el = document.getElementById('catalog-table');
-  el.innerHTML = '<div class="empty-state"><p>Loading...</p></div>';
+  el.innerHTML = '<div class="empty-state"><p>加载中...</p></div>';
   fetch('/api/catalogs').then(function(r){return r.json()}).then(function(d){
-    if(d.error){el.innerHTML='<div class="empty-state"><p>Error: '+escHtml(d.error)+'</p></div>';return}
+    if(d.error){el.innerHTML='<div class="empty-state"><p>错误: '+escHtml(d.error)+'</p></div>';return}
     renderCatalogTable(d.catalogs||[]);
-  }).catch(function(e){el.innerHTML='<div class="empty-state"><p>Failed: '+e.message+'</p></div>'});
+  }).catch(function(e){el.innerHTML='<div class="empty-state"><p>加载失败: '+e.message+'</p></div>'});
+}
+function _typeTagCls(t){
+  var m={'hms':'hms','hive':'hms','jdbc':'jdbc','mysql':'jdbc','oracle':'jdbc','es':'es','elasticsearch':'es','iceberg':'iceberg','paimon':'paimon','max_compute':'mc','maxcompute':'mc'};
+  return m[(t||'').toLowerCase()]||'unknown';
+}
+function renderCatalogSummary(list){
+  var st=document.getElementById('catalog-summary');
+  if(!st)return;
+  var byType={};
+  list.forEach(function(c){var t=(c.type||'other').toLowerCase();byType[t]=(byType[t]||0)+1});
+  var typeNames={hms:'HMS',hive:'Hive',jdbc:'JDBC',mysql:'MySQL',es:'Elasticsearch',elasticsearch:'Elasticsearch',iceberg:'Iceberg',paimon:'Paimon',max_compute:'MaxCompute',maxcompute:'MaxCompute'};
+  var topTypes=Object.keys(byType).sort(function(a,b){return byType[b]-byType[a]}).slice(0,3);
+  var cards='<div class="metric-card hl"><div class="l">Catalog 总数</div><div class="v" style="color:var(--green)">'+list.length+'</div><div class="sub">'+(topTypes.length?topTypes.map(function(t){return (typeNames[t]||t)+' '+byType[t]}).join(' · '):'无外部数据源')+'</div></div>';
+  topTypes.forEach(function(t){
+    cards+='<div class="metric-card"><div class="l">'+(typeNames[t]||t)+'</div><div class="v b">'+byType[t]+'</div><div class="sub">外部数据源</div></div>';
+  });
+  while(topTypes.length<3){
+    cards+='<div class="metric-card"><div class="l">—</div><div class="v" style="color:var(--text-tertiary)">0</div><div class="sub">—</div></div>';
+    topTypes.push('x');
+  }
+  st.innerHTML=cards;
 }
 function renderCatalogTable(list){
   _catalogData = list;
+  renderCatalogSummary(list);
   var q=(document.getElementById('catalog-search').value||'').toLowerCase();
   var fl = list.filter(function(c){return c.name.toLowerCase().indexOf(q)>=0||(c.type||'').toLowerCase().indexOf(q)>=0});
   var el = document.getElementById('catalog-table');
   if(!fl.length){el.innerHTML='<div class="empty-state"><p>未找到匹配的 Catalog</p></div>';return}
-  el.innerHTML = '<div class="apple-table-wrap"><table class="apple-table"><thead><tr><th>名称</th><th>类型</th><th>属性</th><th></th></tr></thead><tbody>'+
+  el.innerHTML = '<div class="apple-table-wrap"><table class="apple-table"><thead><tr><th>名称</th><th>类型</th><th>关键属性</th><th></th></tr></thead><tbody>'+
     fl.map(function(c,i){
       var pkeys = Object.keys(c.properties||{});
       var propsStr = pkeys.filter(function(k){return k!=='type'}).map(function(k){return escHtml(k)+'='+escHtml(c.properties[k])}).join(', ');
       if(propsStr.length>100) propsStr = propsStr.substring(0,100)+'...';
       return '<tr><td><strong>'+escHtml(c.name)+'</strong></td>'+
-        '<td><span style="display:inline-block;background:var(--accent-bg,#e8f0fe);color:var(--accent,#1967d2);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:500">'+escHtml(c.type||'N/A')+'</span></td>'+
-        '<td style="font-size:11px;color:var(--text-secondary);max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+escHtml(propsStr||'-')+'</td>'+
-        '<td><button class="cfg-btn small" onclick="openCatalogModal('+i+')" style="margin-right:4px">Edit</button>'+
-        '<button class="cfg-btn small" style="background:var(--error);color:#fff" onclick="deleteCatalog('+i+',this)">Delete</button></td></tr>';
+        '<td><span class="type-tag '+_typeTagCls(c.type)+'">'+escHtml(c.type||'N/A')+'</span></td>'+
+        '<td style="font-family:\'SF Mono\',Consolas,monospace;font-size:10.5px;color:var(--text-tertiary);max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+escHtml(propsStr||'-')+'</td>'+
+        '<td><button class="job-btn" title="编辑" onclick="openCatalogModal('+i+')">✎</button>'+
+        '<button class="job-btn drop" title="删除" onclick="deleteCatalog('+i+',this)">✕</button></td></tr>';
     }).join('')+'</tbody></table></div>';
 }
 function filterCatalogTable(){renderCatalogTable(_catalogData);}
