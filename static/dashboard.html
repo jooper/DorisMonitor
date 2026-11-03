@@ -1403,7 +1403,7 @@ function _createGraphEngine(cv){
   var ctx=cv.getContext('2d');
   var nodes=[],edges=[],nodeMap={},W=0,H=0,dpr=Math.min(window.devicePixelRatio||1,2);
   var view={scale:1,ox:0,oy:0},hoverN=null,dragging=null,panning=false,downPos=null,moved=false;
-  var mouse={x:-1e4,y:-1e4},fitUntil=0,frameCnt=0;
+  var mouse={x:-1e4,y:-1e4},fitUntil=0,frameCnt=0,_slept=false,_sleepCnt=0,gcx=0,gcy=0;
   function resize(){
     var host=cv.parentElement;
     var w=host.clientWidth,h=host.clientHeight;
@@ -1445,7 +1445,24 @@ function _createGraphEngine(cv){
         n.y+=(Math.random()-.5)*40;
       });
     });
-    resize();fitUntil=performance.now()+3200;fitView();
+    resize();
+    // 固定重力中心(布局质心, 不随视图缩放漂移)
+    if(nodes.length){
+      var sx=0,sy=0;
+      nodes.forEach(function(n){sx+=n.x;sy+=n.y});
+      gcx=sx/nodes.length;gcy=sy/nodes.length;
+    }
+    if(W>2&&H>2&&nodes.length){
+      // 预收敛: 同步跑完物理迭代, 渲染前布局已稳定, 消除初次抖动
+      var iters=nodes.length>250?120:180;
+      for(var pi=0;pi<iters;pi++)tick();
+      _slept=false;_sleepCnt=0;
+      fitView();
+      fitUntil=0;
+    } else {
+      _slept=false;_sleepCnt=0;
+      fitUntil=performance.now()+2500;
+    }
   }
   function fitView(){
     if(!nodes.length||!W)return;
@@ -1495,10 +1512,10 @@ function _createGraphEngine(cv){
       a.fx+=fx;a.fy+=fy;b.fx-=fx;b.fy-=fy;
     });
     // gravity + integrate
-    var cx=W/view.scale*0.5,cy=H/view.scale*0.5,G=0.004,DAMP=0.85;
+    var G=0.004,DAMP=0.85;
     nodes.forEach(function(nd){
       if(nd.pin){nd.vx=0;nd.vy=0;return}
-      nd.fx+=(cx-nd.x)*G;nd.fy+=(cy-nd.y)*G;
+      nd.fx+=(gcx-nd.x)*G;nd.fy+=(gcy-nd.y)*G;
       nd.vx=(nd.vx+nd.fx)*DAMP;nd.vy=(nd.vy+nd.fy)*DAMP;
       var vm=Math.sqrt(nd.vx*nd.vx+nd.vy*nd.vy);
       if(vm>14){nd.vx*=14/vm;nd.vy*=14/vm}
@@ -1520,7 +1537,7 @@ function _createGraphEngine(cv){
     var w=s2w(sx,sy);
     var n=hitTest(w.x,w.y);
     downPos={x:sx,y:sy};moved=false;
-    if(n){dragging=n;n.pin=true}
+    if(n){dragging=n;n.pin=true;_slept=false;_sleepCnt=0}
     else{panning=true}
     cv.style.cursor=n?'grabbing':'grabbing';
   });
@@ -1577,7 +1594,14 @@ function _createGraphEngine(cv){
     var host=cv.parentElement;
     if(host.clientWidth>0&&(host.clientWidth!==W||host.clientHeight!==H)){resize()}
     if(W<2||H<2){requestAnimationFrame(frame);return}
-    if(nodes.length)tick();
+    if(nodes.length&&!_slept){
+      tick();
+      // 动能检测: 稳定后休眠物理模拟(消除残余抖动 + 省CPU)
+      var ke=0;
+      for(var ki=0;ki<nodes.length;ki++){ke+=nodes[ki].vx*nodes[ki].vx+nodes[ki].vy*nodes[ki].vy}
+      if(ke<1){_sleepCnt++;if(_sleepCnt>12)_slept=true}
+      else _sleepCnt=0;
+    }
     frameCnt++;
     if(now<fitUntil&&nodes.length&&frameCnt%6===0)fitView();
     // hover
