@@ -6,6 +6,8 @@ data/scheduler_jobs.json
 config.json
 app_stdout.log
 app_stderr.log
+app.log
+app.pid
 data/
 graphify-out/cache/
 graphify-out/.graphify_semantic_new.json
