@@ -1,4 +1,8 @@
 {
+  "auth": {
+    "username": "admin",
+    "password": "change_me"
+  },
   "cluster": {
     "host": "your_doris_host",
     "port": 9030,

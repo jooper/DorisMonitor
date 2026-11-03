@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>方向二 · 极简宽域</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Helvetica Neue",sans-serif;background:#FAFBFC;color:#1D1D1F;letter-spacing:-0.01em}
+.split{display:flex;height:100%}
+.left{flex:1.15;position:relative;background:#F2F4F7;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:64px 72px}
+.right{flex:1;display:flex;align-items:center;justify-content:center;background:#FAFBFC;position:relative}
+/* 左侧大气排版 */
+.hero-kicker{font-size:13px;font-weight:600;letter-spacing:0.22em;color:#86868B;text-transform:uppercase}
+.hero-title{font-size:clamp(48px,5.2vw,74px);font-weight:700;line-height:1.06;letter-spacing:-0.035em;color:#1D1D1F;margin-top:22px}
+.hero-title em{font-style:normal;color:#B9C0C9}
+.hero-desc{font-size:16px;line-height:1.65;color:#86868B;max-width:400px;margin-top:26px;font-weight:400}
+.hero-stats{display:flex;gap:56px;margin-top:auto;padding-top:48px}
+.stat{display:flex;flex-direction:column}
+.stat-num{font-size:32px;font-weight:700;letter-spacing:-0.03em;color:#1D1D1F;font-variant-numeric:tabular-nums}
+.stat-label{font-size:11px;font-weight:600;letter-spacing:0.14em;color:#C7C7CC;text-transform:uppercase;margin-top:6px}
+/* 背景几何 */
+.geo{position:absolute;border-radius:50%;filter:blur(60px);opacity:.55;pointer-events:none}
+.geo-1{width:520px;height:520px;background:radial-gradient(circle,rgba(0,122,255,0.16),transparent 70%);top:-160px;right:-120px}
+.geo-2{width:420px;height:420px;background:radial-gradient(circle,rgba(52,199,89,0.10),transparent 70%);bottom:-140px;left:-80px}
+.grid-lines{position:absolute;top:0;left:0;right:0;bottom:0;background-image:linear-gradient(rgba(0,0,0,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.025) 1px,transparent 1px);background-size:64px 64px;pointer-events:none;mask-image:radial-gradient(ellipse 70% 60% at 40% 50%,black 20%,transparent 75%);-webkit-mask-image:radial-gradient(ellipse 70% 60% at 40% 50%,black 20%,transparent 75%)}
+/* 右侧登录卡 */
+.form-wrap{width:360px;max-width:84vw;animation:fadeIn .7s cubic-bezier(.22,1,.36,1) both .15s}
+@keyframes fadeIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.form-brand{display:flex;align-items:center;gap:12px;margin-bottom:44px}
+.form-logo{width:40px;height:40px;border-radius:11px;background:#007AFF;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,122,255,0.3)}
+.form-logo svg{width:20px;height:20px}
+.form-title{font-size:24px;font-weight:700;letter-spacing:-0.02em;color:#1D1D1F}
+.form-sub{font-size:14px;color:#86868B;margin:-38px 0 36px}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:13px;font-weight:600;color:#3A3A3E;margin-bottom:8px}
+.field input{width:100%;padding:13px 16px;border:1.5px solid #E5E5EA;border-radius:12px;font-size:15px;color:#1D1D1F;font-family:inherit;outline:none;transition:all .2s;background:#FAFBFC}
+.field input::placeholder{color:#C7C7CC}
+.field input:focus{border-color:#007AFF;box-shadow:0 0 0 4px rgba(0,122,255,0.1);background:#fff}
+.btn{width:100%;padding:14px 0;margin-top:12px;background:#007AFF;border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .2s;box-shadow:0 6px 20px rgba(0,122,255,0.28)}
+.btn:hover{background:#0066D6;transform:translateY(-1px);box-shadow:0 8px 26px rgba(0,122,255,0.35)}
+.btn:active{transform:translateY(0) scale(.985)}
+.form-foot{margin-top:32px;text-align:center;font-size:12px;color:#C7C7CC}
+/* 响应式 */
+@media(max-width:860px){.left{display:none}.right{flex:1;background:#F2F4F7}}
+</style>
+</head>
+<body>
+<div class="split">
+  <div class="left">
+    <div class="grid-lines"></div>
+    <div class="geo geo-1"></div>
+    <div class="geo geo-2"></div>
+    <div>
+      <div class="hero-kicker">Data Warehouse Operations</div>
+      <h1 class="hero-title">让数据<br>流动<em>起来</em></h1>
+      <p class="hero-desc">物化视图调度、依赖图谱、集群监控——一个平台，掌握 Doris 数据仓库的全部脉动。</p>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">152</span><span class="stat-label">物化视图</span></div>
+      <div class="stat"><span class="stat-num">48</span><span class="stat-label">调度作业</span></div>
+      <div class="stat"><span class="stat-num">99.98%</span><span class="stat-label">可用性</span></div>
+    </div>
+  </div>
+  <div class="right">
+    <div class="form-wrap">
+      <div class="form-brand">
+        <div class="form-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round">
+            <circle cx="12" cy="5" r="2.2"/><circle cx="5" cy="18" r="2.2"/><circle cx="19" cy="18" r="2.2"/>
+            <line x1="10.5" y1="7" x2="6.8" y2="16"/><line x1="13.5" y1="7" x2="17.2" y2="16"/><line x1="8" y1="17" x2="16" y2="17"/>
+          </svg>
+        </div>
+        <span class="form-title">登录</span>
+      </div>
+      <p class="form-sub">继续前往 Doris 作业平台</p>
+      <form onsubmit="return false">
+        <div class="field"><label>账号</label><input type="text" placeholder="用户名" autofocus></div>
+        <div class="field"><label>密码</label><input type="password" placeholder="密码"></div>
+        <button class="btn" type="submit">登 录</button>
+      </form>
+      <div class="form-foot">Apache Doris 3.1.1 · 内部系统</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

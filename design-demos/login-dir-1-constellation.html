@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>方向一 · 深空星座</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Helvetica Neue",sans-serif;background:#0A1628;color:#E8EEF7}
+#bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
+.vignette{position:fixed;top:0;left:0;right:0;bottom:0;z-index:1;background:radial-gradient(ellipse 80% 70% at 50% 45%,transparent 0%,rgba(10,22,40,0.4) 70%,rgba(10,22,40,0.9) 100%);pointer-events:none}
+.stage{position:fixed;top:0;left:0;right:0;bottom:0;z-index:2;display:flex;align-items:center;justify-content:center}
+.card{width:400px;max-width:88vw;padding:0;background:rgba(16,32,56,0.72);-webkit-backdrop-filter:blur(24px) saturate(1.4);backdrop-filter:blur(24px) saturate(1.4);border:1px solid rgba(120,170,255,0.18);border-radius:20px;box-shadow:0 24px 80px rgba(0,10,30,0.6),inset 0 1px 0 rgba(255,255,255,0.08);overflow:hidden;animation:cardIn .6s cubic-bezier(.22,1,.36,1) both}
+@keyframes cardIn{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.card-top{height:3px;background:linear-gradient(90deg,transparent,#5B9BFF,#8FC1FF,transparent)}
+.card-body{padding:44px 44px 40px}
+.brand{display:flex;align-items:center;gap:14px;margin-bottom:8px}
+.brand-mark{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#1B3A66 0%,#0F2444 100%);border:1px solid rgba(139,182,255,0.3);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(91,155,255,0.25)}
+.brand-mark svg{width:22px;height:22px}
+.brand-name{font-size:19px;font-weight:600;letter-spacing:-0.01em;color:#F0F5FC}
+.brand-sub{font-size:12px;color:rgba(180,200,230,0.55);letter-spacing:0.08em;margin-top:2px}
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(120,170,255,0.22),transparent);margin:28px 0}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12px;font-weight:500;color:rgba(190,210,240,0.7);margin-bottom:7px;letter-spacing:0.02em}
+.field input{width:100%;padding:13px 16px;background:rgba(10,22,40,0.5);border:1px solid rgba(120,170,255,0.15);border-radius:10px;font-size:15px;color:#E8EEF7;font-family:inherit;outline:none;transition:all .25s cubic-bezier(.22,1,.36,1)}
+.field input::placeholder{color:rgba(150,170,200,0.35)}
+.field input:focus{border-color:rgba(139,182,255,0.6);background:rgba(13,28,50,0.7);box-shadow:0 0 0 4px rgba(91,155,255,0.12)}
+.btn{width:100%;padding:14px 0;margin-top:10px;background:linear-gradient(180deg,#3D7BDB 0%,#2B5FBF 100%);border:1px solid rgba(139,182,255,0.4);border-radius:10px;color:#fff;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;letter-spacing:0.12em;transition:all .25s;box-shadow:0 8px 24px rgba(43,95,191,0.35)}
+.btn:hover{background:linear-gradient(180deg,#4A8AE8 0%,#3369CE 100%);box-shadow:0 10px 32px rgba(43,95,191,0.45);transform:translateY(-1px)}
+.btn:active{transform:translateY(0) scale(.985)}
+.foot{margin-top:24px;text-align:center;font-size:11px;color:rgba(150,170,200,0.35);letter-spacing:0.06em}
+.corner{position:fixed;z-index:2;font-size:11px;letter-spacing:0.15em;color:rgba(130,160,200,0.3);pointer-events:none}
+.corner.tl{top:28px;left:32px}
+.corner.br{bottom:28px;right:32px;text-align:right}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div class="vignette"></div>
+<div class="stage">
+  <div class="card">
+    <div class="card-top"></div>
+    <div class="card-body">
+      <div class="brand">
+        <div class="brand-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#8FC1FF" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="5" r="2.2"/><circle cx="5" cy="18" r="2.2"/><circle cx="19" cy="18" r="2.2"/>
+            <line x1="10.5" y1="7" x2="6.8" y2="16" opacity=".7"/><line x1="13.5" y1="7" x2="17.2" y2="16" opacity=".7"/><line x1="8" y1="17" x2="16" y2="17" opacity=".7"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-name">Doris 作业平台</div>
+          <div class="brand-sub">DATA WAREHOUSE OPERATIONS</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <form onsubmit="return false">
+        <div class="field">
+          <label>账号</label>
+          <input type="text" placeholder="请输入用户名" autofocus>
+        </div>
+        <div class="field">
+          <label>密码</label>
+          <input type="password" placeholder="请输入密码">
+        </div>
+        <button class="btn" type="submit">登 录</button>
+      </form>
+      <div class="foot">Apache Doris · 3.1.1 Cluster</div>
+    </div>
+  </div>
+</div>
+<div class="corner tl">N 31°14′ · E 121°29′</div>
+<div class="corner br">SECURE · INTERNAL<br>SESSION TLS 1.3</div>
+<script>
+(function(){
+  var c=document.getElementById('bg'),ctx=c.getContext('2d');
+  var nodes=[],W,H;
+  function resize(){W=c.width=innerWidth*devicePixelRatio;H=c.height=innerHeight*devicePixelRatio;c.style.width=innerWidth+'px';c.style.height=innerHeight+'px'}
+  resize();addEventListener('resize',resize);
+  var N=Math.min(70,Math.floor(innerWidth/22));
+  for(var i=0;i<N;i++)nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-0.5)*0.16,vy:(Math.random()-0.5)*0.16,r:Math.random()*1.6+0.6});
+  var mouse={x:-9999,y:-9999};
+  addEventListener('mousemove',function(e){mouse.x=e.clientX*devicePixelRatio;mouse.y=e.clientY*devicePixelRatio});
+  var DM=170*devicePixelRatio;
+  function frame(){
+    ctx.clearRect(0,0,W,H);
+    var g=ctx.createRadialGradient(W*0.5,H*0.42,0,W*0.5,H*0.42,Math.max(W,H)*0.6);
+    g.addColorStop(0,'#0D1F3C');g.addColorStop(1,'#070F1E');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    for(var i=0;i<N;i++){
+      var n=nodes[i];
+      n.x+=n.vx;n.y+=n.vy;
+      if(n.x<0||n.x>W)n.vx*=-1;
+      if(n.y<0||n.y>H)n.vy*=-1;
+    }
+    for(var i=0;i<N;i++)for(var j=i+1;j<N;j++){
+      var a=nodes[i],b=nodes[j],dx=a.x-b.x,dy=a.y-b.y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<DM){
+        var o=(1-d/DM)*0.28;
+        var dm=Math.sqrt((a.x-mouse.x)**2+(a.y-mouse.y)**2);
+        if(dm<200*devicePixelRatio)o+=0.25;
+        ctx.strokeStyle='rgba(110,165,255,'+Math.min(o,0.5)+')';
+        ctx.lineWidth=0.7;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+      }
+    }
+    for(var i=0;i<N;i++){
+      var n=nodes[i];
+      ctx.fillStyle='rgba(140,190,255,0.55)';
+      ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fill();
+    }
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+</script>
+</body>
+</html>

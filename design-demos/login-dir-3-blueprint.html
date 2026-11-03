@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>方向三 · 蓝图工程</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Helvetica Neue",sans-serif;background:#101820;color:#DDE6F0}
+/* 蓝图网格背景 */
+.blueprint{position:fixed;top:0;left:0;right:0;bottom:0;background:
+  linear-gradient(rgba(58,110,165,0.08) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(58,110,165,0.08) 1px,transparent 1px),
+  linear-gradient(rgba(58,110,165,0.04) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(58,110,165,0.04) 1px,transparent 1px),
+  radial-gradient(ellipse 90% 80% at 50% 40%,#16222E 0%,#0E1620 100%);
+  background-size:120px 120px,120px 120px,24px 24px,24px 24px,100% 100%}
+/* 工程标注 */
+.anno{position:fixed;z-index:1;font-size:10px;letter-spacing:0.18em;color:rgba(120,160,210,0.35);font-family:"SF Mono",Consolas,monospace;pointer-events:none}
+.anno.tl{top:36px;left:40px}
+.anno.tr{top:36px;right:40px;text-align:right}
+.anno.bl{bottom:36px;left:40px}
+.anno.br{bottom:36px;right:40px;text-align:right}
+.crosshair{position:fixed;width:24px;height:24px;z-index:1;pointer-events:none}
+.crosshair::before,.crosshair::after{content:'';position:absolute;background:rgba(120,160,210,0.2)}
+.crosshair::before{left:50%;top:0;bottom:0;width:1px}
+.crosshair::after{top:50%;left:0;right:0;height:1px}
+.ch-1{top:100px;left:120px}.ch-2{bottom:120px;right:140px}
+/* 卡片 */
+.stage{position:fixed;top:0;left:0;right:0;bottom:0;z-index:2;display:flex;align-items:center;justify-content:center}
+.card{width:420px;max-width:90vw;background:rgba(22,34,48,0.88);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border:1px solid rgba(90,140,200,0.22);border-radius:4px;position:relative;box-shadow:0 32px 90px rgba(5,10,18,0.7);animation:cardIn .55s cubic-bezier(.22,1,.36,1) both}
+@keyframes cardIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+/* 工程角标 */
+.card::before{content:'';position:absolute;top:-1px;left:-1px;width:22px;height:22px;border-top:2px solid #4A8AC8;border-left:2px solid #4A8AC8;border-radius:2px 0 0 0}
+.card::after{content:'';position:absolute;bottom:-1px;right:-1px;width:22px;height:22px;border-bottom:2px solid #4A8AC8;border-right:2px solid #4A8AC8;border-radius:0 0 2px 0}
+.card-head{padding:38px 42px 30px;border-bottom:1px solid rgba(90,140,200,0.14)}
+.card-head-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.tag{font-size:10px;letter-spacing:0.16em;font-family:"SF Mono",Consolas,monospace;color:#6FA6D8;border:1px solid rgba(111,166,216,0.3);padding:3px 9px;border-radius:2px}
+.brand-row{display:flex;align-items:center;gap:14px}
+.brand-mark{width:46px;height:46px;border-radius:4px;background:linear-gradient(145deg,#1E3A5C,#152A44);border:1px solid rgba(111,166,216,0.35);display:flex;align-items:center;justify-content:center}
+.brand-mark svg{width:24px;height:24px}
+.brand-name{font-size:20px;font-weight:600;color:#E5EDF7;letter-spacing:-0.01em}
+.brand-sub{font-size:11px;color:rgba(160,190,220,0.5);letter-spacing:0.1em;margin-top:3px;font-family:"SF Mono",Consolas,monospace}
+.card-body{padding:30px 42px 36px}
+.field{margin-bottom:18px;position:relative}
+.field-label{display:flex;justify-content:space-between;font-size:11px;font-weight:600;letter-spacing:0.1em;color:rgba(170,200,230,0.65);margin-bottom:8px;font-family:"SF Mono",Consolas,monospace}
+.field-label .req{color:#6FA6D8}
+.field input{width:100%;padding:13px 15px;background:rgba(14,22,32,0.6);border:1px solid rgba(90,140,200,0.2);border-radius:3px;font-size:15px;color:#E8EEF5;font-family:inherit;outline:none;transition:all .22s}
+.field input::placeholder{color:rgba(140,165,195,0.3)}
+.field input:focus{border-color:rgba(111,166,216,0.65);box-shadow:0 0 0 3px rgba(74,138,200,0.14);background:rgba(18,28,40,0.8)}
+.btn{width:100%;padding:14px 0;margin-top:14px;background:#2E6BAE;border:1px solid rgba(120,170,220,0.4);border-radius:3px;color:#fff;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;letter-spacing:0.14em;transition:all .22s;box-shadow:0 10px 28px rgba(46,107,174,0.35)}
+.btn:hover{background:#3579C0;box-shadow:0 12px 34px rgba(46,107,174,0.45);transform:translateY(-1px)}
+.btn:active{transform:translateY(0) scale(.98)}
+.card-foot{margin-top:26px;padding-top:20px;border-top:1px dashed rgba(90,140,200,0.18);display:flex;justify-content:space-between;font-size:10px;letter-spacing:0.14em;color:rgba(140,170,200,0.4);font-family:"SF Mono",Consolas,monospace}
+</style>
+</head>
+<body>
+<div class="blueprint"></div>
+<div class="crosshair ch-1"></div>
+<div class="crosshair ch-2"></div>
+<div class="anno tl">DW-OPS // GRID REF 04-A</div>
+<div class="anno tr">APACHE DORIS 3.1.1<br>BUILD 2026.11</div>
+<div class="anno bl">COORD 10.11.2.101:9030</div>
+<div class="anno br">SESSION SECURE<br>ENCRYPTED CHANNEL</div>
+<div class="stage">
+  <div class="card">
+    <div class="card-head">
+      <div class="card-head-top"><span class="tag">ACCESS CONTROL</span><span class="tag">v2.0</span></div>
+      <div class="brand-row">
+        <div class="brand-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#7EB8E8" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="5" r="2.2"/><circle cx="5" cy="18" r="2.2"/><circle cx="19" cy="18" r="2.2"/>
+            <line x1="10.5" y1="7" x2="6.8" y2="16"/><line x1="13.5" y1="7" x2="17.2" y2="16"/><line x1="8" y1="17" x2="16" y2="17"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-name">Doris 作业平台</div>
+          <div class="brand-sub">DATA WAREHOUSE OPS CONSOLE</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <form onsubmit="return false">
+        <div class="field">
+          <div class="field-label"><span>ACCOUNT <span class="req">*</span></span><span>F-01</span></div>
+          <input type="text" placeholder="用户名" autofocus>
+        </div>
+        <div class="field">
+          <div class="field-label"><span>PASSKEY <span class="req">*</span></span><span>F-02</span></div>
+          <input type="password" placeholder="密码">
+        </div>
+        <button class="btn" type="submit">认 证 登 录</button>
+      </form>
+      <div class="card-foot"><span>INTERNAL SYSTEM</span><span>EST. 2026</span></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>合成稿 · 星座宽域</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Helvetica Neue",sans-serif;color:#E8EEF7;letter-spacing:-0.01em}
+#bg{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0}
+.vignette{position:fixed;top:0;left:0;right:0;bottom:0;z-index:1;background:radial-gradient(ellipse 85% 75% at 50% 42%,transparent 0%,rgba(10,22,40,0.35) 65%,rgba(8,16,30,0.85) 100%);pointer-events:none}
+.split{position:fixed;top:0;left:0;right:0;bottom:0;z-index:2;display:flex}
+/* 左侧大气排版 */
+.left{flex:1.15;display:flex;flex-direction:column;justify-content:space-between;padding:72px 80px 64px;position:relative}
+.hero-kicker{font-size:13px;font-weight:600;letter-spacing:0.24em;color:rgba(170,200,235,0.6);text-transform:uppercase}
+.hero-title{font-size:clamp(52px,5.6vw,80px);font-weight:700;line-height:1.05;letter-spacing:-0.04em;color:#F2F6FB;margin-top:24px;text-shadow:0 2px 40px rgba(10,22,40,0.6)}
+.hero-title em{font-style:normal;color:rgba(150,180,220,0.4)}
+.hero-desc{font-size:16px;line-height:1.7;color:rgba(185,205,230,0.75);max-width:420px;margin-top:28px;font-weight:400}
+.hero-stats{display:flex;gap:64px;padding-top:52px}
+.stat{display:flex;flex-direction:column}
+.stat-num{font-size:34px;font-weight:700;letter-spacing:-0.03em;color:#F0F5FC;font-variant-numeric:tabular-nums}
+.stat-label{font-size:11px;font-weight:600;letter-spacing:0.16em;color:rgba(150,175,210,0.45);text-transform:uppercase;margin-top:7px}
+/* 右侧登录 */
+.right{flex:1;display:flex;align-items:center;justify-content:center;position:relative}
+.form-wrap{width:380px;max-width:86vw;animation:cardIn .7s cubic-bezier(.22,1,.36,1) both .18s}
+@keyframes cardIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+.card{background:rgba(16,30,52,0.66);-webkit-backdrop-filter:blur(26px) saturate(1.5);backdrop-filter:blur(26px) saturate(1.5);border:1px solid rgba(120,170,255,0.16);border-radius:20px;box-shadow:0 24px 70px rgba(4,10,24,0.55),inset 0 1px 0 rgba(255,255,255,0.07);overflow:hidden}
+.card-top{height:3px;background:linear-gradient(90deg,transparent,#5B9BFF,#8FC1FF,transparent)}
+.card-body{padding:40px 42px 36px}
+.brand-row{display:flex;align-items:center;gap:13px;margin-bottom:8px}
+.brand-mark{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,#1E3C68 0%,#12264A 100%);border:1px solid rgba(139,182,255,0.3);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(91,155,255,0.22)}
+.brand-mark svg{width:21px;height:21px}
+.brand-name{font-size:18px;font-weight:600;color:#F0F5FC;letter-spacing:-0.01em}
+.form-sub{font-size:14px;color:rgba(180,200,230,0.6);margin:0 0 30px 55px}
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(120,170,255,0.2),transparent);margin:0 0 28px}
+.field{margin-bottom:17px}
+.field label{display:block;font-size:12px;font-weight:600;letter-spacing:0.04em;color:rgba(195,215,240,0.72);margin-bottom:8px}
+.field input{width:100%;padding:13px 16px;background:rgba(10,22,40,0.45);border:1px solid rgba(120,170,255,0.15);border-radius:11px;font-size:15px;color:#E8EEF7;font-family:inherit;outline:none;transition:all .25s cubic-bezier(.22,1,.36,1)}
+.field input::placeholder{color:rgba(140,165,195,0.35)}
+.field input:focus{border-color:rgba(139,182,255,0.6);background:rgba(13,28,50,0.65);box-shadow:0 0 0 4px rgba(91,155,255,0.13)}
+.btn{width:100%;padding:14px 0;margin-top:12px;background:linear-gradient(180deg,#3D7BDB 0%,#2B5FBF 100%);border:1px solid rgba(139,182,255,0.4);border-radius:11px;color:#fff;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;letter-spacing:0.14em;transition:all .25s;box-shadow:0 8px 24px rgba(43,95,191,0.35)}
+.btn:hover{background:linear-gradient(180deg,#4A8AE8 0%,#3369CE 100%);box-shadow:0 10px 32px rgba(43,95,191,0.45);transform:translateY(-1px)}
+.btn:active{transform:translateY(0) scale(.985)}
+.card-foot{margin-top:26px;text-align:center;font-size:11px;color:rgba(140,165,195,0.4);letter-spacing:0.08em}
+/* 响应式 */
+@media(max-width:920px){.left{display:none}.right{flex:1}}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div class="vignette"></div>
+<div class="split">
+  <div class="left">
+    <div>
+      <div class="hero-kicker">Data Warehouse Operations</div>
+      <h1 class="hero-title">让数据<br>流动<em>起来</em></h1>
+      <p class="hero-desc">物化视图调度、依赖图谱、集群监控——一个平台，掌握 Doris 数据仓库的全部脉动。</p>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">152</span><span class="stat-label">物化视图</span></div>
+      <div class="stat"><span class="stat-num">48</span><span class="stat-label">调度作业</span></div>
+      <div class="stat"><span class="stat-num">99.98%</span><span class="stat-label">可用性</span></div>
+    </div>
+  </div>
+  <div class="right">
+    <div class="form-wrap">
+      <div class="card">
+        <div class="card-top"></div>
+        <div class="card-body">
+          <div class="brand-row">
+            <div class="brand-mark">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#8FC1FF" stroke-width="2" stroke-linecap="round">
+                <circle cx="12" cy="5" r="2.2"/><circle cx="5" cy="18" r="2.2"/><circle cx="19" cy="18" r="2.2"/>
+                <line x1="10.5" y1="7" x2="6.8" y2="16"/><line x1="13.5" y1="7" x2="17.2" y2="16"/><line x1="8" y1="17" x2="16" y2="17"/>
+              </svg>
+            </div>
+            <div class="brand-name">Doris 作业平台</div>
+          </div>
+          <p class="form-sub">继续前往控制台</p>
+          <div class="divider"></div>
+          <form onsubmit="return false">
+            <div class="field"><label>账号</label><input type="text" placeholder="用户名" autofocus></div>
+            <div class="field"><label>密码</label><input type="password" placeholder="密码"></div>
+            <button class="btn" type="submit">登 录</button>
+          </form>
+          <div class="card-foot">Apache Doris 3.1.1 · 内部系统</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var c=document.getElementById('bg'),ctx=c.getContext('2d');
+  var nodes=[],W,H;
+  function resize(){W=c.width=innerWidth*devicePixelRatio;H=c.height=innerHeight*devicePixelRatio;c.style.width=innerWidth+'px';c.style.height=innerHeight+'px'}
+  resize();addEventListener('resize',resize);
+  var N=Math.min(80,Math.floor(innerWidth/20));
+  for(var i=0;i<N;i++)nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-0.5)*0.16,vy:(Math.random()-0.5)*0.16,r:Math.random()*1.6+0.6});
+  var mouse={x:-9999,y:-9999};
+  addEventListener('mousemove',function(e){mouse.x=e.clientX*devicePixelRatio;mouse.y=e.clientY*devicePixelRatio});
+  var DM=170*devicePixelRatio;
+  function frame(){
+    ctx.clearRect(0,0,W,H);
+    var g=ctx.createRadialGradient(W*0.38,H*0.42,0,W*0.38,H*0.42,Math.max(W,H)*0.65);
+    g.addColorStop(0,'#0D2038');g.addColorStop(1,'#070F1E');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    for(var i=0;i<N;i++){var n=nodes[i];n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1}
+    for(var i=0;i<N;i++)for(var j=i+1;j<N;j++){
+      var a=nodes[i],b=nodes[j],dx=a.x-b.x,dy=a.y-b.y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<DM){
+        var o=(1-d/DM)*0.26;
+        var dm=Math.sqrt((a.x-mouse.x)*(a.x-mouse.x)+(a.y-mouse.y)*(a.y-mouse.y));
+        if(dm<200*devicePixelRatio)o+=0.25;
+        ctx.strokeStyle='rgba(110,165,255,'+Math.min(o,0.5)+')';
+        ctx.lineWidth=0.7;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+      }
+    }
+    for(var i=0;i<N;i++){var n=nodes[i];ctx.fillStyle='rgba(140,190,255,0.5)';ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fill()}
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+</script>
+</body>
+</html>

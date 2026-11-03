@@ -3,11 +3,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, date
 from email.mime.text import MIMEText
 import pymysql, requests
-from flask import Flask, jsonify, send_from_directory, request, Response
+from flask import Flask, jsonify, send_from_directory, request, Response, session
 from flask_cors import CORS
 from scheduler_service import SchedulerService
 
-scheduler = None  # initialized in __main__
 
 class EnhancedEncoder(json.JSONEncoder):
     def default(self, o):
@@ -20,6 +19,8 @@ class EnhancedEncoder(json.JSONEncoder):
 
 app = Flask(__name__, static_folder='static')
 CORS(app)
+app.secret_key = "doris-monitor-secret-key-2026"
+app.permanent_session_lifetime = 86400  # 24 hours
 
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config.json")
 
@@ -167,6 +168,10 @@ def get_db(database=None):
         password=cfg["password"], database=database,
         connect_timeout=5, read_timeout=10
     )
+
+# Initialize the scheduler once when the module is imported. This keeps /api/jobs
+# usable under WSGI/import without requiring the __main__ block.
+scheduler = SchedulerService(get_db)
 
 def query(sql):
     conn = get_db()
@@ -603,6 +608,16 @@ def collect_metrics():
     fe_metrics = get_fe_metrics_all()
     be_metrics = get_be_metrics_all()
     queries = get_queries()
+    mv_job_status = {}
+    try:
+        rows = query('SELECT MvDatabaseName, MvName, Status FROM jobs("type"="mv")')
+        for row in rows:
+            db = (row.get("MvDatabaseName") or "").strip()
+            name = (row.get("MvName") or "").strip()
+            if db and name:
+                mv_job_status[(db, name)] = (row.get("Status") or "").strip().upper()
+    except Exception:
+        pass
     # Add journal_lag properly
     master_id = None
     for f in fe_status:
@@ -638,6 +653,9 @@ def collect_metrics():
                 mv["last_status"] = t.get("status", "")
                 mv["last_finish_time"] = t.get("finish_time", "")
                 mv["last_duration_ms"] = t.get("duration_ms", 0)
+                mv["paused"] = mv_job_status.get(
+                    (mv.get("database", ""), mv.get("name", "")), ""
+                ).upper() == "PAUSED"
             all_mvs.extend(mvs)
         except Exception:
             pass
@@ -871,6 +889,42 @@ def generate_create_job_sql(job_name, target_db, target_table, columns, source_c
 
 # ─── Routes ──────────────────────────────────────────────
 
+# ─── Auth ────────────────────────────────────────────────
+
+AUTH_DEFAULTS = {"username": "admin", "password": "doris@123"}
+
+def load_auth_config():
+    cfg = load_config()
+    return {**AUTH_DEFAULTS, **cfg.get("auth", {})}
+
+@app.before_request
+def check_auth():
+    # Allow static files and login endpoint without auth
+    if request.path == "/api/login" or request.path.startswith("/static"):
+        return None
+    # Protect all /api/* endpoints
+    if request.path.startswith("/api/"):
+        if not session.get("user"):
+            return jsonify({"error": "未登录"}), 401
+    return None
+
+@app.route("/api/login", methods=["POST"])
+def api_login():
+    data = request.get_json(silent=True) or {}
+    username = data.get("username", "")
+    password = data.get("password", "")
+    auth = load_auth_config()
+    if username == auth.get("username") and password == auth.get("password"):
+        session.permanent = True
+        session["user"] = username
+        return jsonify({"ok": True, "user": username})
+    return jsonify({"error": "用户名或密码错误"}), 401
+
+@app.route("/api/logout", methods=["POST"])
+def api_logout():
+    session.clear()
+    return jsonify({"ok": True})
+
 @app.route("/")
 def index():
     return send_from_directory(app.static_folder, "dashboard.html")
@@ -1033,9 +1087,13 @@ def api_toggle_mv():
     action = (data.get("action") or "").strip()
     if not database or not name or action not in ("pause", "resume"):
         return jsonify({"error": "database, name, and action (pause|resume) required"}), 400
-    sql = f"ALTER MATERIALIZED VIEW `{database}`.`{name}` {'PAUSE' if action == 'pause' else 'RESUME'}"
+    operation = "PAUSE" if action == "pause" else "RESUME"
+    sql = f"{operation} MATERIALIZED VIEW JOB ON `{database}`.`{name}`"
     ok, err = execute_ddl(sql)
     if ok:
+        with CACHE["lock"]:
+            CACHE["data"] = None
+            CACHE["timestamp"] = 0
         return jsonify({"status": "ok", "message": f"MV {name} {action}d"})
     return jsonify({"error": err}), 400
 
@@ -1072,9 +1130,10 @@ def api_config():
         "be_http_port": int(data.get("be_http_port", 8040)),
         "connect_timeout": int(data.get("connect_timeout", 10)),
     }
-    config = {"cluster": cluster, "refresh_interval_seconds": int(data.get("refresh_interval_seconds", 30))}
+    cfg["cluster"] = cluster
+    cfg["refresh_interval_seconds"] = int(data.get("refresh_interval_seconds", 30))
     with open(CONFIG_PATH, "w") as f:
-        json.dump(config, f, indent=2, ensure_ascii=False)
+        json.dump(cfg, f, indent=2, ensure_ascii=False)
     with CACHE["lock"]: CACHE["data"] = None; CACHE["timestamp"] = 0
     return jsonify({"status": "ok", "message": "配置已保存"})
 
@@ -1086,14 +1145,26 @@ def api_alert_config():
         safe["smtp_password"] = "********" if ac.get("smtp_password") else ""
         return jsonify(safe)
     data = request.get_json(force=True)
-    ac = {k: data.get(k, ALERT_DEFAULTS[k]) for k in ALERT_DEFAULTS}
+    existing = load_alert_config()
+    ac = {}
+    for key in ALERT_DEFAULTS:
+        value = data.get(key, existing.get(key, ALERT_DEFAULTS[key]))
+        if key == "smtp_password" and value in ("", "********"):
+            value = existing.get(key, ALERT_DEFAULTS[key])
+        ac[key] = value
     save_alert_config(ac)
     return jsonify({"status": "ok", "message": "告警配置已保存"})
 
 @app.route("/api/alert-test", methods=["POST"])
 def api_alert_test():
     data = request.get_json(force=True)
-    ac = {k: data.get(k, ALERT_DEFAULTS[k]) for k in ALERT_DEFAULTS}
+    existing = load_alert_config()
+    ac = {}
+    for key in ALERT_DEFAULTS:
+        value = data.get(key, existing.get(key, ALERT_DEFAULTS[key]))
+        if key == "smtp_password" and value in ("", "********"):
+            value = existing.get(key, ALERT_DEFAULTS[key])
+        ac[key] = value
     ok = send_email("Doris 测试邮件", "这是一封测试邮件，来自 Doris 监控系统。\n时间: " + datetime.now().strftime("%Y-%m-%d %H:%M:%S"), ac)
     if ok:
         return jsonify({"status": "ok", "message": "测试邮件发送成功，请检查收件箱"})
@@ -1447,10 +1518,8 @@ def api_catalog_drop(name):
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    import scheduler_service as _ss
-    scheduler = _ss.SchedulerService(get_db)
     scheduler.start()
     cfg = get_fe_config()
-    print(f"  Doris 作业平台 @ http://localhost:5000")
+    print(f"  Apache Doris 作业平台 @ http://localhost:5000")
     start_alert_checker()
     app.run(host="0.0.0.0", port=5000, debug=False, threaded=True)

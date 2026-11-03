@@ -1,4 +1,4 @@
 @echo off
-cd /d "D:\Projects\Sources\BDProject\doris_yw"
+cd /d "%~dp0"
 python app.py
 pause
