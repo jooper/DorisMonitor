@@ -220,10 +220,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","SF Pro Text","H
 .cj-sel-input{width:100%;height:34px;border:1px solid var(--border-color);border-radius:8px;padding:0 12px;font-size:13px;outline:none;font-family:inherit;color:var(--text-primary)}
 .cj-sel-input:focus{border-color:var(--green);box-shadow:0 0 0 3px var(--accent-light)}
 .cj-sel-input:disabled{background:var(--bg-secondary);color:var(--text-tertiary)}
-.cj-sel-dropdown{display:none;position:absolute;top:36px;left:0;right:0;background:#FFF;border:1px solid var(--border-color);border-radius:8px;box-shadow:var(--shadow-lg);z-index:100;max-height:220px;overflow-y:auto}
+.cj-sel-dropdown{display:none;position:absolute;top:36px;left:0;right:0;background:#FFF;border:1px solid var(--border-color);border-radius:8px;box-shadow:var(--shadow-lg);z-index:100;max-height:300px;overflow-y:auto}
 .cj-sel-dropdown.open{display:block}
 .cj-sel-item{padding:8px 12px;font-size:12px;color:var(--text-secondary);cursor:pointer}
 .cj-sel-item:hover{background:var(--accent-light);color:var(--accent)}
+.cj-sel-item.cj-loading{color:var(--text-tertiary);cursor:default;display:flex;align-items:center;gap:8px}
+.cj-sel-item.cj-loading:hover{background:none;color:var(--text-tertiary)}
+.cj-sel-item.cj-loading::before{content:'';width:12px;height:12px;border:2px solid var(--border-color);border-top-color:var(--accent);border-radius:50%;animation:cjspin .7s linear infinite;flex-shrink:0}
+@keyframes cjspin{to{transform:rotate(360deg)}}
+.cj-sel-wrap.loading::after{content:'';position:absolute;right:10px;top:11px;width:12px;height:12px;border:2px solid var(--border-color);border-top-color:var(--accent);border-radius:50%;animation:cjspin .7s linear infinite;pointer-events:none}
+.create-job-modal{height:86vh;max-height:86vh}
+.create-job-modal .modal-body{flex:1;min-height:0}
 .cj-col-toolbar{display:flex;align-items:center;gap:12px;margin-bottom:8px}
 .cj-check-all{font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:6px;cursor:pointer}
 .cj-check-all input{accent-color:var(--green)}
@@ -427,9 +434,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","SF Pro Text","H
 
 <div id="cj-step-1" class="cj-step active">
 <div class="cj-form"><div class="cj-source-row">
-<div class="cj-source-col"><label class="cj-source-label">Catalog</label><div class="cj-sel-wrap"><input class="cj-sel-input" id="cj-catalog-input" placeholder="Search or select..." oninput="cjFilterOptions('cj-catalog')" onfocus="cjOpenDropdown('cj-catalog')" onblur="setTimeout(function(){cjCloseDropdown('cj-catalog')},200)"><div class="cj-sel-dropdown" id="cj-catalog-dropdown"></div><select id="cj-catalog" style="display:none" onchange="cjLoadDatabases()"></select></div></div>
-<div class="cj-source-col"><label class="cj-source-label">Database</label><div class="cj-sel-wrap"><input class="cj-sel-input" id="cj-database-input" placeholder="Search or select..." oninput="cjFilterOptions('cj-database')" onfocus="cjOpenDropdown('cj-database')" onblur="setTimeout(function(){cjCloseDropdown('cj-database')},200)" disabled><div class="cj-sel-dropdown" id="cj-database-dropdown"></div><select id="cj-database" style="display:none" onchange="cjLoadTables()"></select></div></div>
-<div class="cj-source-col"><label class="cj-source-label">Table</label><div class="cj-sel-wrap"><input class="cj-sel-input" id="cj-table-input" placeholder="Search or select..." oninput="cjFilterOptions('cj-table')" onfocus="cjOpenDropdown('cj-table')" onblur="setTimeout(function(){cjCloseDropdown('cj-table')},200)" disabled><div class="cj-sel-dropdown" id="cj-table-dropdown"></div><select id="cj-table" style="display:none" onchange="cjLoadColumns()"></select></div></div>
+<div class="cj-source-col"><label class="cj-source-label">Catalog</label><div class="cj-sel-wrap"><input class="cj-sel-input" id="cj-catalog-input" placeholder="Search or select..." oninput="cjFilterOptions('cj-catalog')" onfocus="cjOpenDropdown('cj-catalog')" onclick="cjOpenDropdown('cj-catalog')" onblur="cjScheduleClose('cj-catalog')"><div class="cj-sel-dropdown" id="cj-catalog-dropdown"></div><select id="cj-catalog" style="display:none" onchange="cjLoadDatabases()"></select></div></div>
+<div class="cj-source-col"><label class="cj-source-label">Database</label><div class="cj-sel-wrap"><input class="cj-sel-input" id="cj-database-input" placeholder="Search or select..." oninput="cjFilterOptions('cj-database')" onfocus="cjOpenDropdown('cj-database')" onclick="cjOpenDropdown('cj-database')" onblur="cjScheduleClose('cj-database')" disabled><div class="cj-sel-dropdown" id="cj-database-dropdown"></div><select id="cj-database" style="display:none" onchange="cjLoadTables()"></select></div></div>
+<div class="cj-source-col"><label class="cj-source-label">Table</label><div class="cj-sel-wrap"><input class="cj-sel-input" id="cj-table-input" placeholder="Search or select..." oninput="cjFilterOptions('cj-table')" onfocus="cjOpenDropdown('cj-table')" onclick="cjOpenDropdown('cj-table')" onblur="cjScheduleClose('cj-table')" disabled><div class="cj-sel-dropdown" id="cj-table-dropdown"></div><select id="cj-table" style="display:none" onchange="cjLoadColumns()"></select></div></div>
 </div>
 <div id="cj-columns-area" style="display:none"><label style="font-weight:600;font-size:12px;color:var(--text-secondary);display:block;margin-bottom:8px">选择同步列 <span style="font-weight:400;color:var(--text-tertiary)">（源类型 → Doris 类型）</span></label><div class="cj-col-toolbar"><label class="cj-check-all"><input type="checkbox" id="cj-select-all" onchange="cjToggleAllColumns(this.checked)"> 全选</label><span id="cj-col-count" class="cj-col-count">0 列已选</span><span class="cj-map-toggle" onclick="cjToggleMapping()">字段映射 ▸</span></div><div id="cj-columns-list" class="cj-columns-list"></div><div id="cj-mapping-area" style="display:none;margin-top:10px"><label style="font-weight:600;font-size:12px;color:var(--text-secondary);display:block;margin-bottom:6px">字段映射 <span style="font-weight:400;color:var(--text-tertiary)">（源字段 → 目标字段）</span></label><div id="cj-mapping-table" class="cj-mapping-table"></div></div></div>
 </div>
@@ -1861,6 +1868,8 @@ function testAlert(){
 var _cj = {step: 1, columns: [], ddlDone: false};
 
 function renderJobsPage(){
+  var tgt = document.getElementById('jobs-table');
+  if(tgt && !tgt.querySelector('table')) tgt.innerHTML = '<div class="empty-state"><p>加载中…</p></div>';
   fetch('/api/jobs').then(function(r){return r.json()}).then(function(d){
     var jobs = d.jobs || [];
     var running = jobs.filter(function(j){return j.status==='RUNNING'}).length;
@@ -1872,7 +1881,10 @@ function renderJobsPage(){
       '<div class="metric-card"><div class="l">近期失败</div><div class="v r">0</div><div class="sub">24 小时内</div></div>';
     populateJobFilters(jobs);
     renderJobsTable(jobs);
-  }).catch(function(){});
+  }).catch(function(e){
+    var t = document.getElementById('jobs-table');
+    if(t && !t.querySelector('table')) t.innerHTML = '<div class="empty-state"><p>加载失败: '+e.message+'</p></div>';
+  });
 }
 function populateJobFilters(jobs){
   var s=document.getElementById('jobs-status-filter'),cv=s.value;
@@ -2080,15 +2092,28 @@ function openCreateJobModal(){
   var catInput = document.getElementById('cj-catalog-input');
   catInput.disabled = false;
   catInput.value = '';
-  fetch('/api/jobs/catalogs').then(function(r){return r.json()}).then(function(d){
-    cjPopulateSel('cj-catalog', d.catalogs||[], '-- 选择 Catalog --');
+  ['cj-catalog','cj-database','cj-table'].forEach(function(id){
+    document.getElementById(id).value = '';
+    cjSetLoading(id, '');
   });
+  document.getElementById('cj-database-input').value = '';
+  document.getElementById('cj-database-input').disabled = true;
+  document.getElementById('cj-database-dropdown').innerHTML = '';
+  document.getElementById('cj-table-input').value = '';
+  document.getElementById('cj-table-input').disabled = true;
+  document.getElementById('cj-table-dropdown').innerHTML = '';
+  cjSetLoading('cj-catalog', '加载 Catalog…');
+  fetch('/api/jobs/catalogs').then(function(r){return r.json()}).then(function(d){
+    if(d.error){cjSetLoading('cj-catalog','');showToast('加载 Catalog 失败: '+d.error,'error');return}
+    cjPopulateSel('cj-catalog', d.catalogs||[], '-- 选择 Catalog --');
+  }).catch(function(e){cjSetLoading('cj-catalog','');showToast('加载 Catalog 失败: '+e.message,'error')});
   // Load internal dbs for target
   var dbSel = document.getElementById('cj-target-db');
+  dbSel.innerHTML = '<option value="">加载中…</option>';
   fetch('/api/jobs/internal-dbs').then(function(r){return r.json()}).then(function(d){
     dbSel.innerHTML = '<option value="">-- 请选择 --</option>';
     (d.databases||[]).forEach(function(db){dbSel.innerHTML += '<option value="'+db+'">'+db+'</option>'});
-  });
+  }).catch(function(){dbSel.innerHTML = '<option value="">加载失败</option>'});
   document.getElementById('create-job-overlay').style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
@@ -2101,7 +2126,17 @@ function cjGoToStep(n){
   document.querySelectorAll('.cj-step').forEach(function(s){s.classList.toggle('active',parseInt(s.id.slice(-1))===n)});
   document.querySelectorAll('.step').forEach(function(s){s.classList.toggle('active',parseInt(s.getAttribute('data-step'))===n)});
 }
+function cjSpinner(id, on){
+  var input = document.getElementById(id+'-input');
+  if(input && input.parentNode) input.parentNode.classList.toggle('loading', !!on);
+}
+function cjSetLoading(id, text){
+  cjSpinner(id, !!text);
+  var dd = document.getElementById(id+'-dropdown');
+  if(text && dd) dd.innerHTML = '<div class="cj-sel-item cj-loading">'+text+'</div>';
+}
 function cjPopulateSel(id, options, placeholder){
+  cjSetLoading(id, '');
   var sel=document.getElementById(id);
   sel.innerHTML='<option value="">'+placeholder+'</option>';
   options.forEach(function(v){sel.innerHTML+='<option value="'+v+'">'+v+'</option>'});
@@ -2123,30 +2158,40 @@ function cjSelectOption(id, value, text){
 function cjFilterOptions(id){
   var q=document.getElementById(id+'-input').value.toLowerCase();
   var dd=document.getElementById(id+'-dropdown');
+  if(dd.querySelector('.cj-loading')){dd.classList.add('open');return}
   dd.querySelectorAll('.cj-sel-item').forEach(function(el){
     el.style.display=el.textContent.toLowerCase().indexOf(q)>=0?'':'none';
   });
   dd.classList.add('open');
 }
+var _cjCloseTimers={};
 function cjOpenDropdown(id){
+  if(_cjCloseTimers[id]){clearTimeout(_cjCloseTimers[id]);_cjCloseTimers[id]=null}
   document.getElementById(id+'-dropdown').classList.add('open');
 }
+function cjScheduleClose(id){
+  if(_cjCloseTimers[id])clearTimeout(_cjCloseTimers[id]);
+  _cjCloseTimers[id]=setTimeout(function(){cjCloseDropdown(id)},200);
+}
 function cjCloseDropdown(id){
+  if(_cjCloseTimers[id]){clearTimeout(_cjCloseTimers[id]);_cjCloseTimers[id]=null}
   document.getElementById(id+'-dropdown').classList.remove('open');
 }
 function cjLoadDatabases(){
   var cat = document.getElementById('cj-catalog').value;
   var sel = document.getElementById('cj-database');
   sel.disabled = true; sel.innerHTML = '<option value="">-- 选择 Database --</option>';
-  document.getElementById('cj-database-input').disabled = true; document.getElementById('cj-database-input').value = '';
+  document.getElementById('cj-database-input').value = '';
   document.getElementById('cj-database-dropdown').innerHTML = '<div class="cj-sel-item" data-value="">-- 选择 Database --</div>';
   document.getElementById('cj-table').disabled = true; document.getElementById('cj-table').innerHTML = '<option value="">-- 选择 Table --</option>';
-  document.getElementById('cj-table-input').disabled = true; document.getElementById('cj-table-input').value = '';
+  document.getElementById('cj-table-input').value = '';
   document.getElementById('cj-table-dropdown').innerHTML = '<div class="cj-sel-item" data-value="">-- 选择 Table --</div>';
   document.getElementById('cj-columns-area').style.display = 'none';
-  if(!cat) return;
+  if(!cat){document.getElementById('cj-database-input').disabled=true;document.getElementById('cj-table-input').disabled=true;return}
+  cjSetLoading('cj-database', '加载数据库…');
   fetch('/api/jobs/databases?catalog='+encodeURIComponent(cat)).then(function(r){return r.json()}).then(function(d){
     if(document.getElementById('cj-catalog').value !== cat) return;
+    if(d.error){cjSetLoading('cj-database','');showToast('加载数据库失败: '+d.error,'error');return}
     sel.disabled = false;
     document.getElementById('cj-database-input').disabled = false;
     cjPopulateSel('cj-database', d.databases||[], '-- 选择 Database --');
@@ -2165,17 +2210,19 @@ function cjLoadTables(){
   var db = document.getElementById('cj-database').value;
   var sel = document.getElementById('cj-table');
   sel.disabled = true; sel.innerHTML = '<option value="">-- 选择 Table --</option>';
-  document.getElementById('cj-table-input').disabled = true; document.getElementById('cj-table-input').value = '';
+  document.getElementById('cj-table-input').value = '';
   document.getElementById('cj-table-dropdown').innerHTML = '<div class="cj-sel-item" data-value="">-- 选择 Table --</div>';
   document.getElementById('cj-columns-area').style.display = 'none';
   document.getElementById('cj-base-table').textContent = '源表名';
-  if(!cat||!db) return;
+  if(!cat||!db){document.getElementById('cj-table-input').disabled=true;return}
+  cjSetLoading('cj-table', '加载数据表…');
   fetch('/api/jobs/tables?catalog='+encodeURIComponent(cat)+'&db='+encodeURIComponent(db)).then(function(r){return r.json()}).then(function(d){
     if(document.getElementById('cj-catalog').value !== cat || document.getElementById('cj-database').value !== db) return;
+    if(d.error){cjSetLoading('cj-table','');showToast('加载数据表失败: '+d.error,'error');return}
     sel.disabled = false;
     document.getElementById('cj-table-input').disabled = false;
     cjPopulateSel('cj-table', d.tables||[], '-- 选择 Table --');
-  });
+  }).catch(function(e){cjSetLoading('cj-table','');showToast('加载数据表失败: '+e.message,'error')});
 }
 function cjLoadColumns(){
   var cat = document.getElementById('cj-catalog').value;
@@ -2187,15 +2234,20 @@ function cjLoadColumns(){
   if(!cat||!db||!tbl){area.style.display='none';return}
   document.getElementById('cj-base-table').textContent = tbl;
   cjUpdatePreview();
+  cjSpinner('cj-table', true);
+  area.style.display = 'block';
+  document.getElementById('cj-columns-list').innerHTML = '<div class="cj-col-item" style="color:var(--text-tertiary)">加载列信息…</div>';
+  document.getElementById('cj-col-count').textContent = '加载中…';
   fetch('/api/jobs/columns?catalog='+encodeURIComponent(cat)+'&db='+encodeURIComponent(db)+'&table='+encodeURIComponent(tbl))
     .then(function(r){return r.json()}).then(function(d){
       if(document.getElementById('cj-catalog').value!==cat||document.getElementById('cj-database').value!==db||document.getElementById('cj-table').value!==tbl)return;
-      if(d.error){showToast(d.error,'error');return}
+      cjSpinner('cj-table', false);
+      if(d.error){showToast(d.error,'error');area.style.display='none';return}
       _cj.columns = d.columns || [];
       area.style.display = 'block';
       renderColumns();
       document.getElementById('cj-btn-s1-next').disabled = false;
-    }).catch(function(){});
+    }).catch(function(e){cjSpinner('cj-table', false);area.style.display='none';showToast('加载列信息失败: '+e.message,'error')});
 }
 
 function renderColumns(){
