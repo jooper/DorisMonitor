@@ -441,10 +441,24 @@ def parse_mv_ddl(create_sql):
         result["baseTables"] = sorted(tables)
     return result
 
+def _list_mv_names(database):
+    """列出某库全部异步物化视图名。
+    优先 mv_infos()：能识别名称不含 mv 的 MV（如 ads_fin_trip_fee_df）；
+    旧版本 Doris 不支持时回退到表名匹配。"""
+    try:
+        rows = query(f"SELECT Name FROM mv_infos('database'='{database}')")
+        return [r.get("Name") for r in rows if r.get("Name")]
+    except Exception:
+        pass
+    try:
+        rows = query(f"SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA='{database}' AND TABLE_NAME LIKE '%mv%'")
+        return [r.get("TABLE_NAME") for r in rows if r.get("TABLE_NAME")]
+    except Exception:
+        return []
+
 def discover_mvs(database=None):
     if database:
-        rows = query(f"SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA='{database}' AND TABLE_NAME LIKE '%mv%'")
-        names = [r.get("TABLE_NAME") for r in rows]
+        names = _list_mv_names(database)
     else:
         rows = query("SELECT DISTINCT MvDatabaseName,MvName FROM tasks('type'='mv')")
         return [{"name":r.get("MvName",""),"database":r.get("MvDatabaseName","")} for r in rows if r.get("MvName")]

@@ -749,7 +749,7 @@ function renderMvPageForCurrent(){
   var tp=document.getElementById('mv-type-filter').value;
   var st=document.getElementById('mv-status-filter').value;
   var fl=mvs.filter(function(m){
-    var searchFields=[m.name, m.database, m.refresh_type, m.last_status, m.refresh_interval, m.chinese_name].filter(Boolean).map(function(v){return v.toLowerCase()});
+    var searchFields=[m.name, m.database, m.database+'.'+m.name, m.refresh_type, m.last_status, m.refresh_interval, m.chinese_name].filter(Boolean).map(function(v){return v.toLowerCase()});
     var tags=(_mvSearchTags||[]).concat(q).filter(Boolean);
     var matchSearch=tags.length===0||tags.some(function(kw){return searchFields.some(function(v){return v.indexOf(kw)>=0})});
     return (!db||m.database===db)&&(!tp||m.refresh_type===tp)&&(!st||(st==='PAUSED'?!!m.paused:m.last_status===st))&&matchSearch;
