@@ -142,6 +142,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","SF Pro Text","H
 .cfg-btn.drop{background:#fff;border-color:var(--border-color);color:var(--error)}
 .cfg-btn.drop:hover{border-color:var(--error);background:var(--error-bg)}
 .cfg-btn:disabled{opacity:.55;cursor:not-allowed}
+.jobs-refresh-ico{display:inline-block;font-size:15px;line-height:1;transform-origin:center}
+.cfg-btn.spinning .jobs-refresh-ico{animation:cjspin .8s linear infinite}
 
 /* ─── Job/MV action buttons ─── */
 .job-actions{display:flex;gap:4px}
@@ -419,7 +421,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","SF Pro Text","H
 
 <div id="tab-tables" class="tab-content"><div class="page-header"><h1>数据表</h1><p>浏览全部数据库中的表结构</p></div><div class="page-body"><div class="metrics-grid" id="tbl-summary"></div><div class="page-section"><div class="filter-bar"><select id="tbl-db-filter" onchange="filterTblTable()"></select><input id="tbl-search" type="text" placeholder="搜索表名..." oninput="filterTblTable()"></div><div id="tbl-table"><div class="empty-state"><p>切换到此标签页加载数据</p></div></div></div></div></div>
 
-<div id="tab-jobs" class="tab-content"><div class="page-header"><h1>作业调度</h1><p>定时作业全生命周期管理</p></div><div class="page-body"><div class="metrics-grid" id="jobs-summary"></div><div class="page-section"><div class="section-toolbar"><button class="cfg-btn primary" onclick="openCreateJobModal()">＋ 创建作业</button><div class="filter-bar"><select id="jobs-status-filter" onchange="filterJobsTable()"><option value="">全部状态</option></select><input id="jobs-search" type="text" placeholder="搜索作业名称..." oninput="filterJobsTable()"></div></div><div id="jobs-table"><div class="empty-state"><p>切换到此标签页加载数据</p></div></div></div></div></div>
+<div id="tab-jobs" class="tab-content"><div class="page-header"><h1>作业调度</h1><p>定时作业全生命周期管理</p></div><div class="page-body"><div class="metrics-grid" id="jobs-summary"></div><div class="page-section"><div class="section-toolbar"><button class="cfg-btn primary" onclick="openCreateJobModal()">＋ 创建作业</button><button class="cfg-btn" id="jobs-refresh-btn" onclick="refreshJobsList()" title="重新拉取作业列表"><span class="jobs-refresh-ico">↻</span> 刷新</button><div class="filter-bar"><select id="jobs-status-filter" onchange="filterJobsTable()"><option value="">全部状态</option></select><input id="jobs-search" type="text" placeholder="搜索作业名称..." oninput="filterJobsTable()"></div></div><div id="jobs-table"><div class="empty-state"><p>切换到此标签页加载数据</p></div></div></div></div></div>
 
 <div id="tab-catalog" class="tab-content"><div class="page-header"><h1>Catalog 管理</h1><p>外部数据源 Catalog 配置</p></div><div class="page-body"><div class="metrics-grid" id="catalog-summary"></div><div class="page-section"><div class="section-toolbar"><button class="cfg-btn primary" onclick="openCatalogModal()">＋ 创建 Catalog</button><div class="filter-bar" style="margin-left:auto"><input id="catalog-search" type="text" placeholder="搜索 Catalog..." oninput="filterCatalogTable()"></div></div><div id="catalog-table"><div class="empty-state"><p>切换到此标签页加载数据</p></div></div></div></div></div>
 
@@ -1870,7 +1872,7 @@ var _cj = {step: 1, columns: [], ddlDone: false};
 function renderJobsPage(){
   var tgt = document.getElementById('jobs-table');
   if(tgt && !tgt.querySelector('table')) tgt.innerHTML = '<div class="empty-state"><p>加载中…</p></div>';
-  fetch('/api/jobs').then(function(r){return r.json()}).then(function(d){
+  return fetch('/api/jobs').then(function(r){return r.json()}).then(function(d){
     var jobs = d.jobs || [];
     var running = jobs.filter(function(j){return j.status==='RUNNING'}).length;
     var paused = jobs.filter(function(j){return j.status==='PAUSED'||j.status==='SUSPENDED'}).length;
@@ -1885,6 +1887,13 @@ function renderJobsPage(){
     var t = document.getElementById('jobs-table');
     if(t && !t.querySelector('table')) t.innerHTML = '<div class="empty-state"><p>加载失败: '+e.message+'</p></div>';
   });
+}
+function refreshJobsList(){
+  var btn = document.getElementById('jobs-refresh-btn');
+  if(btn && btn.disabled) return;
+  if(btn){btn.disabled = true; btn.classList.add('spinning')}
+  var done = function(){ if(btn){btn.disabled = false; btn.classList.remove('spinning')} };
+  try { renderJobsPage().then(done, done); } catch(e){ done(); }
 }
 function populateJobFilters(jobs){
   var s=document.getElementById('jobs-status-filter'),cv=s.value;
