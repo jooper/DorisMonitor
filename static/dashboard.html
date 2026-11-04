@@ -1527,7 +1527,7 @@ function _createGraphEngine(cv){
     });
     var pad=60;
     var s=Math.min((W-pad*2)/Math.max(maxX-minX,1),(H-pad*2)/Math.max(maxY-minY,1),1.2);
-    s=Math.max(s,0.75);
+    s=Math.max(s,0.3);
     var ox=W/2-(minX+maxX)/2*s,oy=H/2-(minY+maxY)/2*s;
     if(snap){view.scale=s;view.ox=ox;view.oy=oy;fTarget=null}
     else fTarget={s:s,ox:ox,oy:oy};
@@ -1545,19 +1545,20 @@ function _createGraphEngine(cv){
     vcap=vcap||14;
     // repulsion
     for(i=0;i<n;i++){a=nodes[i];a.fx=0;a.fy=0}
-    var REP=3200;
+    var REP=7200,MIND=54;
     for(i=0;i<n;i++)for(j=i+1;j<n;j++){
       a=nodes[i];b=nodes[j];
       dx=a.x-b.x;dy=a.y-b.y;d2=dx*dx+dy*dy;
       if(d2<1)d2=1;
-      if(d2>490000)continue; // 700 cutoff
-      var f=REP/d2;
+      if(d2>810000)continue; // 900 cutoff
       d=Math.sqrt(d2);
+      // 近距离改用线性斥力, 保证节点之间始终留有间隙
+      var f=d<MIND?(MIND-d)*0.3:REP/d2;
       var fx=dx/d*f,fy=dy/d*f;
       a.fx+=fx;a.fy+=fy;b.fx-=fx;b.fy-=fy;
     }
     // springs
-    var LEN=130,K=0.02;
+    var LEN=175,K=0.02;
     edges.forEach(function(e){
       a=nodeMap[e.a];b=nodeMap[e.b];
       if(!a||!b)return;
@@ -1567,10 +1568,11 @@ function _createGraphEngine(cv){
       a.fx+=fx;a.fy+=fy;b.fx-=fx;b.fy-=fy;
     });
     // gravity + integrate
-    var G=0.01,DAMP=0.85;
+    var G=0.0055,DAMP=0.85;
     nodes.forEach(function(nd){
       if(nd.pin){nd.vx=0;nd.vy=0;return}
-      nd.fx+=(gcx-nd.x)*G;nd.fy+=(gcy-nd.y)*G;
+      // 纵向重力更强: 让整体形状贴合宽屏画布, 避免上下溢出
+      nd.fx+=(gcx-nd.x)*G;nd.fy+=(gcy-nd.y)*G*2.4;
       nd.vx=(nd.vx+nd.fx)*DAMP;nd.vy=(nd.vy+nd.fy)*DAMP;
       var vm=Math.sqrt(nd.vx*nd.vx+nd.vy*nd.vy);
       if(vm>vcap){nd.vx*=vcap/vm;nd.vy*=vcap/vm}
@@ -1730,7 +1732,7 @@ function _createGraphEngine(cv){
       ctx.shadowBlur=0;
     });
     // nodes
-    var showLabels=view.scale>=0.34;
+    var showLabels=view.scale>=0.28;
     nodes.forEach(function(nd){
       var isMV=nd.t==='mv';
       var active=hoverN&&(nd.id===hoverN.id||nb[nd.id]);
@@ -1764,14 +1766,52 @@ function _createGraphEngine(cv){
         ctx.textAlign='center';ctx.textBaseline='middle';
         ctx.fillText(nd.deps,bx,by+.5);
       }
-      if(showLabels||active){
-        ctx.font=(active?'600 ':'400 ')+'12px -apple-system,"PingFang SC",sans-serif';
-        ctx.textAlign='center';
-        ctx.fillStyle=active?'#0B6B4D':(isMV?'#17805F':'#64748B');
-        ctx.fillText(nd.label,nd.x,nd.y+R+17);
-      }
       ctx.restore();
     });
+    // labels: 固定屏幕字号 + 贪心占位, 与已占区域重叠的标签不再绘制
+    var cand=[];
+    if(hoverN){
+      cand.push(hoverN);
+      nodes.forEach(function(nd){if(nd!==hoverN&&nb[nd.id])cand.push(nd)});
+    }else if(showLabels){
+      nodes.forEach(function(nd){cand.push(nd)});
+    }
+    if(cand.length){
+      cand.sort(function(p,q){var dm=(q.t==='mv')-(p.t==='mv');return dm||((q.deps||0)-(p.deps||0))});
+      var boxes=[],fs=11/Math.max(view.scale,0.0001),lbh=fs*1.35;
+      nodes.forEach(function(nd){var R=nd.r;boxes.push([nd.x-R,nd.y-R,nd.x+R,nd.y+R])});
+      cand.forEach(function(nd){
+        var isMV=nd.t==='mv',act=nd===hoverN||(hoverN&&nb[nd.id]);
+        ctx.font=(act?'600 ':'400 ')+fs+'px -apple-system,"PingFang SC",sans-serif';
+        var w=ctx.measureText(nd.label).width;
+        // 依次尝试: 下方 / 上方 / 右侧 / 左侧, 取第一个不与既有内容重叠且不出画布的位置
+        var vx0=(0-view.ox)/view.scale,vy0=(0-view.oy)/view.scale,vx1=(W-view.ox)/view.scale,vy1=(H-view.oy)/view.scale;
+        var spots=[
+          [nd.x-w/2,nd.y+nd.r+4],
+          [nd.x-w/2,nd.y-nd.r-4-lbh],
+          [nd.x+nd.r+6,nd.y-lbh/2],
+          [nd.x-nd.r-6-w,nd.y-lbh/2]
+        ],bx=null,by=null;
+        for(var si=0;si<spots.length&&bx===null;si++){
+          var sx=spots[si][0],sy=spots[si][1],hit=false;
+          if(sx<vx0||sx+w>vx1||sy<vy0||sy+lbh>vy1)continue;
+          for(var bi=0;bi<boxes.length;bi++){
+            var o=boxes[bi];
+            if(sx<o[2]&&sx+w>o[0]&&sy<o[3]&&sy+lbh>o[1]){hit=true;break}
+          }
+          if(!hit){bx=sx;by=sy}
+        }
+        if(bx===null){
+          if(nd!==hoverN)return;
+          bx=spots[0][0];by=spots[0][1];
+        }
+        boxes.push([bx,by,bx+w,by+lbh]);
+        ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.globalAlpha=1;
+        ctx.fillStyle=act?'#0B6B4D':(isMV?'#17805F':'#64748B');
+        ctx.fillText(nd.label,bx+w/2,by+lbh/2);
+      });
+    }
     ctx.restore();
     if(!nodes.length){
       ctx.font='13px -apple-system,"PingFang SC",sans-serif';
