@@ -742,25 +742,39 @@ def drop_job(job_name):
 
 # ─── Job creation helpers ──────────────────────────────
 
+SYS_SCHEMAS = {"__internal_schema", "information_schema", "mysql", "sys", "_statistics_"}
+
 def get_catalogs():
     try:
         rows = query("SHOW CATALOGS")
-        return [r.get("Catalog", r.get("CatalogName", r.get("name", ""))) for r in rows
-                if r.get("Catalog", r.get("CatalogName", r.get("name", ""))) not in ("internal", "")]
+        names = []
+        for r in rows:
+            name = r.get("Catalog", r.get("CatalogName", r.get("name", "")))
+            if name and name not in names:
+                names.append(name)
+        # internal 排在最前，其余保持服务端顺序
+        names.sort(key=lambda n: 0 if n == "internal" else 1)
+        return names
     except Exception as e:
         return {"error": str(e)}
 
 def get_catalog_databases(catalog):
     try:
         rows = query(f"SHOW DATABASES FROM `{catalog}`")
-        return [r.get("Database", "") for r in rows if r.get("Database", "")]
+        names = [r.get("Database", "") for r in rows if r.get("Database", "")]
+        # 过滤系统库，避免用户误选 information_schema 后看到一堆系统表
+        real = [n for n in names if n not in SYS_SCHEMAS and not n.startswith("_")]
+        return real if real else names
     except Exception as e:
         return {"error": str(e)}
 
 def get_catalog_tables(catalog, db):
     try:
         rows = query(f"SHOW TABLES FROM `{catalog}`.`{db}`")
-        key = next(k for k in rows[0].keys() if k.lower() in ("tables_in_%s" % db.lower(), "table", "name"))
+        if not rows:
+            return []
+        keys = list(rows[0].keys())
+        key = next((k for k in keys if k.lower() in ("tables_in_%s" % db.lower(), "table", "name")), keys[0])
         return [r.get(key, "") for r in rows if r.get(key, "")]
     except Exception:
         try:
@@ -921,6 +935,14 @@ def check_auth():
         if not session.get("user"):
             return jsonify({"error": "未登录"}), 401
     return None
+
+@app.after_request
+def no_store(resp):
+    # 避免浏览器缓存 API/首页，导致新增 Catalog 或新版本页面不生效
+    if request.path == "/" or request.path.startswith("/api/"):
+        resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        resp.headers["Pragma"] = "no-cache"
+    return resp
 
 @app.route("/api/login", methods=["POST"])
 def api_login():
@@ -1372,6 +1394,134 @@ def api_jobs_execute():
         return jsonify({"status": "fail", "message": "缺少 id"}), 400
     ok, msg = scheduler.execute_now(jid)
     return jsonify({"status": "ok" if ok else "fail", "message": "执行成功" if ok else msg})
+
+# ─── Job editing ───────────────────────────────────────
+
+_SCHED_RE = re.compile(r"EVERY\s+(\d+)\s+(MINUTE|HOUR|DAY)\s+STARTS\s+([0-9:\-\s]+)$", re.I)
+
+def _parse_job_schedule(text):
+    m = _SCHED_RE.search((text or "").strip())
+    if not m:
+        return 1, "MINUTE", ""
+    return int(m.group(1)), m.group(2).upper(), m.group(3).strip()
+
+def _find_doris_job(name):
+    data = get_jobs()
+    if isinstance(data, dict):
+        return None
+    for j in data:
+        if j.get("name") == name:
+            return j
+    return None
+
+def _job_db_hint(execute_sql):
+    """推断 Doris JOB 所属数据库：优先取自 SQL 的 INSERT INTO 目标，再回查 information_schema。"""
+    sql = execute_sql or ""
+    m = re.search(r"INSERT\s+(?:INTO|OVERWRITE\s+TABLE)\s+`?([\w]+)`?\s*\.\s*`?([\w]+)`?", sql, re.I)
+    if m:
+        return m.group(1)
+    m = re.search(r"INSERT\s+(?:INTO|OVERWRITE\s+TABLE)\s+`?([\w]+)`?", sql, re.I)
+    if not m:
+        return ""
+    try:
+        rows = query("SELECT TABLE_SCHEMA FROM information_schema.TABLES "
+                     f"WHERE TABLE_CATALOG='internal' AND TABLE_NAME='{m.group(1)}' LIMIT 2")
+        if rows:
+            return rows[0].get("TABLE_SCHEMA", "")
+    except Exception:
+        pass
+    return ""
+
+@app.route("/api/jobs/detail")
+def api_jobs_detail():
+    source = request.args.get("source", "doris")
+    if source == "scheduler":
+        j = scheduler.get_job(request.args.get("id", ""))
+        if not j:
+            return jsonify({"error": "作业不存在"}), 404
+        return jsonify({"job": {
+            "id": j["id"], "name": j["name"], "source": "scheduler",
+            "db": j.get("target_db", ""),
+            "schedule_value": j.get("schedule", {}).get("value", 1),
+            "schedule_unit": j.get("schedule", {}).get("unit", "MINUTE"),
+            "start_time": j.get("start_time", ""),
+            "mode": j.get("mode", "full_refresh"),
+            "watermark_column": j.get("watermark_column") or "",
+            "sql": j.get("sql", ""),
+            "status": j.get("status", ""),
+        }})
+    j = _find_doris_job(request.args.get("name", ""))
+    if not j:
+        return jsonify({"error": "作业不存在"}), 404
+    sv, su, start = _parse_job_schedule(j.get("schedule", ""))
+    return jsonify({"job": {
+        "id": j.get("id"), "name": j.get("name"), "source": "doris",
+        "db": _job_db_hint(j.get("execute_sql", "")),
+        "schedule_value": sv, "schedule_unit": su, "start_time": start,
+        "mode": "", "watermark_column": "",
+        "sql": j.get("execute_sql", ""), "status": j.get("status", ""),
+    }})
+
+@app.route("/api/jobs/update", methods=["POST"])
+def api_jobs_update():
+    body = request.get_json(force=True)
+    source = body.get("source", "doris")
+
+    if source == "scheduler":
+        ok = scheduler.update_job(body.get("id", ""), body)
+        return jsonify({"status": "ok" if ok else "fail",
+                        "message": "已保存" if ok else "作业不存在"})
+
+    # Doris 原生 JOB 不支持 ALTER，只能删除后按新配置重建
+    name = (body.get("name") or "").strip()
+    old = _find_doris_job(name)
+    if not old:
+        return jsonify({"status": "fail", "message": "作业不存在"}), 404
+    sql = (body.get("sql") or "").strip().rstrip(";")
+    db = (body.get("db") or "").strip() or _job_db_hint(old.get("execute_sql", ""))
+    try:
+        sv = int(body.get("schedule_value") or 0)
+    except (TypeError, ValueError):
+        sv = 0
+    unit = (body.get("schedule_unit") or "").upper()
+    start = (body.get("start_time") or "").strip()
+    if not sql or sv <= 0 or unit not in ("MINUTE", "HOUR", "DAY") or not start:
+        return jsonify({"status": "fail", "message": "参数不完整：SQL / 频率 / 开始时间"}), 400
+    if not db:
+        return jsonify({"status": "fail", "message": "无法确定作业所在数据库，请手动选择"}), 400
+
+    jname = name if re.match(r"^[A-Za-z_]\w*$", name) else f"`{name}`"
+    new_sched = f"EVERY {sv} {unit} STARTS '{start}'"
+    old_sql = (old.get("execute_sql") or "").strip().rstrip(";")
+    old_sched = old.get("schedule", "").strip()
+    if old_sched and "STARTS" in old_sched.upper():
+        old_sched = re.sub(r"STARTS\s+([0-9][0-9:\-\s]*)$", r"STARTS '\1'", old_sched)
+
+    conn = get_db(db)
+    try:
+        with conn.cursor() as cur:
+            cur.execute(f"DROP JOB WHERE jobName='{name}'")
+            try:
+                cur.execute(f"CREATE JOB {jname} ON SCHEDULE {new_sched} DO {sql}")
+            except Exception as create_err:
+                # 新定义创建失败，用旧定义恢复
+                try:
+                    cur.execute(f"CREATE JOB {jname} ON SCHEDULE {old_sched or new_sched} DO {old_sql}")
+                    if old.get("status") == "PAUSED":
+                        cur.execute(f"PAUSE JOB WHERE jobName='{name}'")
+                    conn.commit()
+                    return jsonify({"status": "fail", "message": f"修改失败，已回滚原作业：{create_err}"})
+                except Exception as restore_err:
+                    return jsonify({"status": "fail",
+                                    "message": f"修改失败且回滚失败：{create_err}；{restore_err}"})
+            if old.get("status") == "PAUSED":
+                cur.execute(f"PAUSE JOB WHERE jobName='{name}'")
+        conn.commit()
+        return jsonify({"status": "ok", "message": "作业已重建"})
+    except Exception as e:
+        return jsonify({"status": "fail", "message": f"修改失败：{e}"})
+    finally:
+        conn.close()
 
 # ─── Catalog Management ───────────────────────────────
 

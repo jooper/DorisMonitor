@@ -421,7 +421,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","SF Pro Text","H
 
 <div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal"><div class="modal-header"><h2 id="modal-title">详情</h2><button class="modal-close" onclick="closeModal()">&times;</button></div><div class="modal-body" id="modal-body"></div></div></div>
 
-<div class="modal-overlay" id="create-job-overlay" onclick="if(event.target===this)closeCreateJobModal()"><div class="modal create-job-modal"><div class="modal-header"><h2>创建作业</h2><button class="modal-close" onclick="closeCreateJobModal()">&times;</button></div>
+<div class="modal-overlay" id="create-job-overlay" onmousedown="if(event.target===this)window._cjBackdropDown=true" onclick="if(event.target===this&&window._cjBackdropDown)closeCreateJobModal();window._cjBackdropDown=false"><div class="modal create-job-modal"><div class="modal-header"><h2>创建作业</h2><button class="modal-close" onclick="closeCreateJobModal()">&times;</button></div>
 <div class="modal-body" id="create-job-body">
 <div class="step-indicator"><div class="step active" data-step="1"><span class="step-num">1</span><span class="step-label">选择数据源</span></div><div class="step-connector"></div><div class="step" data-step="2"><span class="step-num">2</span><span class="step-label">创建目标表</span></div><div class="step-connector"></div><div class="step" data-step="3"><span class="step-num">3</span><span class="step-label">创建调度</span></div></div>
 
@@ -461,6 +461,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","SF Pro Text","H
 </div>
 <div style="margin-top:16px;display:flex;justify-content:space-between"><button class="cfg-btn" onclick="cjGoToStep(2)">上一步</button></div>
 </div>
+</div></div></div>
+
+<div class="modal-overlay" id="job-edit-overlay" onclick="if(event.target===this)closeJobEdit()"><div class="modal" style="width:780px;max-width:94vw"><div class="modal-header"><h2 id="je-title">编辑作业</h2><button class="modal-close" onclick="closeJobEdit()">&times;</button></div><div class="modal-body">
+<div class="cfg-form">
+<div class="cfg-row"><label class="cfg-label">作业名称</label><input class="cfg-input" id="je-name" readonly style="flex:1"></div>
+<div class="cfg-row"><label class="cfg-label" id="je-db-label">数据库</label><select class="cfg-input" id="je-db" style="width:220px"></select></div>
+<div class="cfg-row"><label class="cfg-label">调度频率</label><div class="cj-inline"><input class="cfg-input" id="je-sched-value" type="number" min="1" value="10" style="width:100px"><select class="cfg-input" id="je-sched-unit" style="width:110px"><option value="MINUTE">分钟</option><option value="HOUR">小时</option><option value="DAY">天</option></select></div></div>
+<div class="cfg-row"><label class="cfg-label">开始时间</label><input class="cfg-input" id="je-start" type="datetime-local" style="width:220px"></div>
+<div class="cfg-row" id="je-mode-row"><label class="cfg-label">同步模式</label><select class="cfg-input" id="je-mode" onchange="jobEditModeChange()" style="width:150px"><option value="full_refresh">全量覆盖</option><option value="incremental">增量同步</option></select></div>
+<div class="cfg-row" id="je-wm-row"><label class="cfg-label">水印列</label><input class="cfg-input" id="je-wm" placeholder="增量同步使用，可留空" style="flex:1"></div>
+<div class="cfg-row" style="align-items:flex-start"><label class="cfg-label">SQL</label><textarea class="ddl-block editable" id="je-sql" style="flex:1;min-height:200px;width:100%" spellcheck="false"></textarea></div>
+<div id="je-warn" style="display:none;background:var(--warning-bg);border:1px solid rgba(255,149,0,.25);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--text-secondary)"></div>
+</div>
+<div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;margin-top:16px;padding-top:12px;border-top:1px solid var(--border-color)"><span id="je-status" class="cfg-status" style="flex:1;text-align:left"></span><button class="cfg-btn" onclick="closeJobEdit()">取消</button><button class="cfg-btn primary" onclick="saveJobEdit()" id="je-save-btn">保存</button></div>
 </div></div></div>
 
 <div class="modal-overlay" id="catalog-overlay" onclick="if(event.target===this)closeCatalogModal()"><div class="modal" style="width:680px;max-width:94vw"><div class="modal-header"><h2 id="catalog-modal-title">创建 Catalog</h2><button class="modal-close" onclick="closeCatalogModal()">&times;</button></div><div class="modal-body">
@@ -1900,6 +1914,7 @@ function renderJobsTable(jobs){
     var lastRun = j.last_run || '-';
     var runCnt = j.run_count != null ? j.run_count : '-';
     var actionsHtml = '<td class="job-actions" onclick="event.stopPropagation()">';
+    actionsHtml += '<button class="job-btn" title="编辑" onclick="openJobEdit(\''+j.id+'\')">✎</button>';
     if(j.status==='PAUSED'||j.status==='SUSPENDED'){
       if(jsrc==='scheduler') actionsHtml += '<button class="job-btn resume" title="Resume" onclick="schedAction(\'resume\',\''+j.id+'\',this)">⟳</button>';
       else actionsHtml += '<button class="job-btn resume" title="Resume" onclick="handleJobAction(\'resume\',\''+escHtml(j.name)+'\',this)">⟳</button>';
@@ -1948,6 +1963,102 @@ function confirmJobDrop(name, source){
         if(d.message) showToast(d.message);
       }).catch(function(){});
   });
+}
+
+var _je = null;
+
+function openJobEdit(id){
+  var list = (_ld && _ld.jobs) || [];
+  var job = list.filter(function(j){return String(j.id)===String(id)})[0];
+  if(!job){showToast('作业不存在，请刷新列表','error');return}
+  _je = job;
+  var src = job.source || 'doris';
+  document.getElementById('je-title').textContent = '编辑作业 · ' + (src==='scheduler'?'平台调度器':'Doris JOB');
+  document.getElementById('je-name').value = job.name || '';
+  document.getElementById('je-sql').value = '';
+  document.getElementById('je-status').textContent = '';
+  document.getElementById('je-warn').style.display = 'none';
+  document.getElementById('je-mode-row').style.display = src==='scheduler' ? '' : 'none';
+  document.getElementById('je-wm-row').style.display = 'none';
+  document.getElementById('je-db-label').textContent = src==='scheduler' ? '目标数据库' : '所属数据库';
+  document.getElementById('job-edit-overlay').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  var qs = src==='scheduler' ? ('id='+encodeURIComponent(job.id)) : ('name='+encodeURIComponent(job.name));
+  fetch('/api/jobs/internal-dbs').then(function(r){return r.json()}).then(function(d){
+    var sel = document.getElementById('je-db');
+    sel.innerHTML = '<option value="">-- 请选择 --</option>';
+    (d.databases||[]).forEach(function(db){sel.innerHTML += '<option value="'+db+'">'+db+'</option>'});
+    return fetch('/api/jobs/detail?source='+src+'&'+qs);
+  }).then(function(r){return r.json()}).then(function(d){
+    if(d.error){showToast(d.error,'error');return}
+    var j = d.job;
+    document.getElementById('je-sched-value').value = j.schedule_value || 1;
+    document.getElementById('je-sched-unit').value = j.schedule_unit || 'MINUTE';
+    document.getElementById('je-start').value = (j.start_time||'').replace(' ','T').slice(0,16);
+    document.getElementById('je-mode').value = j.mode || 'full_refresh';
+    document.getElementById('je-wm').value = j.watermark_column || '';
+    document.getElementById('je-sql').value = j.sql || '';
+    var sel = document.getElementById('je-db');
+    if(j.db && sel.value !== j.db){
+      if(!Array.prototype.some.call(sel.options, function(o){return o.value===j.db})){
+        sel.innerHTML += '<option value="'+j.db+'">'+j.db+'</option>';
+      }
+      sel.value = j.db;
+    }
+    jobEditModeChange();
+    if(src !== 'scheduler'){
+      var w = document.getElementById('je-warn');
+      w.style.display = 'block';
+      w.textContent = 'Doris 原生 JOB 不支持原地修改，保存时会先删除该作业再按新配置重建，作业 ID 与历史执行记录会重置。';
+    }
+  }).catch(function(e){showToast('加载作业失败: '+e.message,'error')});
+}
+function jobEditModeChange(){
+  var src = (_je && _je.source) || 'doris';
+  var show = src==='scheduler' && document.getElementById('je-mode').value==='incremental';
+  document.getElementById('je-wm-row').style.display = show ? '' : 'none';
+}
+function closeJobEdit(){
+  document.getElementById('job-edit-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+function saveJobEdit(){
+  if(!_je) return;
+  var src = _je.source || 'doris';
+  var stv = document.getElementById('je-start').value || '';
+  var body = {
+    source: src,
+    id: _je.id,
+    name: document.getElementById('je-name').value,
+    db: document.getElementById('je-db').value,
+    schedule_value: parseInt(document.getElementById('je-sched-value').value) || 1,
+    schedule_unit: document.getElementById('je-sched-unit').value,
+    start_time: stv ? (stv.replace('T',' ') + (stv.length===16?':00':'')) : '',
+    mode: document.getElementById('je-mode').value,
+    watermark_column: document.getElementById('je-wm').value || null,
+    sql: document.getElementById('je-sql').value.trim()
+  };
+  if(src==='scheduler') body.target_db = body.db;
+  if(!body.sql){showToast('SQL 不能为空','error');return}
+  if(!body.db){showToast('请选择数据库','error');return}
+  if(!body.start_time){showToast('请选择开始时间','error');return}
+  var doSave = function(){
+    var st = document.getElementById('je-status'), btn = document.getElementById('je-save-btn');
+    btn.disabled = true; st.textContent = '保存中...'; st.style.color = 'var(--text-tertiary)';
+    fetch('/api/jobs/update', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+      .then(function(r){return r.json()}).then(function(d){
+        if(d.status==='ok'){
+          st.textContent = '✓ ' + d.message; st.style.color = 'var(--success)';
+          setTimeout(function(){closeJobEdit();renderJobsPage()}, 900);
+        } else {
+          st.textContent = '✗ ' + d.message; st.style.color = 'var(--error)';
+        }
+      }).catch(function(e){st.textContent='请求失败: '+e.message;st.style.color='var(--error)'})
+      .finally(function(){btn.disabled=false});
+  };
+  if(src !== 'scheduler'){
+    showConfirm('将删除作业 "'+body.name+'" 并按新配置重建（ID 与历史记录会重置），继续？', doSave);
+  } else doSave();
 }
 
 function openCreateJobModal(){
@@ -2035,6 +2146,7 @@ function cjLoadDatabases(){
   document.getElementById('cj-columns-area').style.display = 'none';
   if(!cat) return;
   fetch('/api/jobs/databases?catalog='+encodeURIComponent(cat)).then(function(r){return r.json()}).then(function(d){
+    if(document.getElementById('cj-catalog').value !== cat) return;
     sel.disabled = false;
     document.getElementById('cj-database-input').disabled = false;
     cjPopulateSel('cj-database', d.databases||[], '-- 选择 Database --');
@@ -2059,6 +2171,7 @@ function cjLoadTables(){
   document.getElementById('cj-base-table').textContent = '源表名';
   if(!cat||!db) return;
   fetch('/api/jobs/tables?catalog='+encodeURIComponent(cat)+'&db='+encodeURIComponent(db)).then(function(r){return r.json()}).then(function(d){
+    if(document.getElementById('cj-catalog').value !== cat || document.getElementById('cj-database').value !== db) return;
     sel.disabled = false;
     document.getElementById('cj-table-input').disabled = false;
     cjPopulateSel('cj-table', d.tables||[], '-- 选择 Table --');
@@ -2070,11 +2183,13 @@ function cjLoadColumns(){
   var tbl = document.getElementById('cj-table').value;
   var area = document.getElementById('cj-columns-area');
   _cj.columns = [];
+  document.getElementById('cj-btn-s1-next').disabled = true;
   if(!cat||!db||!tbl){area.style.display='none';return}
   document.getElementById('cj-base-table').textContent = tbl;
   cjUpdatePreview();
   fetch('/api/jobs/columns?catalog='+encodeURIComponent(cat)+'&db='+encodeURIComponent(db)+'&table='+encodeURIComponent(tbl))
     .then(function(r){return r.json()}).then(function(d){
+      if(document.getElementById('cj-catalog').value!==cat||document.getElementById('cj-database').value!==db||document.getElementById('cj-table').value!==tbl)return;
       if(d.error){showToast(d.error,'error');return}
       _cj.columns = d.columns || [];
       area.style.display = 'block';
@@ -2161,7 +2276,10 @@ function cjGetTargetTableName(){
   var prefix = document.getElementById('cj-prefix').value;
   var base = document.getElementById('cj-base-table').textContent;
   var suffix = document.getElementById('cj-suffix').value;
-  return (prefix || 'ods_' + (document.getElementById('cj-catalog').value.split('.').pop() || '') + '_') + base + (suffix || '');
+  var cat = document.getElementById('cj-catalog').value;
+  var db = document.getElementById('cj-database').value;
+  var scope = cat === 'internal' ? db : (cat.split('.').pop() || '');
+  return (prefix || 'ods_' + scope + '_') + base + (suffix || '');
 }
 
 function getSelectedColumns(){

@@ -96,6 +96,31 @@ class SchedulerService:
                     return True
         return False
 
+    def update_job(self, job_id, job_def):
+        with self.lock:
+            for j in self.jobs:
+                if j["id"] == job_id:
+                    if job_def.get("name"):
+                        j["name"] = job_def["name"]
+                    if job_def.get("target_db"):
+                        j["target_db"] = job_def["target_db"]
+                    if job_def.get("mode"):
+                        j["mode"] = job_def["mode"]
+                    if job_def.get("sql"):
+                        j["sql"] = job_def["sql"]
+                    if job_def.get("schedule_value") and job_def.get("schedule_unit"):
+                        j["schedule"] = {"value": int(job_def["schedule_value"]), "unit": job_def["schedule_unit"]}
+                    if job_def.get("start_time"):
+                        j["start_time"] = job_def["start_time"]
+                        j["next_run"] = job_def["start_time"]
+                    if "watermark_column" in job_def:
+                        j["watermark_column"] = job_def.get("watermark_column") or None
+                    if "watermark_type" in job_def:
+                        j["watermark_type"] = job_def.get("watermark_type") or None
+                    self._save()
+                    return True
+        return False
+
     def _resolve_sql(self, job):
         sql = job["sql"]
         if job.get("mode") == "incremental" and job.get("last_watermark"):
